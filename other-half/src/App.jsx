@@ -2,6 +2,7 @@ import React from 'react'
 import Header from './Header'
 import HeroBanner from './HeroBanner'
 import Slider from './Slider'
+import Health from './Health'
 
 const App = () => {
   return (
@@ -9,6 +10,7 @@ const App = () => {
     <Header ></Header>
     <HeroBanner></HeroBanner>
     <Slider></Slider>
+    <Health></Health>
     </>
   )
 }
