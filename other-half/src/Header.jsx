@@ -21,7 +21,7 @@ export default function Header() {
 
           {/* LEFT CONTAINER (LOGO) */}
           <div className="flex items-center w-[262px]">
-           <img src="/dog-logo.svg" alt="logo" className="w-[40px] h-[40px]" />
+           <img src="/images/dog-logo.svg" alt="logo" className="w-[40px] h-[40px]" />
 
           </div>
 

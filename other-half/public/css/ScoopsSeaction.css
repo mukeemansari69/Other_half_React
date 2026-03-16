@@ -1,0 +1,155 @@
+.scoops-section{
+background:#ffffff;
+padding:80px 20px 180px;
+}
+
+.heading{
+font-family:"Luckiest Guy";
+font-size:48px;
+text-align:center;
+color:#1A1A1A;
+line-height:125%;
+}
+
+.subheading{
+font-family:"Manrope";
+font-size:20px;
+text-align:center;
+color:#000000CC;
+margin-top:10px;
+margin-bottom:60px;
+}
+
+.circle-grid{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:30px;
+justify-items:center;
+}
+
+.circle-wrapper{
+position:relative;
+text-align:center;
+}
+
+.circle{
+width:183px;
+height:183px;
+border-radius:999px;
+background-size:cover;
+background-position:center;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+position:relative;
+transition:all .3s ease;
+}
+
+.circle.active{
+background-color:#0F4A12;
+}
+
+.circle-text{
+font-family:Poppins;
+font-weight:600;
+font-size:24px;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+.plus{
+position:absolute;
+bottom:-18px;
+width:56px;
+height:56px;
+background:#D4E6CE;
+border-radius:88px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:32px;
+color:#0F4A12;
+transition:all .3s ease;
+}
+
+.plus.close{
+background:#0F4A12;
+color:#EBF466;
+transform:rotate(45deg);
+}
+
+/* FIXED INFO BOX */
+
+.info-box{
+position:absolute;
+top:210px;
+left:50%;
+transform:translateX(-50%);
+width:255px;
+padding:14px;
+border:1px solid #00000033;
+border-radius:12px;
+background:#fff;
+font-family:Poppins;
+font-size:16px;
+font-weight:600;
+text-align:center;
+animation:fade .3s ease;
+z-index:5;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translate(-50%,10px)}
+to{opacity:1;transform:translate(-50%,0)}
+}
+
+
+/* MOBILE */
+
+@media(max-width:768px){
+.scoops-section{
+    padding: 36px 16px;
+}
+.heading{
+font-size:34px;
+}
+
+.subheading{
+font-size:16px;
+padding-top: 9px;
+padding-bottom: 32px;
+max-width: 308px;
+margin: auto;
+
+}
+
+.circle-grid{
+grid-template-columns:repeat(2,1fr);
+gap:42px;
+}
+
+.circle{
+width:136px;
+height:136px;
+}
+
+.circle-text{
+font-size:16px;
+}
+
+.plus{
+width:42px;
+height:42px;
+font-size:24px;
+}
+
+.info-box{
+top:155px;
+width:154px;
+font-size:14px;
+padding:8px;
+}
+
+}

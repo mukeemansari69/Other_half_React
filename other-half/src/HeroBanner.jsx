@@ -10,7 +10,7 @@ export default function HeroBanner() {
       lg:pt-[160px] lg:pb-[160px] lg:px-[120px]
       "
       style={{
-        backgroundImage: "url('/banner-img.png')",
+        backgroundImage: "url('/images/banner-img.png')",
       }}
     >
       {/* Desktop Background */}
@@ -18,7 +18,7 @@ export default function HeroBanner() {
         {`
           @media (min-width: 1024px){
             section{
-              background-image:url('/mobile-banner.png');
+             /*  background-image:url('/mobile-banner.png'); */
             }
           }
         `}

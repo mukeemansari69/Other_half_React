@@ -1,127 +1,151 @@
 import React, { useEffect, useState } from "react";
 
-import img1 from "/dog-1.svg";
-import img2 from "/dog-2.svg";
-import img3 from "/dog-3.svg";
-import img4 from "/dog-2.svg";
-import img5 from "/dog-1.svg";
+import img1 from "/images/dog-1.svg";
+import img2 from "/images/dog-2.svg";
+import img3 from "/images/dog-3.svg";
 
-const images = [img1, img2, img3, img4, img5];
+const images = [img1, img2, img3];
 
 const Health = () => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const slider = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
-    }, 2500);
+    }, 3500); // thoda slow
 
-    return () => clearInterval(interval);
+    return () => clearInterval(slider);
   }, []);
 
   return (
     <section
       className="
-      w-full max-w-[1920px] mx-auto
+      w-full
       bg-[#FAF9F5]
-      px-[240px] py-[120px]
-      flex justify-between items-center
-      gap-[111px]
-      max-lg:px-[120px]
-      max-md:flex-col
-      max-md:px-[16px]
-      max-md:py-[32px]
-      max-md:gap-[27px]
+      px-6 md:px-12 lg:px-[120px] xl:px-[240px]
+      py-10 md:py-16 lg:py-[120px]
+      flex flex-col lg:flex-row
+      items-center
+      justify-between
+      gap-10 lg:gap-[111px]
       "
     >
-      {/* TEXT SECTION */}
+      {/* TEXT */}
 
-      <div className="flex flex-col gap-6 max-w-[673px] max-md:items-center text-center md:text-left">
+      <div className="flex flex-col gap-8 max-w-[673px] text-center lg:text-left">
 
         <h1
           className="
           font-[Luckiest_Guy]
-          text-[48px]
+          text-[32px]
+          md:text-[40px]
+          lg:text-[48px]
           leading-[125%]
           text-[#1A1A1A]
-          max-md:text-[32px]
-          max-md:w-[366px]
           "
         >
           THEIR HEALTH GLOWS. YOUR LIFE FLOWS WITH OTHER HALF!
         </h1>
 
+        {/* MOBILE STACK */}
+
+        <div className="lg:hidden flex justify-center">
+          <ImageStack images={images} index={index} />
+        </div>
+
         <p
           className="
           font-poppins
-          font-medium
-          text-[18px]
-          leading-[152%]
+          text-[16px]
+          md:text-[18px]
+          leading-[160%]
           text-[#1A1A1A]
-          max-w-[673px]
-          max-md:w-[398px]
+          px-2 md:px-0 mt-5 md:mt-0
           "
         >
           Ditch the junk—Other Half crafts science-backed, human-grade
           supplements that pamper your pup with pure wellness. Think
-          pumpkin-bacon yum, minus the fillers. Just pure, proven goodness
-          for tail-wagging bliss!
+          pumpkin-bacon yum, minus the fillers. Just pure, proven goodness for tail-wagging bliss!
+          
+
         </p>
 
-        <button
-          className="
-          w-[161px] h-[55px]
-          rounded-full
-          bg-[#0F4A12]
-          text-[#EBF466]
-          font-bold
-          text-[18px]
-          uppercase
-          transition-all
-          hover:bg-white
-          hover:text-black
-          max-md:w-[197px]
-          "
-        >
-          SHOP NOW
-        </button>
+        <div className="flex justify-center lg:justify-start">
+          <button
+            className="
+            h-[55px]
+            px-8
+            rounded-full
+            bg-[#0F4A12]
+            text-[#EBF466]
+            font-bold
+            uppercase
+            text-[16px]
+            md:text-[18px]
+            transition-all duration-300
+            hover:bg-white hover:text-black
+            "
+          >
+            SHOP NOW
+          </button>
+        </div>
+
       </div>
 
-      {/* IMAGE STACK */}
+      {/* DESKTOP STACK */}
 
-      <div className="relative w-[656px] h-[700px] max-md:w-full max-md:h-[424px]">
-
-        {images.map((img, i) => {
-          const pos = (i - index + images.length) % images.length;
-
-          const styles = [
-            "translate-y-[0px] scale-100 z-50 opacity-100",
-            "translate-y-[15px] scale-95 z-40 opacity-90",
-            "translate-y-[30px] scale-90 z-30 opacity-80",
-            "translate-y-[45px] scale-[0.85] z-20 opacity-70",
-            "translate-y-[60px] scale-[0.8] z-10 opacity-60",
-          ];
-
-          return (
-            <img
-              key={i}
-              src={img}
-              alt="dog"
-              className={`
-              absolute
-              w-[620px] h-[700px]
-              object-cover
-              rounded-[20px]
-              transition-all duration-700 ease-in-out
-              ${styles[pos]}
-              max-md:w-full max-md:h-[424px]
-              `}
-            />
-          );
-        })}
+      <div className="hidden lg:block">
+        <ImageStack images={images} index={index} />
       </div>
     </section>
   );
 };
 
 export default Health;
+
+
+
+/* IMAGE STACK */
+
+const ImageStack = ({ images, index }) => {
+
+  const positions = [
+    "translate-y-0 scale-100 z-30",
+    "translate-y-6 scale-[0.96] z-20",
+    "translate-y-12 scale-[0.92] z-10"
+  ];
+
+  return (
+    <div className="relative w-[320px] h-[360px] md:w-[420px] md:h-[460px] lg:w-[620px] lg:h-[700px]">
+
+      {/* decoration cards */}
+
+      <div className="absolute inset-0 bg-[#F9F3D3] rounded-[20px] translate-x-4 translate-y-4"></div>
+      <div className="absolute inset-0 bg-[#F4E7A1] rounded-[20px] translate-x-8 translate-y-8"></div>
+
+      {images.map((img, i) => {
+
+        const pos = (i - index + images.length) % images.length;
+
+        return (
+          <img
+            key={i}
+            src={img}
+            alt="dog"
+            className={`
+            absolute
+            w-full h-full
+            object-cover
+            rounded-[20px]
+            shadow-xl
+            transform-gpu
+            transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)]
+            ${positions[pos]}
+            `}
+          />
+        );
+
+      })}
+    </div>
+  );
+};
