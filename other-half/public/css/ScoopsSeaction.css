@@ -1,6 +1,6 @@
 .scoops-section{
 background:#ffffff;
-padding:80px 20px 180px;
+padding:0px 20px 158px;
 }
 
 .heading{
@@ -107,7 +107,11 @@ to{opacity:1;transform:translate(-50%,0)}
 
 
 /* MOBILE */
-
+@media (max-width:1280px) {
+    .circle-grid{
+        grid-template-columns: repeat(3, 2fr)
+    }
+}
 @media(max-width:768px){
 .scoops-section{
     padding: 36px 16px;
@@ -152,4 +156,11 @@ font-size:14px;
 padding:8px;
 }
 
+}
+
+@media(max-width :390px){
+.circle-grid{
+   grid-template-columns:repeat(1,1fr);
+gap:30px; 
+}
 }

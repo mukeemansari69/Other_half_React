@@ -1,0 +1,137 @@
+.save-section{
+background:#FAF9F5;
+padding-top:80px;
+padding-bottom:80px;
+text-align:center;
+width:100%;
+}
+
+/* heading */
+
+.save-heading{
+font-family:"Luckiest Guy";
+font-size:48px;
+color:#1A1A1A;
+margin-bottom:60px;
+}
+
+/* container */
+
+.save-container{
+max-width:1200px;
+margin:auto;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:80px;
+}
+
+/* card */
+
+.save-card{
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+gap:18px;
+}
+
+/* icon circle */
+
+.save-icon-circle{
+width:88px;
+height:88px;
+background:#111;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.save-icon-circle img{
+width:40px;
+height:40px;
+}
+
+/* title */
+
+.save-title{
+font-family:Poppins;
+font-weight:700;
+font-size:22px;
+color:#1A1A1A;
+}
+
+/* desc */
+
+.save-desc{
+font-family:Poppins;
+font-weight:500;
+font-size:18px;
+color:#4A4A4A;
+max-width:351px;
+line-height:1.4;
+}
+
+/* button */
+
+.save-btn-wrapper{
+margin-top:60px;
+}
+
+.subscribe-btn{
+width:229px;
+height:55px;
+background:#0F4A12;
+border-radius:333px;
+border:none;
+cursor:pointer;
+
+font-family:Poppins;
+font-weight:700;
+font-size:18px;
+text-transform:uppercase;
+
+color:#EBF466;
+
+transition:0.3s;
+}
+
+/* hover */
+
+.subscribe-btn:hover{
+background:#ffffff;
+color:#000000;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.save-section{
+padding:32px 16px;
+}
+
+.save-heading{
+font-size:34px;
+margin-bottom:40px;
+}
+
+.save-container{
+grid-template-columns:1fr;
+gap:40px;
+}
+
+.save-title{
+font-size:20px;
+}
+
+.save-desc{
+font-size:16px;
+}
+
+.subscribe-btn{
+width:100%;
+max-width:229px;
+}
+
+}
