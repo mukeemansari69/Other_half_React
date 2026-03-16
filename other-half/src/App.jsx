@@ -11,6 +11,7 @@ import Features from './Features'
 import TrustedSection from './TrustedSection'
 import SaveSection from './SaveSection'
 import QualitySection from './QualitySection'
+import Testimonials from './Testimonials'
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
     <TrustedSection></TrustedSection>
     <SaveSection></SaveSection>
     <QualitySection></QualitySection>
+    <Testimonials></Testimonials>
     </>
   )
 }
