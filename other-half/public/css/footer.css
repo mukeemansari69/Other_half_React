@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+.footer-font {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Custom border-top as per your detail */
+.footer-border-top {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.search-border {
+  border: 1px solid #161829;
+}
+
+/* Social icons color */
+
+
+input::placeholder {
+  color: #1A1A1A;
+  opacity: 0.6;
+}
+.mobile-grid{
+    display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 20px; /* row gap + column gap */
+}
+.mobile-logo{
+    align-items: center;
+}

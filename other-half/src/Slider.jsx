@@ -24,28 +24,51 @@ const items = [
 ];
 
 export default function Slider() {
-  const loopItems = [...items, ...items, ...items]; // seamless loop
+  const loopItems = [...items, ...items, ...items];
 
   return (
-    <div className="w-full overflow-hidden bg-[#E8754C] py-8 group">
-      <div className="flex gap-8 w-max animate-infinite-slider group-hover:[animation-play-state:paused]">
+    <div className="w-full bg-[#E8754C] flex justify-center overflow-hidden py-6 md:py-8">
+      
+      {/* ✅ 1920 CONTAINER */}
+      <div className="w-full max-w-[1920px] overflow-hidden">
+        
+        <div className="flex gap-6 md:gap-8 w-max animate-infinite-slider group-hover:[animation-play-state:paused]">
 
-        {loopItems.map((item, index) => (
-          <div
-            key={index}
-            className="flex flex-col justify-between items-center min-w-[240px] max-w-[350px] h-[134px] gap-[42px]"
-          >
-            <p className="text-white text-center font-medium text-[16px] leading-[175%] font-[Poppins]">
-              "{item.text}"
-            </p>
+          {loopItems.map((item, index) => (
+            <div
+              key={index}
+              className="
+              flex flex-col justify-between items-center
+              min-w-[180px] sm:min-w-[220px] md:min-w-[240px]
+              max-w-[260px] md:max-w-[320px]
+              h-[110px] sm:h-[120px] md:h-[134px]
+              gap-[24px] md:gap-[42px]
+              px-2
+              "
+            >
+              <p
+                className="
+                text-white text-center font-medium
+                text-[13px] sm:text-[14px] md:text-[16px]
+                leading-[150%] md:leading-[175%]
+                font-[Poppins]
+                "
+              >
+                "{item.text}"
+              </p>
 
-            <img
-              src={item.img}
-              alt="logo"
-              className="max-w-[120px] h-auto object-contain"
-            />
-          </div>
-        ))}
+              <img
+                src={item.img}
+                alt="logo"
+                className="
+                max-w-[80px] sm:max-w-[100px] md:max-w-[120px]
+                h-auto object-contain
+                "
+              />
+            </div>
+          ))}
+
+        </div>
 
       </div>
     </div>

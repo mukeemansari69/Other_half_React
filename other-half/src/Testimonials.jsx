@@ -68,8 +68,6 @@ const reviews = [
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
   },
-
-  
 ];
 
 const Stars = ({ count }) => {
@@ -86,57 +84,63 @@ const Stars = ({ count }) => {
 
 export default function Testimonials() {
   return (
-    <section className="testimonial-section">
-      <div className="testimonial-container">
+    <section className="testimonial-section w-full">
+      
+      {/* ✅ 1920 CENTER CONTAINER */}
+      <div className="max-w-[1920px] mx-auto px-6">
 
-        <h2 className="testimonial-heading">
-          LOVED BY PET PARENTS,
-          <br />
-          TRUSTED BY OVER 4 MILLION FURRY TAILS
-        </h2>
-<Swiper
-  className="testimonial-swiper"
-  modules={[Autoplay]}
-  autoplay={{
-    delay: 2500,
-    disableOnInteraction: false,
-  }}
-  loop={true}
-  loopAdditionalSlides={8}
-  loopFillGroupWithBlank={true}
-  spaceBetween={24}
-  slidesPerView={1.5}
-  centeredSlides={false}
-watchSlidesProgress={true}
-  breakpoints={{
-    640: { slidesPerView: 1.5 },
-    768: { slidesPerView: 2.5 },
-    1024: { slidesPerView: 3.5 },
-    1280: { slidesPerView: 4.5 },
-  }}
->
-          {reviews.map((review) => (
-            <SwiperSlide key={review.id}>
-              <div className="testimonial-card">
+        <div className="testimonial-container">
 
-                <div className="card-content">
-                  <Stars count={review.rating} />
+          <h2 className="testimonial-heading">
+            LOVED BY PET PARENTS,
+            <br />
+            TRUSTED BY OVER 4 MILLION FURRY TAILS
+          </h2>
 
-                  <h3 className="card-title">{review.title}</h3>
+          <Swiper
+            className="testimonial-swiper"
+            modules={[Autoplay]}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            loop={true}
+            loopAdditionalSlides={8}
+            loopFillGroupWithBlank={true}
+            spaceBetween={24}
+            slidesPerView={1.5}
+            centeredSlides={false}
+            watchSlidesProgress={true}
+            breakpoints={{
+              640: { slidesPerView: 1.5 },
+              768: { slidesPerView: 2.5 },
+              1024: { slidesPerView: 3.5 },
+              1280: { slidesPerView: 4.5 },
+            }}
+          >
+            {reviews.map((review) => (
+              <SwiperSlide key={review.id}>
+                <div className="testimonial-card">
 
-                  <p className="card-desc">{review.desc}</p>
+                  <div className="card-content">
+                    <Stars count={review.rating} />
+
+                    <h3 className="card-title">{review.title}</h3>
+
+                    <p className="card-desc">{review.desc}</p>
+                  </div>
+
+                  <div className="card-user">
+                    <img src={review.image} alt="user" />
+                    <span>{review.name}</span>
+                  </div>
+
                 </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
 
-                <div className="card-user">
-                  <img src={review.image} alt="user" />
-                  <span>{review.name}</span>
-                </div>
-
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-
+        </div>
       </div>
     </section>
   );

@@ -26,7 +26,6 @@ export default function TrustedSection() {
     let index = 0;
 
     const playNext = () => {
-
       const vids = desktopVideosRef.current;
 
       vids.forEach(v => v && v.pause());
@@ -46,11 +45,9 @@ export default function TrustedSection() {
     };
 
     playNext();
-
   }, []);
 
   const togglePause = (i, type) => {
-
     const video =
       type === "desktop"
         ? desktopVideosRef.current[i]
@@ -68,7 +65,6 @@ export default function TrustedSection() {
   };
 
   const toggleMute = (i, type) => {
-
     const video =
       type === "desktop"
         ? desktopVideosRef.current[i]
@@ -85,140 +81,107 @@ export default function TrustedSection() {
   };
 
   return (
+    <section className="w-full flex justify-center">
 
-    <section className="trusted-container">
+      {/* ✅ 1920 CONTAINER */}
+      <div className="w-full max-w-[1920px] trusted-container">
 
-      <h2 className="trusted-heading">
-        TRUSTED BY VETS. LOVED BY PETS.
-      </h2>
+        <h2 className="trusted-heading">
+          TRUSTED BY VETS. LOVED BY PETS.
+        </h2>
 
-      {/* DESKTOP */}
+        {/* DESKTOP */}
+        <div className="desktop-videos hidden md:flex">
+          {videos.map((src, i) => (
+            <div className="video-card" key={i}>
 
-      <div className="desktop-videos hidden md:flex">
+              <video
+                ref={el => desktopVideosRef.current[i] = el}
+                src={src}
+                muted
+                playsInline
+                className="video-element"
+              />
 
-        {videos.map((src, i) => (
+              <div className="video-controls">
 
-          <div className="video-card" key={i}>
+                <button onClick={() => togglePause(i,"desktop")}>
+                  {playing[i] ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F4A12">
+                      <rect x="6" y="4" width="4" height="16"/>
+                      <rect x="14" y="4" width="4" height="16"/>
+                    </svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F4A12">
+                      <polygon points="5,3 19,12 5,21"/>
+                    </svg>
+                  )}
+                </button>
 
-            <video
-              ref={el => desktopVideosRef.current[i] = el}
-              src={src}
-              muted
-              playsInline
-              className="video-element"
-            />
+                <button onClick={() => toggleMute(i,"desktop")}>
+                  {muted[i] ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F4A12">
+                      <path d="M3 9V15H7L12 20V4L7 9H3Z"/>
+                    </svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F4A12">
+                      <path d="M16 7L9 12L16 17V7Z"/>
+                    </svg>
+                  )}
+                </button>
 
-            <div className="video-controls">
+              </div>
+            </div>
+          ))}
+        </div>
 
-              <button onClick={() => togglePause(i,"desktop")}>
+        {/* MOBILE */}
+        <div className="mobile-videos flex md:hidden">
+          {videos.map((src, i) => (
+            <div className="mobile-card" key={i}>
 
-                {playing[i] ? (
+              <video
+                ref={el => mobileVideosRef.current[i] = el}
+                src={src}
+                muted
+                playsInline
+                className="mobile-video"
+              />
 
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F4A12">
-                    <rect x="6" y="4" width="4" height="16"/>
-                    <rect x="14" y="4" width="4" height="16"/>
-                  </svg>
+              <div className="mobile-controls">
 
-                ) : (
+                <button onClick={() => togglePause(i,"mobile")}>
+                  {playing[i] ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F4A12">
+                      <rect x="6" y="4" width="4" height="16"/>
+                      <rect x="14" y="4" width="4" height="16"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F4A12">
+                      <polygon points="5,3 19,12 5,21"/>
+                    </svg>
+                  )}
+                </button>
 
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F4A12">
-                    <polygon points="5,3 19,12 5,21"/>
-                  </svg>
+                <button onClick={() => toggleMute(i,"mobile")}>
+                  {muted[i] ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F4A12">
+                      <path d="M3 9V15H7L12 20V4L7 9H3Z"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0F4A12">
+                      <path d="M16 7L9 12L16 17V7Z"/>
+                    </svg>
+                  )}
+                </button>
 
-                )}
-
-              </button>
-
-              <button onClick={() => toggleMute(i,"desktop")}>
-
-                {muted[i] ? (
-
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F4A12">
-                    <path d="M3 9V15H7L12 20V4L7 9H3Z"/>
-                  </svg>
-
-                ) : (
-
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F4A12">
-                    <path d="M16 7L9 12L16 17V7Z"/>
-                  </svg>
-
-                )}
-
-              </button>
+              </div>
 
             </div>
-
-          </div>
-
-        ))}
+          ))}
+        </div>
 
       </div>
-
-      {/* MOBILE */}
-
-      <div className="mobile-videos flex md:hidden">
-
-        {videos.map((src, i) => (
-
-          <div className="mobile-card" key={i}>
-
-            <video
-              ref={el => mobileVideosRef.current[i] = el}
-              src={src}
-              muted
-              playsInline
-              className="mobile-video"
-            />
-
-            <div className="mobile-controls">
-
-<button onClick={() => togglePause(i,"mobile")}>
-
-{playing[i] ? (
-
-<svg width="18" height="18" viewBox="0 0 24 24" fill="#0F4A12">
-<rect x="6" y="4" width="4" height="16"/>
-<rect x="14" y="4" width="4" height="16"/>
-</svg>
-
-) : (
-
-<svg width="18" height="18" viewBox="0 0 24 24" fill="#0F4A12">
-<polygon points="5,3 19,12 5,21"/>
-</svg>
-
-)}
-
-</button>
-
-
-<button onClick={() => toggleMute(i,"mobile")}>
-
-{muted[i] ? (
-
-<svg width="18" height="18" viewBox="0 0 24 24" fill="#0F4A12">
-<path d="M3 9V15H7L12 20V4L7 9H3Z"/>
-</svg>
-
-) : (
-
-<svg width="18" height="18" viewBox="0 0 24 24" fill="#0F4A12">
-<path d="M16 7L9 12L16 17V7Z"/>
-</svg>
-
-)}
-
-</button>
-
-</div>
-
-          </div>
-
-        ))}
-
-      </div>
-
     </section>
   );
 }

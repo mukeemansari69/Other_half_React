@@ -1,0 +1,24 @@
+.health-container{
+  padding: 120px 240px;
+}
+.health-img{
+    max-width: 100%;
+}
+@media (max-width :1800px){
+    .health-container{
+  padding: 50px 20px;
+}
+}
+
+@media (max-width :720px){
+  .health-section{
+      padding: 0px 0px;
+  }
+  .health-container{
+  padding: 32px 16px;
+}
+.mobile-gap{
+    gap: 27px;
+}
+   
+}

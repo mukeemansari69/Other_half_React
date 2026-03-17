@@ -35,7 +35,7 @@ const data = [
 ];
 
 export default function ScoopsSection() {
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState(0);
 
   const toggle = (i) => {
     setActive(active === i ? null : i);
