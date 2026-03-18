@@ -1,24 +1,15 @@
 import React from "react";
 
-/**
- * Place images in public/images/
- * - /images/starter-product-desktop.png
- * - /images/starter-product-mobile.png
- *
- * Component name: Starter
- */
-
 export default function Starter() {
   return (
     <section
       aria-label="starter-duo"
       className="w-full bg-[#FAF9F5] text-[#1A1A1A] flex justify-center"
     >
-      {/* ✅ 1920 CONTAINER */}
       <div className="w-full max-w-[1920px] pb-1 px-6 flex flex-col md:flex-row items-center">
 
-        {/* IMAGE */}
-        <div className="order-2 md:order-1 md:w-[1065px] w-full flex justify-center items-start">
+        {/* ✅ DESKTOP IMAGE (same as before) */}
+        <div className="hidden md:flex md:w-[1065px] w-full justify-center items-start">
           <img
             src="/images/strater-duo.svg"
             alt="Starter duo product"
@@ -27,40 +18,40 @@ export default function Starter() {
         </div>
 
         {/* TEXT CONTAINER */}
-        <div className="order-1 md:order-2 md:w-[609px] w-full flex flex-col gap-6 md:gap-8 items-start mt-6 md:mt-0">
+        <div className="md:w-[609px] w-full flex flex-col gap-6 md:gap-8 items-start mt-6 md:mt-0">
           
           {/* Heading */}
           <h1
-            className="text-[34px] md:text-[48px] leading-[125%]"
+            className="text-[34px] md:text-[48px] leading-[125%] w-full text-center md:text-left"
             style={{ fontFamily: "'Luckiest Guy', cursive", fontWeight: 400 }}
           >
             THE STARTER DUO
           </h1>
 
           {/* Rating */}
-          <div className="flex items-center gap-3 w-full">
+          <div className="flex items-center gap-3 w-full justify-center md:justify-start">
             <div
               className="text-[16px] font-[500]"
-              style={{ fontFamily: "Poppins, sans-serif" }}
+              style={{ fontFamily: "Poppins, sans-serif"}}
             >
               Best
             </div>
 
-            {/* Stars */}
-            <div className="flex items-center gap-2 max-w-[116px]">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <svg
-                  key={i}
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="#F7C948"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M12 .587l3.668 7.431L23.4 9.75l-5.7 5.553L19.335 24 12 19.771 4.665 24l1.636-8.697L.6 9.75l7.732-1.732L12 .587z" />
-                </svg>
-              ))}
-            </div>
+            <div className="flex items-center gap-1">
+  {Array.from({ length: 5 }).map((_, i) => (
+    <svg
+      key={i}
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="#F7C948"
+      xmlns="http://www.w3.org/2000/svg"
+      className="shrink-0"
+    >
+      <path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.2 22 12 18.27 5.8 22 7 14.14l-5-4.87 7.1-1.01L12 2z" />
+    </svg>
+  ))}
+</div>
 
             <div
               className="text-[16px] font-[500]"
@@ -72,7 +63,7 @@ export default function Starter() {
 
           {/* Subtext */}
           <div
-            className="text-[18px] font-[500] leading-[152%] flex flex-col gap-4"
+            className="text-[18px] font-[500] leading-[152%] flex flex-col gap-4 text-center md:text-left"
             style={{ fontFamily: "Poppins, sans-serif" }}
           >
             <p>
@@ -83,6 +74,15 @@ export default function Starter() {
             <p className="font-[700]">
               Together? They’re basically superhero sidekicks.
             </p>
+          </div>
+
+          {/* ✅ MOBILE IMAGE (NEW - only mobile me show hogi) */}
+          <div className="flex md:hidden w-full justify-center">
+            <img
+              src="/images/strater-duo.svg"
+              alt="Starter duo product"
+              className="max-w-full h-auto object-contain"
+            />
           </div>
 
           {/* Tick List */}
@@ -99,8 +99,8 @@ export default function Starter() {
             Why settle for one when you can double the good stuff?
           </div>
 
-          {/* CTA Button */}
-          <div className="pt-2">
+          {/* Button */}
+          <div className="pt-2 w-full flex justify-center md:justify-start">
             <a
               href="#"
               className="
@@ -113,7 +113,7 @@ export default function Starter() {
               border-2 border-transparent
               hover:bg-white hover:text-black
               "
-              style={{ fontFamily: "Poppins, sans-serif" }}
+              style={{ fontFamily: "Poppins, sans-serif",marginBottom: "30px" }}
             >
               Shop Daily Duo Now
             </a>
@@ -137,16 +137,11 @@ function TickItem({ title, subtitle }) {
             d="M17 8.5L10.5 15 7 11.5"
             stroke="#fff"
             strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
           />
         </svg>
       </div>
 
-      <div
-        className="text-[20px]"
-        style={{ fontFamily: "Poppins, sans-serif" }}
-      >
+      <div className="text-[20px]" style={{ fontFamily: "Poppins, sans-serif" }}>
         <span className="font-[700]">{title} </span>
         <span className="font-[500]">{subtitle}</span>
       </div>

@@ -51,7 +51,7 @@ const Health = () => {
           </h1>
 
           {/* MOBILE STACK */}
-          <div className="lg:hidden flex justify-center">
+          <div className="lg:hidden flex justify-center mobile-stack">
             <ImageStack images={images} index={index} />
           </div>
 
