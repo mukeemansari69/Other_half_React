@@ -1,36 +1,36 @@
 import React, { useState } from "react";
-import "/public/css/ScoopsSeaction.css";
+import "/public/Home/css/ScoopsSeaction.css";
 
 const data = [
   {
     title: "Hip & Joint Support",
     text: "Keep those zoomies pain-free—joints that jump for joy!",
-    img: "/images/d1.jpg",
+    img: "/Home/images/d1.jpg",
   },
   {
     title: "Digestive Health",
     text: "Supports smooth digestion for your pup.",
-    img: "/images/d2.jpg",
+    img: "/Home/images/d2.jpg",
   },
   {
     title: "Allergy Support",
     text: "Helps reduce common allergy symptoms.",
-    img: "/images/d3.jpg",
+    img: "/Home/images/d3.jpg",
   },
   {
     title: "Healthy Aging",
     text: "Nutrients that support senior dogs.",
-    img: "/images/d4.jpg",
+    img: "/Home/images/d4.jpg",
   },
   {
     title: "Immunity Boost",
     text: "Boost your dog’s natural defenses.",
-    img: "/images/d5.jpg",
+    img: "/Home/images/d5.jpg",
   },
   {
     title: "Dental Delight",
     text: "Supports teeth and gum health.",
-    img: "/images/d6.jpg",
+    img: "/Home/images/d6.jpg",
   },
 ];
 

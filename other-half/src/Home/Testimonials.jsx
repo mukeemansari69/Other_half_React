@@ -1,13 +1,13 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
-import "/public/css/testimonials.css";
+import "/public/Home/css/testimonials.css";
 
 const reviews = [
   {
     id: 1,
     name: "Laura, Max’s Owner",
-    image: "/images/d1.jpg",
+    image: "/Home/images/d1.jpg",
     rating: 4,
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again. His coat is shinier, and he seems happier overall.",
@@ -15,7 +15,7 @@ const reviews = [
   {
     id: 2,
     name: "Laura, Max’s Owner",
-    image: "/images/d2.jpg",
+    image: "/Home/images/d2.jpg",
     rating: 4,
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again. His coat is shinier.",
@@ -23,7 +23,7 @@ const reviews = [
   {
     id: 3,
     name: "Laura, Max’s Owner",
-    image: "/images/d3.jpg",
+    image: "/Home/images/d3.jpg",
     rating: 4,
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
@@ -31,7 +31,7 @@ const reviews = [
   {
     id: 4,
     name: "Laura, Max’s Owner",
-    image: "/images/d4.jpg",
+    image: "/Home/images/d4.jpg",
     rating: 4,
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
@@ -39,7 +39,7 @@ const reviews = [
   {
     id: 5,
     name: "Laura, Max’s Owner",
-    image: "/images/d4.jpg",
+    image: "/Home/images/d4.jpg",
     rating: 4,
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
@@ -47,7 +47,7 @@ const reviews = [
   {
     id: 6,
     name: "Laura, Max’s Owner",
-    image: "/images/d4.jpg",
+    image: "/Home/images/d4.jpg",
     rating: 4,
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
@@ -55,7 +55,7 @@ const reviews = [
   {
     id: 7,
     name: "Laura, Max’s Owner",
-    image: "/images/d4.jpg",
+    image: "/Home/images/d4.jpg",
     rating: 4,
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
@@ -63,7 +63,7 @@ const reviews = [
   {
     id: 8,
     name: "Laura, Max’s Owner",
-    image: "/images/d4.jpg",
+    image: "/Home/images/d4.jpg",
     rating: 4,
     title: "My dog is like a puppy again!",
     desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",

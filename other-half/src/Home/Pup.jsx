@@ -1,24 +1,24 @@
 import React from "react";
-import "/public/css/pup.css";
+import "/public/Home/css/pup.css";
 
 export default function Pup() {
   const products = [
     {
-      img: "/images/p1.png",
+      img: "/Home/images/p1.png",
       title: "Everyday Daily Multivitamin",
       price: "$99.99",
       old: "$69.99",
       tags: ["Immunity Boost", "Digestive health", "Overall Wellness"]
     },
     {
-      img: "/images/p2.png",
+      img: "/Home/images/p2.png",
       title: "Doggie Dental Powder",
       price: "$99.99",
       old: "$69.99",
       tags: ["Dental Care", "Overall Wellness"]
     },
     {
-      img: "/images/p3.png",
+      img: "/Home/images/p3.png",
       title: "Daily Duo Bundle",
       price: "$99.99",
       old: "$69.99",

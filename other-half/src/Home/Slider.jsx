@@ -3,23 +3,23 @@ import React from "react";
 const items = [
   {
     text: "Clean, science-backed",
-    img: "/images/slider-2.svg",
+    img: "/Home/images/slider-2.svg",
   },
   {
     text: "Designed to combat the root causes of bad breath, plaque and tartar in dogs",
-    img: "/images/slider-1.svg",
+    img: "/Home/images/slider-1.svg",
   },
   {
     text: "Pet food industry approved",
-    img: "/images/slider-3.svg",
+    img: "/Home/images/slider-3.svg",
   },
   {
     text: "Trusted by experts",
-    img: "/images/slider-5.png",
+    img: "/Home/images/slider-5.png",
   },
   {
     text: "A comprehensive oral health solution",
-    img: "/images/slide-4.svg",
+    img: "/Home/images/slide-4.svg",
   },
 ];
 

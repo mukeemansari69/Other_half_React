@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import "/public/css/health.css";
-import img1 from "/images/dog-1.svg";
-import img2 from "/images/dog-2.svg";
-import img3 from "/images/dog-3.svg";
+import "/public/Home/css/health.css";
+import img1 from "/Home/images/dog-1.svg";
+import img2 from "/Home/images/dog-2.svg";
+import img3 from "/Home/images/dog-3.svg";
 
 const images = [img1, img2, img3];
 

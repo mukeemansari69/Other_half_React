@@ -1,5 +1,5 @@
 import React from "react";
-import "/public/css/marque.css";
+import "/public/Home/css/marque.css";
 export default function Marque() {
   const items = [
     "NON GMO",
@@ -24,7 +24,7 @@ export default function Marque() {
               </span>
 
               <img
-                src="/images/paw.svg"
+                src="/Home/images/paw.svg"
                 alt="paw"
                 className="paw-icon"
               />

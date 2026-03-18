@@ -11,7 +11,7 @@ export default function Starter() {
         {/* ✅ DESKTOP IMAGE (same as before) */}
         <div className="hidden md:flex md:w-[1065px] w-full justify-center items-start">
           <img
-            src="/images/strater-duo.svg"
+            src="/Home/images/strater-duo.svg"
             alt="Starter duo product"
             className="max-w-full h-auto md:h-[738px] object-contain"
           />
@@ -79,7 +79,7 @@ export default function Starter() {
           {/* ✅ MOBILE IMAGE (NEW - only mobile me show hogi) */}
           <div className="flex md:hidden w-full justify-center">
             <img
-              src="/images/strater-duo.svg"
+              src="/Home/images/strater-duo.svg"
               alt="Starter duo product"
               className="max-w-full h-auto object-contain"
             />

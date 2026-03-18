@@ -1,20 +1,20 @@
 import React from "react";
-import "/public/css/features.css";
+import "/public/Home/css/features.css";
 
 const Features = () => {
   const data = [
     {
-      img: "/images/f1.png",
+      img: "/Home/images/f1.png",
       title: "Vet-Approved",
       desc: "Formulated by professionals who speak fluent “woof.”",
     },
     {
-      img: "/images/f2.png",
+      img: "/Home/images/f2.png",
       title: "Clinically Tested",
       desc: "Real science. Real studies. Real tail-wagging results.",
     },
     {
-      img: "/images/f3.png",
+      img: "/Home/images/f3.png",
       title: "Human-Grade Ingredients",
       desc: "Clean, simple, and effective—nothing you wouldn’t want in your own food.",
     },

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import "/public/css/trustedSection.css";
+import "/public/Home/css/trustedSection.css";
 
 export default function TrustedSection() {
 
@@ -10,16 +10,16 @@ export default function TrustedSection() {
   const [muted, setMuted] = useState({});
 
   const videos = [
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
-    "/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
+    "/Home/images/dog1.mp4",
   ];
 
   useEffect(() => {

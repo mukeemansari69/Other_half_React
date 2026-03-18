@@ -10,7 +10,7 @@ export default function HeroBanner() {
       lg:pt-[160px] lg:pb-[160px] lg:px-[120px]
       "
       style={{
-        backgroundImage: "url('/images/banner-img.png')",
+        backgroundImage: "url('/Home/images/banner-img.png')",
       }}
     >
       {/* Desktop Background */}

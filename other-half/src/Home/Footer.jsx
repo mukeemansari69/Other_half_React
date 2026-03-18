@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaArrowRight } from 'react-icons/fa';
-import "/public/css/footer.css";
+import "/public/Home/css/footer.css";
 
 const Footer = () => {
   return (
@@ -14,7 +14,7 @@ const Footer = () => {
           
           {/* Logo Section */}
           <div className="w-[130px] h-[155px] flex-shrink-0">
-            <img src="/images/logo2.png" alt="Other Half Logo" className="w-full h-full object-contain" />
+            <img src="/Home/images/logo2.png" alt="Other Half Logo" className="w-full h-full object-contain" />
           </div>
 
           {/* Text Container */}
@@ -97,7 +97,7 @@ const Footer = () => {
         
         {/* Logo & Social Icons */}
         <div className="flex flex-col gap-[17px] w-full mobile-logo">
-          <img src="/images/logo2.png" alt="Logo" className="w-[100px] h-[120px] object-contain" />
+          <img src="/Home/images/logo2.png" alt="Logo" className="w-[100px] h-[120px] object-contain" />
           <div className="flex gap-[34px] items-center">
             <FaFacebookF className="w-[24px] h-[24px] social-icon-blue" />
             <FaTwitter className="w-[24px] h-[24px]" />

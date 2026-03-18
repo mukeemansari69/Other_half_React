@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import "/public/css/faq.css";
+import "/public/Home/css/faq.css";
 
 const data = [
   {
