@@ -1,0 +1,300 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+.product-banner-root {
+  font-family: "Poppins", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(235, 244, 102, 0.18), transparent 24rem),
+    linear-gradient(180deg, #fffaf2 0%, #ffffff 20rem);
+  color: #1a1a1a;
+}
+
+.product-banner-thumb-column {
+  width: clamp(4rem, 16vw, 5.25rem);
+}
+
+.product-banner-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  border-radius: 1rem;
+  background: #ffffff;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.product-banner-thumb:hover {
+  transform: translateY(-1px);
+}
+
+.product-banner-thumb.is-active {
+  border-color: #0f4a12;
+  box-shadow: 0 10px 24px rgba(15, 74, 18, 0.12);
+}
+
+.product-banner-main-media {
+  overflow: hidden;
+  border: 1px solid rgba(15, 74, 18, 0.08);
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, #fff7bf 0%, #f4f2bc 100%);
+  box-shadow: 0 20px 44px rgba(15, 74, 18, 0.08);
+}
+
+.product-banner-highlight-card {
+  min-height: clamp(5.75rem, 14vw, 7.5rem);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.product-banner-highlight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 74, 18, 0.08);
+}
+
+.product-banner-highlight-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(15, 74, 18, 0.12);
+  background: #ffffff;
+  color: #0f4a12;
+}
+
+.product-banner-description--collapsed {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.product-banner-benefit-pill {
+  min-height: 3.25rem;
+  border: 1px solid rgba(15, 74, 18, 0.16);
+  border-radius: 9999px;
+  background: #fffdf2;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.product-banner-benefit-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15, 74, 18, 0.08);
+}
+
+.product-banner-size-card {
+  min-height: clamp(8.75rem, 23vw, 10rem);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.product-banner-size-card:hover {
+  transform: translateY(-1px);
+}
+
+.product-banner-size-card.is-selected {
+  border-color: #0f4a12;
+  background: #faf9f5;
+  box-shadow: 0 16px 32px rgba(15, 74, 18, 0.08);
+}
+
+.product-banner-frequency-card {
+  text-align: left;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.product-banner-frequency-card:hover {
+  transform: translateY(-1px);
+}
+
+.product-banner-frequency-card.is-selected {
+  border-color: #0f4a12;
+  background: #fffdf2;
+  box-shadow: 0 18px 34px rgba(15, 74, 18, 0.08);
+}
+
+.product-banner-radio {
+  position: relative;
+  width: 1.3125rem;
+  height: 1.3125rem;
+  border: 2px solid #bdbdbd;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  transition: border-color 180ms ease;
+}
+
+.product-banner-radio.is-selected {
+  border-color: #0f4a12;
+}
+
+.product-banner-radio.is-selected::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #0f4a12;
+  transform: translate(-50%, -50%);
+}
+
+.product-banner-switch {
+  position: relative;
+  display: inline-flex;
+  width: 2.625rem;
+  height: 1.5rem;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.1875rem;
+  transition: background-color 180ms ease;
+}
+
+.product-banner-switch[data-active="true"] {
+  background: #0f4a12;
+}
+
+.product-banner-switch[data-active="false"] {
+  background: #d1d5db;
+}
+
+.product-banner-switch-thumb {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: transform 180ms ease;
+}
+
+.product-banner-switch[data-active="true"] .product-banner-switch-thumb {
+  transform: translateX(1.125rem);
+}
+
+.product-banner-cta {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+.product-banner-cta:hover {
+  transform: translateY(-1px);
+}
+
+.product-banner-cta:focus-visible,
+.product-banner-thumb:focus-visible,
+.product-banner-size-card:focus-visible,
+.product-banner-frequency-card:focus-visible,
+.product-banner-quick-add:focus-visible,
+.product-banner-action-link:focus-visible,
+.product-banner-switch:focus-visible {
+  outline: 2px solid #0f4a12;
+  outline-offset: 2px;
+}
+
+.product-banner-guarantee-card {
+  min-height: clamp(6.25rem, 18vw, 8.125rem);
+}
+
+.product-banner-upsell-card {
+  overflow: hidden;
+}
+
+.product-banner-upsell-card.is-active {
+  animation: productBannerFade 260ms ease;
+}
+
+.product-banner-quick-add {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.product-banner-quick-add:hover {
+  transform: translateY(-1px);
+}
+
+.product-banner-quick-add.is-added {
+  border-color: #0f4a12;
+  background: #0f4a12;
+  color: #ffffff;
+}
+
+.product-banner-action-link {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.product-banner-accordion-body {
+  animation: productBannerExpand 220ms ease;
+}
+
+.product-banner-star {
+  color: #358248;
+  fill: currentColor;
+}
+
+.product-banner-scrollbar {
+  scrollbar-width: none;
+}
+
+.product-banner-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes productBannerFade {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes productBannerExpand {
+  from {
+    opacity: 0;
+    transform: translateY(-0.3rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .product-banner-main-media {
+    border-radius: 1.25rem;
+  }
+
+  .product-banner-highlight-card {
+    padding: 0.85rem 0.55rem;
+  }
+
+  .product-banner-highlight-icon {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+}
