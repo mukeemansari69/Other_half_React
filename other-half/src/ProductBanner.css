@@ -298,3 +298,21 @@
     height: 2.35rem;
   }
 }
+@media (max-width :480px){
+  .p-heading{
+    font-size: 20px;
+  }
+  .p-review{
+    font-size: 10px;
+  }
+  .p-bovine{
+    font-size: 10px;
+  }
+  .p-mobile{
+    display: flex;
+  }
+  .p-mobile-img{
+    max-width: 190px;
+   
+  }
+}
