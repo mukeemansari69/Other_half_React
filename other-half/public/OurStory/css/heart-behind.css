@@ -1,0 +1,246 @@
+/* ===== VISIBILITY CONTROL ===== */
+.hb-desktop {
+  display: block;
+  position: relative;
+}
+.hb-mobile {
+  display: none;
+}
+
+
+/* ===== VIDEO DESKTOP ===== */
+.hb-video-wrapper {
+  position: relative;
+  max-width: 1440px;
+  margin: auto;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.hb-video {
+  width: 100%;
+  height: 682px;
+  object-fit: cover;
+}
+
+.hb-video-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 134px;
+  height: 134px;
+  background: #ffffff66;
+  border-radius: 50%;
+  font-size: 40px;
+}
+
+/* ===== TEXT ===== */
+
+.hb-desktop-content{
+    padding-top: 96px;
+    padding-bottom: 123px;
+}
+.hb-title {
+  font-size: 64px;
+  font-family: Luckiest Guy;
+font-weight: 400;
+font-style: Regular;
+font-size: 64px;
+line-height: 125%;
+letter-spacing: 0;
+text-align: center;
+color: #000000;
+margin-bottom: 50px;
+margin-top: 25px;
+}
+
+.hb-circle {
+  width: 68px;
+  height: 68px;
+  background: #E8754C;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+.hb-subheading{
+    font-family: Poppins;
+font-weight: 700;
+
+font-size: 36px;
+
+line-height: 152%;
+letter-spacing: 0;
+text-align: center;
+color: #000000;
+}
+.hb-para{
+    font-family: Poppins;
+font-weight: 500;
+font-style: Medium;
+font-size: 16px;
+line-height: 170%;
+letter-spacing: 0%;
+text-align: center;
+color:#000000;
+max-width: 558px;
+height: 54 px;
+
+
+}
+.hb-line {
+  width: 3px;
+  height: 120px;
+  background: #E8754C;
+  margin: 20px auto;
+}
+
+/* ===== DOG ===== */
+.hb-dog {
+  position: absolute;
+  left: -10%;
+  max-width: 1200px;
+  bottom: 0%;
+  width: 100%;
+}
+
+/* ===== MOBILE ===== */
+/* ================= MOBILE FULL FIX ================= */
+
+.hb-mobile {
+  width: 100%;
+}
+
+/* VIDEO */
+.hb-m-video-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 0 16px;
+ 
+}
+
+.hb-m-video {
+  width: 100%;
+  height: 323px;
+  object-fit: cover;
+  border-radius: 7px;
+}
+
+/* BUTTON */
+.hb-m-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: #ffffff66;
+  border-radius: 50%;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CONTENT */
+.hb-m-content {
+  width: 100%;
+  padding: 36px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+/* PHILOSOPHY */
+.hb-m-subtitle {
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 152%;
+  color: #00000099;
+}
+
+/* TITLE */
+.hb-m-title {
+  font-family: "Luckiest Guy";
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 125%;
+  text-align: center;
+  color: #1A1A1A;
+}
+
+/* STEPS WRAPPER */
+.hb-m-steps {
+  width: 100%;
+  max-width: 398px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* STEP */
+.hb-m-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+/* CIRCLE */
+.hb-m-circle {
+  width: 68px;
+  height: 68px;
+  background: #E8754C;
+  border-radius: 50%;
+  color: #fff;
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* STEP TITLE */
+.hb-m-step-title {
+  font-family: Poppins;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 152%;
+  color: #000000;
+}
+
+/* STEP TEXT */
+.hb-m-step-text {
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 170%;
+  color: #000000;
+}
+
+/* LINE */
+.hb-m-line {
+  width: 3px;
+  height: 80px;
+  background: #E8754C;
+}
+@media (max-width :1590px){
+  .hb-dog{
+  display: none;
+}
+}
+@media (max-width: 768px) {
+  .hb-desktop {
+    display: none;
+  }
+  .hb-mobile {
+    display: block;
+  }
+}

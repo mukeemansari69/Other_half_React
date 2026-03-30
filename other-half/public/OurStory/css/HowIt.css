@@ -1,0 +1,136 @@
+.howit-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: auto;
+  padding: 120px 0 60px 0;
+}
+
+/* ===== DESKTOP ===== */
+.howit-desktop {
+  display: flex;
+  justify-content: space-between;
+  gap: 60px;
+}
+
+.howit-text {
+  flex: 1;
+  max-width: 700px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.howit-label {
+  font-family: "Poppins";
+  font-size: 18px;
+  color: #00000099;
+  margin-bottom: 16px;
+}
+
+.howit-heading {
+  font-family: "Luckiest Guy";
+  font-size: 48px;
+  line-height: 125%;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+}
+
+.howit-para {
+  font-family: "Poppins";
+  font-size: 18px;
+  line-height: 152%;
+  color: #000000cc;
+  margin-bottom: 16px;
+  max-width: 695px;
+}
+
+.howit-quote {
+  border-left: 6px solid #e8754c;
+  padding-left: 20px;
+  margin: 20px 0;
+  font-family: "Poppins";
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  max-width: 550px;
+}
+
+.howit-image-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.howit-image {
+  width: 100%;
+  max-width: 661px;
+  border-radius: 24px;
+  object-fit: cover;
+  height: 826px;
+}
+
+/* ===== MOBILE ===== */
+.howit-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 36px 16px;
+  
+}
+
+.mobile-center {
+  text-align: center;
+  font-size: 34px;
+}
+
+.mobile-img {
+  border-radius: 16px;
+}
+
+.mobile-text {
+  font-size: 16px;
+  color: #1a1a1a;
+ 
+}
+
+.mobile-quote {
+  border-left: 6px solid #e8754c;
+  padding-left: 16px;
+  font-size: 18px;
+}
+/* ===== DESKTOP DEFAULT ===== */
+.howit-desktop {
+  display: flex;
+}
+
+.howit-mobile {
+  display: none;
+}
+
+/* ===== MOBILE VIEW ===== */
+@media (max-width: 768px) {
+  .howit-desktop {
+    display: none;
+  }
+.howit-container{
+    padding: 0;
+}
+.howit-label{
+    font-size: 14px;
+    text-align: center;
+    margin: 0;
+}
+  .howit-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .howit-image{
+  max-width: 398px;
+height: 378px;
+margin-bottom: 24px;
+opacity: 1;
+border-radius: 16px;
+  
+  }
+  
+}

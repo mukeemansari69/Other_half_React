@@ -1,0 +1,157 @@
+.nextstep {
+    max-width: 1920px;
+  width: 100%;
+  background: #ffffff;
+  margin: auto;
+}
+
+/* WRAPPER */
+.nextstep-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+
+ 
+ 
+ 
+}
+
+/* LEFT SIDE */
+.nextstep-left {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nextstep-content {
+  max-width: 656px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* HEADING */
+.nextstep-heading {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 48px;
+  line-height: 125%;
+  color: #1a1a1a;
+}
+
+/* SUBTEXT */
+.nextstep-subtext {
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+  line-height: 152%;
+  color: #1a1a1a;
+}
+
+/* LIST */
+.nextstep-list {
+  padding-left: 20px;
+}
+
+.nextstep-list li {
+  font-family: "Manrope", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 152%;
+  margin-bottom: 6px;
+}
+
+/* GREEN BOX */
+.nextstep-box {
+    display: flex;
+  background: #0f4a12;
+  border-radius: 14px; 
+  height: 145px;
+}
+.nextstep-box-text{
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #ebf466;
+
+  text-align: center;
+  max-width: 476px;
+  margin: auto;
+}
+/* IMAGE */
+.nextstep-image {
+  flex: 1;
+  height: 100%;
+}
+
+.nextstep-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* SHOW/HIDE */
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+
+  .nextstep-wrapper {
+    flex-direction: column;
+    padding: 36px 16px;
+    gap: 24px;
+  }
+
+  .nextstep-left {
+    width: 100%;
+  }
+
+  .nextstep-content {
+    max-width: 100%;
+  }
+
+  /* ORDER FIX */
+  .nextstep-heading {
+    order: 1;
+    font-size: 34px;
+    text-align: center;
+  }
+
+  .mobile-only {
+    display: block;
+    order: 2;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .nextstep-subtext {
+    order: 3;
+    font-size: 16px;
+  }
+
+  .nextstep-list {
+    order: 4;
+  }
+
+  .nextstep-list li {
+    font-size: 16px;
+  }
+
+  .nextstep-box {
+    order: 5;
+    
+  }
+.nextstep-box-text{
+    font-size: 16px;
+}
+  .nextstep-image img {
+    height: 360px;
+  }
+}

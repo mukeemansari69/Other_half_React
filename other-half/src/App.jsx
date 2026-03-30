@@ -1,6 +1,7 @@
 import React from 'react'
 import Home from './Home.jsx'
 import Product from './Product.jsx'
+import OurStoryPage from './OurStoryPage.jsx'
 
 
 
@@ -9,6 +10,8 @@ const App = () => {
    <>
    <Home></Home>
   <Product></Product>
+ <OurStoryPage></OurStoryPage>
+  
    </>
   )
 }
