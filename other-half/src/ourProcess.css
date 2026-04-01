@@ -1,0 +1,260 @@
+.ourProcess-section {
+  padding: 100px 20px;
+ 
+}
+
+.ourProcess-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+/* heading */
+.ourProcess-subtitle {
+  font-family: Manrope;
+  font-weight: 700;
+  font-size: 16px;
+  color: #0F4A12;
+}
+
+.ourProcess-title {
+  font-family: "Luckiest Guy";
+  font-size: 48px;
+  text-align: center;
+}
+
+/* DESKTOP */
+.ourProcess-desktop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 118px;
+}
+
+/* horizontal line */
+.ourProcess-line {
+  position: absolute;
+  top: 47%;
+  left: 0;
+  width: 100%;
+  border-top: 2px dashed #0F4A12;
+  transform: translateY(-50%);
+}
+
+/* rows */
+.ourProcess-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  position: relative;
+  max-width: 666px;
+}
+
+.ourProcess-row-top {
+  align-items: flex-end;
+  max-width: 1440px;
+  margin-right: auto;
+  gap: 370px;
+}
+
+.ourProcess-row-bottom {
+  align-items: flex-start;
+  max-width: 1440px;
+  margin-left: auto;
+  gap: 254px;
+}
+
+/* card */
+.ourProcess-card {
+  position: relative;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ICON */
+.ourProcess-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  
+}
+
+/* DOT on line */
+.ourProcess-card::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #0F4A12;
+  border-radius: 50%;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* vertical line */
+.ourProcess-card::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #0F4A12,
+    #0F4A12 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  left: 24px;
+}
+
+/* top cards line downward */
+.ourProcess-row-top .ourProcess-card::after {
+  top: 100%;
+  height: 60px;
+  left: 0%;
+}
+.ourProcess-row-top .ourProcess-card::before{
+  content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #0F4A12;
+    border-radius: 50%;
+    left: -1%;
+    top: 144%;
+    transform: translateY(-50%);
+}
+.ourProcess-row-bottom .ourProcess-card::before{
+  content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #0F4A12;
+    border-radius: 50%;
+    left: 6%;
+    top: -37%;
+    transform: translateY(-50%);
+}
+/* bottom cards line upward */
+.ourProcess-row-bottom .ourProcess-card::after {
+  bottom: 100%;
+  height: 60px;
+}
+
+/* text */
+.ourProcess-card-title {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.ourProcess-card-desc {
+  font-size: 15px;
+  color: #444;
+}
+
+/* big number */
+.ourProcess-number {
+  position: absolute;
+  right: 0;
+  bottom: -10px;
+  font-size: 110px;
+  font-weight: 700;
+  opacity: 0.08;
+}
+
+/* MOBILE */
+.ourProcess-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .ourProcess-desktop {
+    display: none;
+  }
+.ourProcess-section{
+  padding: 36px 0px;
+}
+
+  .ourProcess-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    position: relative;
+  }
+
+  /* vertical main line */
+  .ourProcess-mobile::before {
+    content: "";
+    position: absolute;
+    left: 22px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: repeating-linear-gradient(
+      to bottom,
+      #0F4A12,
+      #0F4A12 6px,
+      transparent 6px,
+      transparent 12px
+    );
+  }
+
+  .ourProcess-mobile-card {
+    position: relative;
+    padding-left: 60px;
+  }
+
+  /* dot */
+  .ourProcess-mobile-card::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    background: #0F4A12;
+    border-radius: 50%;
+  }
+  
+  .ourProcess-title {
+    font-size: 30px;
+  }
+
+
+  /* horizontal connector line */
+  .ourProcess-mobile-card::after {
+    content: "";
+    position: absolute;
+    left: 22px;
+    top: 10px;
+    width: 40px;
+    height: 2px;
+    background: repeating-linear-gradient(
+      to right,
+      #0F4A12,
+      #0F4A12 6px,
+      transparent 6px,
+      transparent 12px
+    );
+  }
+
+  
+  
+}
+@media (max-width :420px){
+  .ourProcess-subtitle{
+  text-align: start;
+  padding-left: 16px;
+}
+.ourProcess-title{
+  text-align: start;
+  padding-left: 16px;
+}
+.ourProcess-container{
+  gap: 21px;
+}
+}

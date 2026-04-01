@@ -1,0 +1,156 @@
+.ourFlex-section {
+  width: 100%;
+  background: #ffffff;
+ max-width: 1920px;
+ margin: auto;
+}
+
+.ourFlex-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 13px;
+}
+
+/* IMAGE */
+.ourFlex-imageWrapper {
+  flex: 1;
+   max-width: 999px;
+   width: 100%;
+   
+}
+
+.ourFlex-image {
+ max-width: 999px;
+ height: 545px;
+ 
+  width: 100%;
+  object-fit: contain;
+}
+
+/* CONTENT */
+.ourFlex-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 667px;
+  margin-right: auto;
+}
+
+.ourFlex-heading {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 48px;
+  line-height: 125%;
+  color: #1a1a1a;
+}
+
+.ourFlex-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  line-height: 152%;
+  color: #1a1a1a;
+}
+
+.ourFlex-bold {
+  font-weight: 700;
+}
+
+/* BUTTONS */
+.ourFlex-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ourFlex-btn {
+  padding: 14px 30px;
+  border-radius: 333px;
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* PRIMARY */
+.ourFlex-btnPrimary {
+  background: #0f4a12;
+  color: #ebf466;
+  border: none;
+}
+
+.ourFlex-btnPrimary:hover {
+  background: #ebf466;
+  color: #0f4a12;
+}
+
+/* SECONDARY */
+.ourFlex-btnSecondary {
+  background: #ebf466;
+  border: 1px solid #000;
+  color: #000;
+}
+
+.ourFlex-btnSecondary:hover {
+  background: #0f4a12;
+  color: #ebf466;
+}
+
+/* MOBILE IMAGE HIDDEN ON DESKTOP */
+.ourFlex-mobileImage {
+  display: none;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+  .ourFlex-section {
+   
+  }
+
+  .ourFlex-container {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ourFlex-heading {
+    font-size: 34px;
+    text-align: center;
+    max-width: 398px;
+    margin: auto;
+    padding-top: 36px;
+  }
+
+  .ourFlex-text {
+    font-size: 16px;
+    max-width: 398px;
+    margin: auto;
+   
+  }
+
+  /* Hide desktop image */
+  .ourFlex-imageWrapper {
+    display: none;
+  }
+
+  /* Show mobile image */
+  .ourFlex-mobileImage {
+    display: block;
+  }
+
+  .ourFlex-buttons {
+    flex-direction: column;
+    max-width: 398px;
+    margin: auto;
+  }
+  .ourFlex-image{
+    height: 100%;
+  }
+  .ourflex-br{
+    display: none;
+  }
+  .ourFlex-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

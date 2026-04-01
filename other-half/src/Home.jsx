@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from './Home/Header'
 import HeroBanner from './Home/HeroBanner'
 import Slider from './Home/Slider'
 import Health from './Home/Health'
@@ -13,12 +12,12 @@ import SaveSection from './Home/SaveSection'
 import QualitySection from './Home/QualitySection'
 import Testimonials from './Home/Testimonials'
 import FAQ from './Home/FAQ'
-import Footer from './Home/Footer'
+
 
 const Home = () => {
   return (
     <>
-    <Header ></Header>
+   
     <HeroBanner></HeroBanner>
     <Slider></Slider>
     <Health></Health>
@@ -32,7 +31,7 @@ const Home = () => {
     <QualitySection></QualitySection>
      <FAQ></FAQ>
     <Testimonials></Testimonials>
-    <Footer>  </Footer>
+   
    
     </>
   )

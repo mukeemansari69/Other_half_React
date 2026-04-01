@@ -1,5 +1,5 @@
 import React from "react";
-import "/public/OurStory/css/nextstep.css";
+import "/public/OurStory/css/nextstep.css"; 
 
 
 const NextStep = () => {

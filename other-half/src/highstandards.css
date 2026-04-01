@@ -1,0 +1,73 @@
+.highstandards-section {
+  width: 100%;
+  max-width: 1920px;
+  height: 260px;
+
+  margin: auto;
+}
+
+/* Inner container */
+.highstandards-container {
+  width: 100%;
+  max-width: 1440px;
+  gap: 100 px;
+}
+
+/* Left */
+.highstandards-left {
+  flex: 1;
+}
+
+/* Heading */
+.highstandards-heading {
+  font-family: "Luckiest Guy", cursive;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 125%;
+  color: #1a1a1a;
+}
+
+/* Right */
+.highstandards-right {
+  width: 954px;
+  display: flex;
+}
+
+/* Text */
+.highstandards-text {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 152%;
+  color: #000000cc;
+  display: flex;
+  align-items: end;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  .highstandards-section {
+    height: auto;
+    padding: 36px 16px 0px 16px;
+  }
+
+  .highstandards-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .highstandards-heading {
+    font-size: 34px;
+    line-height: 125%;
+  }
+
+  .highstandards-text {
+    font-size: 16px;
+    line-height: 152%;
+  }
+
+  .highstandards-right {
+    width: 100%;
+  }
+}

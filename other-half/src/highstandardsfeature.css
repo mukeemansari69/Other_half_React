@@ -1,0 +1,142 @@
+.highstandardsfeature-section {
+  width: 100%;
+  max-width: 1920px;
+ padding-bottom: 100px;
+  margin: auto;
+  display: flex;
+  position: relative;
+}
+
+/* Wrapper */
+.highstandardsfeature-wrapper {
+  max-width: 1440px;
+  gap: 32px;
+  margin-left: auto;
+  margin-right: 15%;
+  justify-content: flex-end;
+}
+
+/* LEFT DOG */
+.highstandardsfeature-dog {
+ max-width: 823px;
+ position:absolute;
+ left: -6%;
+ bottom: -25%;
+ 
+}
+
+.highstandardsfeature-dogimg {
+  width: 100%;
+  height: auto;
+  transform: rotateY(180deg);
+}
+
+.highstandardsfeature-snooze {
+  position: absolute;
+  top: 40%;
+  right: 15%;
+  
+}
+
+/* RIGHT CONTENT */
+.highstandardsfeature-content {
+ display: flex;
+ flex-direction: column;
+ gap: 32px;
+}
+
+/* ROW */
+.highstandardsfeature-row {
+  gap: 32px;
+ 
+}
+
+/* EMPTY */
+.highstandardsfeature-empty {
+  width: 0;
+}
+
+/* CARD */
+.highstandardsfeature-card {
+  max-width: 460px;
+  padding: 0 24px;
+  border-left: 1px solid #1a1a1a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ICON */
+.highstandardsfeature-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 999px;
+ 
+}
+
+/* HEADING */
+.highstandardsfeature-card h4 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 152%;
+  color: #000;
+}
+
+/* TEXT */
+.highstandardsfeature-card p {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  line-height: 170%;
+  color: #000;
+}
+
+/* ================= MOBILE ================= */
+@media screen and (min-width: 769px) and (max-width: 1740px) {
+  .highstandardsfeature-dog {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
+  .highstandardsfeature-section {
+    padding: 0px 16px 185px 16px;
+  }
+
+  .highstandardsfeature-wrapper {
+    flex-direction: column;
+    margin-right: 0;
+  }
+  .highstandardsfeature-content{
+    gap: 0;
+  }
+
+  .highstandardsfeature-row {
+    flex-direction: column;
+    padding-left: 0;
+    gap: 24px;
+  }
+
+  .highstandardsfeature-card {
+    width: 100%;
+    border-left: none;
+    border-bottom: 1px solid #1a1a1a1a;
+    padding: 0 0 20px 0;
+  }
+
+  .highstandardsfeature-dog {
+    width: 100%;
+    order: 2;
+    bottom: -3%;
+  }
+
+  .highstandardsfeature-dogimg {
+    margin: auto;
+  }
+
+  .highstandardsfeature-snooze {
+    width: 64px;
+    top: 28%;
+   right: 0%;
+    transform: translateX(-50%);
+  }
+}
