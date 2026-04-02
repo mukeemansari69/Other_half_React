@@ -1,0 +1,141 @@
+.QuizBannerCards {
+  max-width: 1920px;
+  margin: auto;
+  padding: 120px 0px;
+  display: flex;
+  justify-content: center;
+  background: #faf9f5;
+}
+
+.QuizBannerCards__container {
+  width: 100%;
+  max-width: 1440px;
+  display: flex;
+  flex-direction: column;
+  gap: 58px;
+}
+
+/* Heading */
+.QuizBannerCards__heading {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 48px;
+  line-height: 125%;
+  text-align: center;
+  color: #1a1a1a;
+}
+
+/* Grid */
+.QuizBannerCards__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Card */
+.QuizBannerCards__card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-align: center;
+}
+
+/* Image */
+.QuizBannerCards__image {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+/* Card Title */
+.QuizBannerCards__cardTitle {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+}
+
+/* Card Desc */
+.QuizBannerCards__cardDesc {
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+}
+
+/* Bottom Text */
+.QuizBannerCards__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+
+.QuizBannerCards__notice {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.QuizBannerCards__subNotice {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  line-height: 160%;
+}
+
+/* Button */
+.QuizBannerCards__btnWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.QuizBannerCards__btn {
+  padding: 14px 30px;
+  border-radius: 333px;
+  background: #0f4a12;
+  color: #ebf466;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.QuizBannerCards__btn:hover {
+  opacity: 0.9;
+}
+
+/* ✅ Tablet */
+@media (max-width: 1024px) {
+  .QuizBannerCards__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ✅ Mobile */
+@media (max-width: 768px) {
+  .QuizBannerCards {
+    padding: 36px 16px;
+  }
+.QuizBannerCards__card{
+    gap: 14px;
+}
+  .QuizBannerCards__heading {
+    font-size: 34px;
+  }
+.QuizBannerCards__container{
+    gap: 24px;
+}
+  .QuizBannerCards__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .QuizBannerCards__cardTitle {
+    font-size: 20px;
+  }
+.QuizBannerCards-mobile{
+    display: none;
+}
+  .QuizBannerCards__cardDesc {
+    font-size: 16px;
+  }
+}

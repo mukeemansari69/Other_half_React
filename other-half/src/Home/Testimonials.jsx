@@ -87,7 +87,7 @@ export default function Testimonials() {
     <section className="testimonial-section w-full">
       
       {/* ✅ 1920 CENTER CONTAINER */}
-      <div className="max-w-[1920px] mx-auto px-6">
+      <div className="max-w-[1920px] mx-auto">
 
         <div className="testimonial-container">
 

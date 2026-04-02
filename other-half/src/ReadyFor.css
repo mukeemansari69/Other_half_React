@@ -1,0 +1,119 @@
+.ReadyFor {
+ max-width: 1920px;
+  display: flex;
+  justify-content: center;
+ background-color: #FAF9F5;
+}
+
+/* Main container */
+.ReadyFor__container {
+  width: 100%;
+  max-width: 1920px;
+}
+
+/* Green box */
+.ReadyFor__box {
+  max-width: 1440px;
+  background: #0f4a12;
+  margin: auto;
+  border-radius: 24px;
+  padding: 40px 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+/* Left */
+.ReadyFor__left {
+  flex: 1;
+}
+
+.ReadyFor__heading {
+  font-family: "Luckiest Guy", cursive;
+  color: #ffffff;
+  font-size: 48px;
+  line-height: 120%;
+}
+
+/* Right */
+.ReadyFor__right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ReadyFor__text {
+  font-family: "Poppins", sans-serif;
+  font-size: 26px;
+  line-height: 160%;
+  color: #ffffff;
+  max-width: 420px;
+}
+
+/* Button */
+.ReadyFor__btn {
+  align-self: flex-start;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: #ebf466;
+  color: #0f4a12;
+
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.ReadyFor__btn:hover {
+  opacity: 0.9;
+}
+
+/* ✅ Tablet */
+@media (max-width: 1024px) {
+  .ReadyFor__box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ReadyFor__heading {
+    font-size: 34px;
+  }
+}
+
+/* ✅ Mobile */
+@media (max-width: 768px) {
+  .ReadyFor {
+    padding: 24px 16px;
+  }
+
+  .ReadyFor__box {
+    padding: 24px;
+    border-radius: 20px;
+    gap:34px;
+  }
+  .ReadyFor-mobile{
+    display: none;
+
+  }
+
+  .ReadyFor__heading {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .ReadyFor__text {
+    font-size: 14px;
+    text-align: center;
+  }
+  .ReadyFor__btn{
+    margin:auto;
+  }
+
+ 
+}
