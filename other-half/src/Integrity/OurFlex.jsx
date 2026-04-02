@@ -1,5 +1,5 @@
 import React from "react";
-import "./ourFlex.css";
+import "/public/Integrity/css/ourFlex.css";
 
 const OurFlex = () => {
   return (

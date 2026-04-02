@@ -4,13 +4,12 @@ import Product from './Product.jsx'
 import OurStoryPage from './OurStoryPage.jsx'
 import Header from './Home/Header.jsx'
 import Footer from './Home/Footer.jsx'
-import NoFiller from './NoFiller.jsx'
-import Marque from './Home/Marque.jsx'
-import HighStandards from './HighStandards.jsx'
-import HighStandardsFeature from './HighStandardsFeature.jsx'
-import OurProcess from './OurProcess.jsx'
-import Obsess from './Obsess.jsx'
-import OurFlex from './OurFlex.jsx'
+import IntegrityPage from './IntegrityPage.jsx'
+import Glossary from './Glossary.jsx'
+import Features from './Home/Features.jsx'
+import OurMission from './Our-Story/OurMission.jsx'
+import NoMystery from './NoMystery.jsx'
+
 
 
 
@@ -20,14 +19,13 @@ const App = () => {
    <Header></Header>
    {/* <Home></Home>
   <Product></Product>
- <OurStoryPage></OurStoryPage> */}
- <NoFiller></NoFiller>
- <Marque> </Marque>
- <HighStandards></HighStandards>
- <HighStandardsFeature></HighStandardsFeature>
- <OurProcess></OurProcess>
- <Obsess></Obsess>
- <OurFlex></OurFlex>
+ <OurStoryPage></OurStoryPage>
+ <IntegrityPage></IntegrityPage> */}
+ <Glossary></Glossary>
+ <Features></Features>
+ <NoMystery></NoMystery>
+ <OurMission></OurMission>
+ 
  <Footer></Footer>
   
    </>

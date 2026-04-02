@@ -1,6 +1,6 @@
 // Obsess.jsx
 import React, { useState } from "react";
-import "./obsess.css";
+import "/public/Integrity/css/obsess.css";
 
 const data = [
   {

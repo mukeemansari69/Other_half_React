@@ -1,5 +1,5 @@
 import React from "react";
-import "./nofiller.css";
+import "/public/Integrity/css/nofiller.css";
 
 const NoFiller = () => {
   return (

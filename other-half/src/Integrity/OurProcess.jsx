@@ -1,6 +1,6 @@
 // OurProcess.jsx
 import React from "react";
-import "./ourProcess.css";
+import "/public/Integrity/css/ourProcess.css";
 
 const processData = [
   {

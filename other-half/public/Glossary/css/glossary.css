@@ -1,0 +1,72 @@
+.glossary-section {
+  width: 100%;
+  max-width: 1920px;
+  height: 440px;
+  position: relative;
+  margin: 0 auto;
+
+  background: url("/public/Glossary/images/banner.jpg") center/cover no-repeat;
+  overflow: hidden;
+}
+
+/* Overlay */
+.glossary-overlay {
+  position: absolute;
+  inset: 0;
+  background: #00000099;
+  z-index: 1;
+}
+
+/* Content */
+.glossary-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  gap: 12px;
+  padding: 0 20px;
+}
+
+/* Heading Desktop */
+.glossary-heading {
+  font-family: "Luckiest Guy", cursive;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 125%;
+  color: #ffffff;
+}
+
+/* Subtext Desktop */
+.glossary-subtext {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 140%;
+  color: #ffffff;
+  text-align: center;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  .glossary-section {
+    height: 260px;
+    padding: 40px 0;
+
+  }
+
+  .glossary-content {
+    gap: 12px;
+  }
+
+  .glossary-heading {
+    font-size: 32px;
+    line-height: 125%;
+    text-align: center;
+  }
+
+  .glossary-subtext {
+    font-size: 14px;
+    line-height: 125%;
+    text-align: center;
+  }
+}

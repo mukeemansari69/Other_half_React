@@ -1,5 +1,5 @@
 import React from "react";
-import "./highstandards.css";
+import "/public/Integrity/css/highstandards.css";
 
 const HighStandards = () => {
   return (

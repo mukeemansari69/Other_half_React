@@ -1,5 +1,6 @@
 import React from "react";
-import "./highstandardsfeature.css";
+import "/public/Integrity/css/highstandardsfeature.css";
+
 
 const features = [
   {
