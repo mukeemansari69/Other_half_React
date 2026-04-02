@@ -1,0 +1,87 @@
+/* MAIN CONTAINER */
+.FaqBanner-container {
+  width: 100%;
+}
+
+/* BACKGROUND WRAPPER */
+.FaqBanner-bg {
+  width: 100%;
+
+  background-image: 
+    linear-gradient(
+      246.81deg,
+      rgba(0, 0, 0, 0) 0.46%,
+      #000000 84.51%
+    ),
+    url("https://images.unsplash.com/photo-1583511655857-d19b40a7a54e");
+
+  background-size: cover;
+  background-position: center;
+
+  min-height: 679px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* OVERLAY */
+.FaqBanner-overlay {
+  width: 100%;
+  height: 100%;
+ 
+  display: flex;
+  align-items: center;
+}
+
+/* CONTENT CONTAINER (Centered 1440 type feel without fixed width) */
+.FaqBanner-content {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+/* HEADING */
+.FaqBanner-heading {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 48px;
+  line-height: 125%;
+  color: #ffffff;
+}
+
+/* SUBTEXT */
+.FaqBanner-subtext {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  line-height: 140%;
+  color: #ffffff;
+  max-width: 900px;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  .FaqBanner-bg {
+    min-height: 500px;
+  }
+
+  .FaqBanner-content {
+    padding: 40px 20px;
+    gap: 16px;
+  }
+
+  .FaqBanner-heading {
+    font-size: 32px;
+    line-height: 125%;
+  }
+
+  .FaqBanner-subtext {
+    font-size: 16px;
+    line-height: 125%;
+  }
+}

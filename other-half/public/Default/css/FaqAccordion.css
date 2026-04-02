@@ -1,0 +1,60 @@
+.FaqAccordion-container {
+  width: 100%;
+  background: #f9f9f9;
+  padding: 60px 20px;
+}
+
+.FaqAccordion-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.FaqAccordion-heading {
+  font-size: 40px;
+  font-family: "Luckiest Guy", cursive;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #b23a1b;
+}
+
+.FaqAccordion-item {
+  border-bottom: 1px solid #ddd;
+  padding: 20px 0;
+  cursor: pointer;
+}
+
+.FaqAccordion-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+}
+
+.FaqAccordion-answer {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Hover Effect */
+.FaqAccordion-item:hover {
+  transform: translateX(5px);
+  transition: 0.3s ease;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .FaqAccordion-heading {
+    font-size: 28px;
+  }
+
+  .FaqAccordion-question {
+    font-size: 16px;
+  }
+
+  .FaqAccordion-answer {
+    font-size: 14px;
+  }
+}

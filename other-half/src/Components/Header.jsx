@@ -40,7 +40,7 @@ export default function Header() {
             </NavLink>
 
             <NavLink
-              to="/product"
+              to="/collection"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
               SHOP
@@ -61,7 +61,7 @@ export default function Header() {
             </NavLink>
 
             <NavLink
-              to="/quiz"
+              to="/faqPage"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
               FAQ
@@ -72,7 +72,13 @@ export default function Header() {
           <div className="flex items-center justify-end gap-[8px]">
             {/* QUIZ BUTTON (DESKTOP) */}
             <button className="hidden lg:flex items-center justify-center bg-[#1A1A1A] text-white text-sm px-[14px] py-[6px] rounded-full h-[40px]">
-              Take the Quiz
+               <NavLink
+              to="/Quiz"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+             Take the Quiz
+            </NavLink>
+             
             </button>
 
             {/* ICONS */}
@@ -117,7 +123,7 @@ export default function Header() {
               </NavLink>
 
               <NavLink
-                to="/product"
+                to="/collection"
                 className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
               >
                 SHOP

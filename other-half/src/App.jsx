@@ -11,6 +11,11 @@ import Story from './Pages/OurStoryPage.jsx';
 import Quiz from './Pages/Quiz.jsx';
 import GlossaryPage from './Pages/GlossaryPage.jsx';
 import QuizDestopPage from './Pages/QuizDestopPage.jsx';
+import OurCollection from './Pages/OurCollection.jsx';
+import FaqBanner from './Faq/FaqBanner.jsx';
+import FAQ from './Home/FAQ.jsx';
+import FaqPage from './Pages/FaqPage.jsx';
+
 
 const App = () => {
   return (
@@ -26,9 +31,11 @@ const App = () => {
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/glossary" element={<GlossaryPage />} />
         <Route path="/quizdesktop" element={<QuizDestopPage />} />
+        <Route path="/collection" element={<OurCollection />} />
+        <Route path="/faqPage" element={<FaqPage/>} />
         
       </Routes>
-
+      
       <Footer />
     </Router>
   )

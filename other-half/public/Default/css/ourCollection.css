@@ -1,0 +1,208 @@
+/* SECTION */
+.ourCollection-container {
+  padding: 120px 24px;
+}
+
+@media (min-width: 1024px) {
+  
+}
+
+/* INNER */
+.ourCollection-inner {
+  max-width: 1440px;
+  margin: auto;
+}
+
+/* HEADING */
+.ourCollection-heading {
+  font-family: 'Luckiest Guy';
+  font-size: 52px;
+  text-align: center;
+  color: #1A1A1A;
+  margin-bottom: 48px;
+}
+
+/* GRID */
+.ourCollection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .ourCollection-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+}
+
+/* CARD */
+.ourCollection-card {
+  position: relative;
+  padding: 68px 24px 24px;
+  border-radius: 24px;
+  border: 1px solid #E8E8E8;
+  background: #fff;
+  box-shadow: 0px -4px 44px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* TAG */
+.ourCollection-tag {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  padding: 6px 13px;
+  border-radius: 0 20px 20px 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* IMAGE */
+.ourCollection-imageWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.ourCollection-image {
+  max-width: 296px;
+  width: 100%;
+}
+
+/* RATING */
+.ourCollection-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ourCollection-star {
+  color: #56C271;
+  font-size: 16px;
+}
+
+.ourCollection-ratingText {
+  font-size: 14px;
+}
+
+.ourCollection-review {
+  margin-left: auto;
+  font-size: 14px;
+}
+
+/* TITLE */
+.ourCollection-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* BADGES */
+.ourCollection-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ourCollection-badge {
+  background: #EBF466;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #0F4A12;
+}
+
+/* DESC */
+.ourCollection-desc {
+  font-size: 14px;
+  color: #1A1A1A99;
+}
+
+/* PRICE */
+.ourCollection-priceRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ourCollection-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F4A12;
+}
+
+.ourCollection-oldPrice {
+  text-decoration: line-through;
+  color: #B8B8B8;
+}
+
+.ourCollection-discount {
+  background: #B11313;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+/* SUBSCRIBE */
+.ourCollection-subscribe {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #56C27133;
+  border: 1px solid #17AD1F;
+}
+
+.ourCollection-tick {
+  width: 24px;
+  height: 24px;
+  background: #0F4A12;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.ourCollection-subscribeTitle {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.ourCollection-subscribeText {
+  font-size: 14px;
+}
+
+/* BUTTON */
+.ourCollection-btn {
+  margin-top: auto;
+  padding: 14px;
+  border-radius: 999px;
+  background: #0F4A12;
+  color: #EBF466;
+  font-weight: 700;
+  transition: 0.3s;
+}
+
+.ourCollection-btn:hover {
+  background: #EBF466;
+  color: #0F4A12;
+}
+@media (max-width :480px){
+    .ourCollection-container{
+        padding: 32px 16px;
+    }
+    .ourCollection-heading{
+        font-size: 34px;
+        margin-bottom: 37px;
+    }
+   .ourCollection-card{
+    padding: 6px;
+   }
+   .ourCollection-grid{
+    grid-template-columns:repeat(1, 1fr);
+   }
+}

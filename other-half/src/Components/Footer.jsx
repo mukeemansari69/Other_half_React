@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaArrowRight } from 'react-icons/fa';
 import "/public/Home/css/footer.css";
+import { NavLink } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -25,19 +26,96 @@ const Footer = () => {
               <h4 className="text-[18px] font-bold leading-[28px] text-[#1A1A1A]">Quick Sniffs</h4>
               <div className="flex gap-[52px]">
                 <ul className="flex flex-col gap-[10px] text-[18px] font-normal leading-none text-[#1A1A1A]">
-                  <li>Home</li>
-                  <li>Shop All</li>
-                  <li>Take the Quiz</li>
-                  <li>About Us</li>
-                  <li>Science</li>
-                  <li>FAQ</li>
+                  <li>
+                    <NavLink
+              to="/"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+              Home 
+            </NavLink>
+                  </li>
+                  <li>
+                     <NavLink
+              to="/collection"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+              Shop All 
+            </NavLink>
+                   </li>
+                  <li>
+                    <NavLink
+              to="/Quiz"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+               Take the Quiz
+            </NavLink>
+                   </li>
+                  <li>
+                    <NavLink
+              to="/aboutus"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+               About Us
+            </NavLink>
+                   </li>
+                  <li>
+                     <NavLink
+              to="/science"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+               Science
+            </NavLink>
+                   </li>
+                  <li>
+                    <NavLink
+              to="/faq"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+               FAQ
+            </NavLink>
+                   </li>
                 </ul>
                 <ul className="flex flex-col gap-[10px] text-[18px] font-normal leading-none text-[#1A1A1A]">
-                  <li>Ingredient Glossary</li>
-                  <li>Ingredient Integrity</li>
-                  <li>Our Story</li>
-                  <li>Blog</li>
-                  <li>Clinical Studies</li>
+                  <li>
+                    <NavLink
+              to="/glossary"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                Ingredient Glossary
+            </NavLink>
+                  </li>
+                  <li>
+                     <NavLink
+              to="/integrity"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                 Ingredient Integrity
+            </NavLink>
+                   </li>
+                  <li>
+                     <NavLink
+              to="/story"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                 Our Story
+            </NavLink>
+                    </li>
+                  <li>
+                           <NavLink
+              to="/blog"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                  Blog
+            </NavLink>
+                   </li>
+                  <li>
+                          <NavLink
+              to="/clinical"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                  Clinical Studies
+            </NavLink>
+                   </li>
                 </ul>
               </div>
             </div>
@@ -46,12 +124,59 @@ const Footer = () => {
             <div className="flex flex-col gap-[12px] w-[192px]">
               <h4 className="text-[18px] font-bold leading-[28px] text-[#1A1A1A]">Customer Care</h4>
               <ul className="flex flex-col gap-[10px] text-[18px] font-normal leading-none text-[#1A1A1A]">
-                <li>Terms & Conditions</li>
-                <li>Manage Subscription</li>
-                <li>Refund Policy</li>
-                <li>Privacy Policy</li>
-                <li>Subscription Policy</li>
-                <li>Contact Us</li>
+                <li>
+  <NavLink
+    to="/terms"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Terms & Conditions
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/manage-subscription"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Manage Subscription
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/refund-policy"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Refund Policy
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/privacy-policy"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Privacy Policy
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/subscription-policy"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Subscription Policy
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/contact"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Contact Us
+  </NavLink>
+</li>
               </ul>
             </div>
 
@@ -110,17 +235,96 @@ const Footer = () => {
         <div className="flex flex-col gap-[12px] w-full">
           <h4 className="text-[18px] font-bold leading-[28px]">Quick Sniffs</h4>
           <ul className="grid grid-cols-1 gap-[12px] text-[16px] font-normal mobile-grid">
-            <li>Home</li>
-            <li>Shop All</li>
-            <li>Take the Quiz</li>
-            <li>About Us</li>
-            <li>Science</li>
-            <li>FAQ</li>
-            <li>Ingredient Glossary</li>
-            <li>Ingredient Integrity</li>
-            <li>Our Story</li>
-            <li>Blog</li>
-            <li>Clinical Studies</li>
+             <li>
+                    <NavLink
+              to="/"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+              Home 
+            </NavLink>
+                  </li>
+                  <li>
+                     <NavLink
+              to="/collection"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+              Shop All 
+            </NavLink>
+                   </li>
+                  <li>
+                    <NavLink
+              to="/Quiz"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+               Take the Quiz
+            </NavLink>
+                   </li>
+                  <li>
+                    <NavLink
+              to="/aboutus"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+               About Us
+            </NavLink>
+                   </li>
+                  <li>
+                     <NavLink
+              to="/science"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+               Science
+            </NavLink>
+                   </li>
+                  <li>
+                    <NavLink
+              to="/faq"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+               FAQ
+            </NavLink>
+                   </li>
+                </ul>
+                <ul className="flex flex-col gap-[10px] text-[18px] font-normal leading-none text-[#1A1A1A]">
+                  <li>
+                    <NavLink
+              to="/glossary"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                Ingredient Glossary
+            </NavLink>
+                  </li>
+                  <li>
+                     <NavLink
+              to="/integrity"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                 Ingredient Integrity
+            </NavLink>
+                   </li>
+                  <li>
+                     <NavLink
+              to="/story"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                 Our Story
+            </NavLink>
+                    </li>
+                  <li>
+                           <NavLink
+              to="/blog"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                  Blog
+            </NavLink>
+                   </li>
+                  <li>
+                          <NavLink
+              to="/clinical"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+                  Clinical Studies
+            </NavLink>
+                   </li>
           </ul>
         </div>
 
@@ -128,12 +332,59 @@ const Footer = () => {
         <div className="flex flex-col gap-[12px] w-full">
           <h4 className="text-[18px] font-bold leading-[28px]">Customer Care</h4>
           <ul className="flex flex-col gap-[12px] text-[16px] font-normal text-[#1A1A1A]">
-            <li>Terms & Conditions</li>
-            <li>Manage Subscription</li>
-            <li>Refund Policy</li>
-            <li>Privacy Policy</li>
-            <li>Subscription Policy</li>
-            <li>Contact Us</li>
+             <li>
+  <NavLink
+    to="/terms"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Terms & Conditions
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/manage-subscription"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Manage Subscription
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/refund-policy"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Refund Policy
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/privacy-policy"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Privacy Policy
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/subscription-policy"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Subscription Policy
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/contact"
+    className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+  >
+    Contact Us
+  </NavLink>
+</li>
           </ul>
         </div>
 

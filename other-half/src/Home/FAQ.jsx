@@ -10,7 +10,7 @@ const data = [
   {
     question: "How do I know if my dog needs Everyday™?",
     answer:
-      "For Wet Foods, scoop the suggested serving amount and pour carefully atop the wet food. Next, stir thoroughly until powder is evenly distributed throughout the wet food. Don’t exceed one serving per day, but don’t miss a full day. Consistency is key. For Dry Foods, scoop the suggested serving and pour it carefully your dog’s favorite dry kibble. Gently stir the powder and kibble together slowly to avoid spillage.",
+      "For Wet Foods, scoop the suggested serving amount and pour carefully atop the wet food. Next, stir thoroughly until powder is evenly distributed throughout the wet food. Don’t exceed one serving per day, but don’t miss a full day. Consistency is key. For Dry Foods, scoop the suggested serving and pour it carefully your dog’s favorite dry kibble. Gently stir the powder and kibble together slowly to avoid spillage. Don’t exceed one serving per day, but don’t miss a full day. Consistency is key.",
   },
   {
     question: "At what age can my dog start using Everyday™?",
