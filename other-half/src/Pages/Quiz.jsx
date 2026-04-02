@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import "./Quiz.css";
-
+import "/public/QuizDesktop/css/Quiz.css";
 const quizData = [
   {
     question: "How is your dog’s energy level?",
@@ -156,12 +155,15 @@ const Quiz = () => {
     const result = getResult();
 
     return (
-      <section className="Quiz">
-        <div className="Quiz__card">
-          <h2>{result.title}</h2>
-          <p><strong>Recommended:</strong> {result.product}</p>
-          <p>{result.routine}</p>
-          <button onClick={() => { setStep(0); setAnswers([]); }}>
+      <section className="general-quiz1">
+        <div className="general-quiz1__card">
+          <h2 className="general-quiz1__title">{result.title}</h2>
+          <p className="general-quiz1__text"><strong>Recommended:</strong> {result.product}</p>
+          <p className="general-quiz1__text">{result.routine}</p>
+          <button
+            className="general-quiz1__btn"
+            onClick={() => { setStep(0); setAnswers([]); }}
+          >
             Restart Quiz
           </button>
         </div>
@@ -172,23 +174,23 @@ const Quiz = () => {
   const current = quizData[step];
 
   return (
-    <section className="Quiz">
-      <div className="Quiz__card">
+      <section className="general-quiz1">
+      <div className="general-quiz1__card">
 
-        <div className="Quiz__progress">
+        <div className="general-quiz1__progress">
           <div
-            className="Quiz__progressFill"
+            className="general-quiz1__progressFill"
             style={{ width: `${progress}%` }}
-          ></div>
+          />
         </div>
 
-        <h2 className="Quiz__question">{current.question}</h2>
+        <h2 className="general-quiz1__question">{current.question}</h2>
 
-        <div className="Quiz__options">
+        <div className="general-quiz1__options">
           {current.options.map((opt, i) => (
             <button
               key={i}
-              className="Quiz__option"
+              className="general-quiz1__option"
               onClick={() => handleAnswer(opt.value)}
             >
               {opt.text}
@@ -196,7 +198,7 @@ const Quiz = () => {
           ))}
         </div>
 
-        <p className="Quiz__step">
+        <p className="general-quiz1__step">
           Question {step + 1} / {quizData.length}
         </p>
 

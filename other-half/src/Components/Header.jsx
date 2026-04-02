@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Menu, X, Search, ShoppingCart, User } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="w-full">
-
       {/* Announcement Bar */}
       <div className="w-full bg-[#EBF466] h-[48px] flex items-center justify-center">
         <p className="font-semibold text-[14px] md:text-[16px] text-[#1A1A1A]">
@@ -16,27 +16,60 @@ export default function Header() {
 
       {/* Main Header */}
       <div className="w-full bg-white border-b border-black/20 backdrop-blur-md">
-
         <div className="max-w-[1920px] mx-auto px-[20px] lg:px-[120px] py-[12px] flex items-center justify-between">
-
           {/* LEFT CONTAINER (LOGO) */}
           <div className="flex items-center w-[262px]">
-           <img src="/Home/images/dog-logo.svg" alt="logo" className="w-[40px] h-[40px]" />
-
+            <img
+              src="/Home/images/dog-logo.svg"
+              alt="logo"
+              className="w-[40px] h-[40px]"
+            />
           </div>
 
           {/* CENTER MENU (DESKTOP) */}
           <nav className="hidden lg:flex gap-[16px] text-[16px] font-semibold text-[#0F4A12]">
-            <a href="#" className="hover:opacity-70">HOME</a>
-            <a href="#" className="hover:opacity-70">SHOP +</a>
-            <a href="#" className="hover:opacity-70">ABOUT</a>
-            <a href="#" className="hover:opacity-70">SCIENCE</a>
-            <a href="#" className="hover:opacity-70">FAQ</a>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#EBF466] border-b-2 border-[#EBF466]"
+                  : "text-[#0F4A12]"
+              }
+            >
+              HOME
+            </NavLink>
+
+            <NavLink
+              to="/product"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+              SHOP
+            </NavLink>
+
+            <NavLink
+              to="/story"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+              ABOUT
+            </NavLink>
+
+            <NavLink
+              to="/integrity"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+              SCIENCE
+            </NavLink>
+
+            <NavLink
+              to="/quiz"
+              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+            >
+              FAQ
+            </NavLink>
           </nav>
 
           {/* RIGHT CONTAINER */}
           <div className="flex items-center justify-end gap-[8px]">
-
             {/* QUIZ BUTTON (DESKTOP) */}
             <button className="hidden lg:flex items-center justify-center bg-[#1A1A1A] text-white text-sm px-[14px] py-[6px] rounded-full h-[40px]">
               Take the Quiz
@@ -65,20 +98,51 @@ export default function Header() {
             >
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-
           </div>
-
         </div>
 
         {/* MOBILE MENU */}
         {menuOpen && (
           <div className="lg:hidden border-t border-black/10 px-6 pb-6 text-align-center mobile-menu">
             <nav className="flex flex-col gap-4 mt-4 text-[#0F4A12] font-semibold">
-              <a href="#">HOME</a>
-              <a href="#">SHOP +</a>
-              <a href="#">ABOUT</a>
-              <a href="#">SCIENCE</a>
-              <a href="#">FAQ</a>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-[#EBF466] border-b-2 border-[#EBF466]"
+                    : "text-[#0F4A12]"
+                }
+              >
+                HOME
+              </NavLink>
+
+              <NavLink
+                to="/product"
+                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+              >
+                SHOP
+              </NavLink>
+
+              <NavLink
+                to="/story"
+                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+              >
+                ABOUT
+              </NavLink>
+
+              <NavLink
+                to="/integrity"
+                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+              >
+                SCIENCE
+              </NavLink>
+
+              <NavLink
+                to="/quiz"
+                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
+              >
+                FAQ
+              </NavLink>
             </nav>
 
             <button className="mt-4 bg-black text-white px-6 py-2 rounded-full">
@@ -86,7 +150,6 @@ export default function Header() {
             </button>
           </div>
         )}
-
       </div>
     </header>
   );
