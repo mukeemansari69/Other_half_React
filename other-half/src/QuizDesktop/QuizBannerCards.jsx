@@ -1,5 +1,5 @@
 import React from "react";
-import "./QuizBannerCards.css";
+import "/public/QuizDesktop/css/QuizBannerCards.css";
 
 const cardData = [
   {

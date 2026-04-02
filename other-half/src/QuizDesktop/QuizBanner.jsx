@@ -1,5 +1,5 @@
 
-import "./QuizBanner.css";
+import "/public/QuizDesktop/css/QuizBanner.css";
 
 const QuizBanner = () => {
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import "./ReadyFor.css";
+import "/public/QuizDesktop/css//ReadyFor.css";
 
 const ReadyFor = () => {
   return (
