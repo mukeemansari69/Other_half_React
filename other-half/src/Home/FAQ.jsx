@@ -1,43 +1,19 @@
 import { useState, useRef } from "react";
 import "/public/Home/css/faq.css";
 
-const data = [
-  {
-    question: "What is Everyday™?",
-    answer:
-      "Everyday™ is a daily supplement for your dog designed to improve overall health and nutrition.",
-  },
-  {
-    question: "How do I know if my dog needs Everyday™?",
-    answer:
-      "For Wet Foods, scoop the suggested serving amount and pour carefully atop the wet food. Next, stir thoroughly until powder is evenly distributed throughout the wet food. Don’t exceed one serving per day, but don’t miss a full day. Consistency is key. For Dry Foods, scoop the suggested serving and pour it carefully your dog’s favorite dry kibble. Gently stir the powder and kibble together slowly to avoid spillage. Don’t exceed one serving per day, but don’t miss a full day. Consistency is key.",
-  },
-  {
-    question: "At what age can my dog start using Everyday™?",
-    answer: "Dogs can typically start from 12 weeks old. Always consult your vet.",
-  },
-  {
-    question: "What does '100% Human-Grade' mean?",
-    answer: "It means all ingredients meet human consumption standards.",
-  },
-  {
-    question: "How many scoops are in each tube?",
-    answer: "Each tube contains approximately 30 servings.",
-  },
-];
-
-export default function FAQ() {
+export default function FAQ({ heading, data }) {
   const [activeIndex, setActiveIndex] = useState(1);
-  const refs = useRef([]); // 🔥 important
+  const refs = useRef([]);
 
   const toggle = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
   return (
-    <section className=" faq-section">
+    <section className="faq-section">
       <div className="max-w-4xl mx-auto flex flex-col gap-8">
-        
+
+        {/* 🔥 Dynamic Heading */}
         <h2
           className="text-center text-[#1A1A1A]"
           style={{
@@ -46,7 +22,7 @@ export default function FAQ() {
             lineHeight: "125%",
           }}
         >
-          BARKED QUESTIONS ANSWERED
+          {heading}
         </h2>
 
         <div className="flex flex-col gap-3">
@@ -74,7 +50,6 @@ export default function FAQ() {
                   <div className={`icon ${isActive ? "active" : ""}`}></div>
                 </button>
 
-                {/* 🔥 FIXED PART */}
                 <div
                   ref={(el) => (refs.current[index] = el)}
                   className="px-4 md:px-5 overflow-hidden transition-all duration-300"

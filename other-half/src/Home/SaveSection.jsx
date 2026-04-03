@@ -1,5 +1,6 @@
 import React from "react";
 import "/public/Home/css/saveSection.css";
+import { NavLink } from "react-router-dom";
 
 const SaveSection = () => {
 
@@ -53,12 +54,12 @@ const SaveSection = () => {
       </div>
 
       <div className="save-btn-wrapper">
-
-        <button className="subscribe-btn">
-          SUBSCRIBE & SAVE
-        </button>
-
-      </div>
+  <NavLink to="/collection" className="block">
+    <button className="subscribe-btn ">
+      SUBSCRIBE & SAVE
+    </button>
+  </NavLink>
+</div>
 
     </section>
   );

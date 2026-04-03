@@ -12,9 +12,9 @@ import Quiz from './Pages/Quiz.jsx';
 import GlossaryPage from './Pages/GlossaryPage.jsx';
 import QuizDestopPage from './Pages/QuizDestopPage.jsx';
 import OurCollection from './Pages/OurCollection.jsx';
-import FaqBanner from './Faq/FaqBanner.jsx';
-import FAQ from './Home/FAQ.jsx';
 import FaqPage from './Pages/FaqPage.jsx';
+import DailyduoProduct from './Product/DailyduoProduct.jsx';
+import DentalProduct from './Product/DentalProduct.jsx';
 
 
 const App = () => {
@@ -33,11 +33,13 @@ const App = () => {
         <Route path="/quizdesktop" element={<QuizDestopPage />} />
         <Route path="/collection" element={<OurCollection />} />
         <Route path="/faqPage" element={<FaqPage/>} />
-        
+        <Route path="/dailyduo" element={<DailyduoProduct />} />
+        <Route path="/dental" element={<DentalProduct />} />
       </Routes>
-      
       <Footer />
+      
     </Router>
+    
   )
 }
 

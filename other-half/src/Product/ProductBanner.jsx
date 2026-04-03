@@ -30,8 +30,8 @@ const guaranteeIconMap = {
 export const defaultProductBannerData = {
   id: "everyday-one",
   breadcrumb: [
-    { label: "Home", href: "#" },
-    { label: "Product", href: "#" },
+    { label: "Home", href: "/" },
+    { label: "Product", href: "/" },
     { label: "Everyday One" },
   ],
   name: "45 in 1 Everyday Daily Multivitamin",

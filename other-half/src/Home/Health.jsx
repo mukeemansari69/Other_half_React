@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import "/public/Home/css/health.css";
 import img1 from "/Home/images/dog-1.svg";
 import img2 from "/Home/images/dog-2.svg";
@@ -71,23 +72,27 @@ const Health = () => {
           </p>
 
           <div className="flex justify-center lg:justify-start">
-            <button
-              className="
-              h-[55px]
-              px-8
-              rounded-full
-              bg-[#0F4A12]
-              text-[#EBF466]
-              font-bold
-              uppercase
-              text-[16px]
-              md:text-[18px]
-              transition-all duration-300
-              hover:bg-white hover:text-black
-              "
-            >
-              SHOP NOW
-            </button>
+            <NavLink
+  to="/collection"
+  className="
+    inline-flex
+    items-center
+    justify-center
+    h-[55px]
+    px-8
+    rounded-full
+    bg-[#0F4A12]
+    text-[#EBF466]
+    font-bold
+    uppercase
+    text-[16px]
+    md:text-[18px]
+    transition-all duration-300
+    hover:bg-white hover:text-black
+  "
+>
+  SHOP NOW
+</NavLink>
           </div>
 
         </div>

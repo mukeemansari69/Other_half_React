@@ -18,7 +18,7 @@
   background-size: cover;
   background-position: center;
 
-  min-height: 679px;
+  min-height: 520px;
 
   position: relative;
   display: flex;
@@ -67,7 +67,7 @@
 
 @media (max-width: 768px) {
   .FaqBanner-bg {
-    min-height: 500px;
+    min-height: 400px;
   }
 
   .FaqBanner-content {

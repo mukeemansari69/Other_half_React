@@ -1,0 +1,139 @@
+/* MAIN */
+.FaqFooter-container {
+  width: 100%;
+}
+
+/* BACKGROUND */
+.FaqFooter-bg {
+  width: 100%;
+  min-height: 520px;
+
+  background-image:
+    linear-gradient(
+      246.81deg,
+      rgba(0, 0, 0, 0) 0.46%,
+      #000000 84.51%
+    ),
+    url("https://images.unsplash.com/photo-1548199973-03cce0bbc87b"); /* dummy */
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  align-items: center;
+}
+
+/* OVERLAY FLEX */
+.FaqFooter-overlay {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* CONTENT CENTER (1440 feel without fixed width) */
+.FaqFooter-content {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  text-align: center;
+}
+
+/* HEADING */
+.FaqFooter-heading {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 48px;
+  line-height: 125%;
+  color: #ffffff;
+}
+
+/* SUBTEXT */
+.FaqFooter-subtext {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  line-height: 140%;
+  color: #ffffff;
+  max-width: 900px;
+}
+
+/* BUTTON */
+.FaqFooter-btn {
+  display: inline-block;
+  padding: 14px 30px;
+  border-radius: 333px;
+
+  background: #0F4A12;
+  color: #EBF466;
+
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+
+  transition: all 0.3s ease;
+}
+
+/* BUTTON HOVER */
+.FaqFooter-btn:hover {
+  background: #0c3a0f;
+  transform: translateY(-2px);
+}
+
+/* BOTTOM STRIP */
+.FaqFooter-bottom {
+  width: 100%;
+  background: #1a1a1a;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+/* BOTTOM TEXT */
+.FaqFooter-bottom p {
+  color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+}
+
+/* SIGN UP LINK */
+.FaqFooter-link {
+  color: #EBF466;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* HOVER EFFECT */
+.FaqFooter-link:hover {
+  color: #d4e24f;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+.FaqFooter-bg{
+    min-height: 400px;
+}
+  .FaqFooter-content {
+    padding: 40px 20px;
+  }
+
+  .FaqFooter-heading {
+    font-size: 32px;
+    line-height: 125%;
+  }
+
+  .FaqFooter-subtext {
+    font-size: 16px;
+    line-height: 125%;
+  }
+
+  .FaqFooter-bottom p {
+    font-size: 14px;
+  }
+}

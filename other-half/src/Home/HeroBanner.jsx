@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 export default function HeroBanner() {
   return (
     <section
@@ -81,42 +82,51 @@ export default function HeroBanner() {
           >
 
             {/* LEARN MORE */}
-            <button
-              className="
-              px-[30px]
-              py-[14px]
-              rounded-[333px]
-              bg-[#FAF9F5]
-              text-black
-              font-semibold
-              text-[18px]
-              uppercase
-              transition
-              hover:bg-[#0F4A12]
-              hover:text-[#EBF466]
-              "
-            >
-              Learn More
-            </button>
+            <a
+  href="https://pmc.ncbi.nlm.nih.gov/search/?term=dog+health"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="
+    inline-block
+    px-[30px]
+    py-[14px]
+    rounded-[333px]
+    bg-[#FAF9F5]
+    text-black
+    font-semibold
+    text-[18px]
+    uppercase
+    transition
+    hover:bg-[#0F4A12]
+    hover:text-[#EBF466]
+  "
+>
+  Learn More
+</a>
 
             {/* SHOP NOW */}
-            <button
-              className="
-              px-[30px]
-              py-[14px]
-              rounded-[333px]
-              bg-[#0F4A12]
-              text-[#EBF466]
-              font-bold
-              text-[18px]
-              uppercase
-              transition
-              hover:bg-[#FAF9F5]
-              hover:text-black
-              "
-            >
-              Shop Now
-            </button>
+            <NavLink
+  to="/collection"
+  className={({ isActive }) =>
+    `
+    inline-block
+    px-[30px]
+    py-[14px]
+    rounded-[333px]
+    bg-[#0F4A12]
+    text-[#EBF466]
+    font-bold
+    text-[18px]
+    uppercase
+    transition
+    hover:bg-[#FAF9F5]
+    hover:text-black
+    ${isActive ? "text-[#EBF466]" : ""}
+    `
+  }
+>
+  Shop Now
+</NavLink>
 
           </div>
         </div>

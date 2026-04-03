@@ -12,6 +12,9 @@ import SaveSection from '../Home/SaveSection'
 import QualitySection from '../Home/QualitySection'
 import Testimonials from '../Home/Testimonials'
 import FAQ from '../Home/FAQ'
+import { homeFaq } from '../faqData'
+
+
 
 
 const Home = () => {
@@ -29,7 +32,7 @@ const Home = () => {
     <TrustedSection></TrustedSection>
     <SaveSection></SaveSection>
     <QualitySection></QualitySection>
-     <FAQ></FAQ>
+    <FAQ heading={"BARKED QUESTIONS ANSWERED"} data={homeFaq}></FAQ>
     <Testimonials></Testimonials>
    
    
