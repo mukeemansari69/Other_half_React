@@ -54,10 +54,10 @@ export default function Header() {
             </NavLink>
 
             <NavLink
-              to="/integrity"
+              to="/glossary"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
-              SCIENCE
+              GLOSSARY
             </NavLink>
 
             <NavLink
@@ -137,10 +137,10 @@ export default function Header() {
               </NavLink>
 
               <NavLink
-                to="/integrity"
+                to="/glossary"
                 className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
               >
-                SCIENCE
+                GLOSSARY
               </NavLink>
 
               <NavLink

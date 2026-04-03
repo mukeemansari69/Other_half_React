@@ -1,13 +1,16 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import "/public/Home/css/pup.css";
 
 export default function Pup() {
+
   const products = [
     {
       img: "/Home/images/p1.png",
       title: "Everyday Daily Multivitamin",
       price: "$99.99",
       old: "$69.99",
+      link: "/product",
       tags: ["Immunity Boost", "Digestive health", "Overall Wellness"]
     },
     {
@@ -15,6 +18,7 @@ export default function Pup() {
       title: "Doggie Dental Powder",
       price: "$99.99",
       old: "$69.99",
+      link: "/doggie-dental",
       tags: ["Dental Care", "Overall Wellness"]
     },
     {
@@ -22,6 +26,7 @@ export default function Pup() {
       title: "Daily Duo Bundle",
       price: "$99.99",
       old: "$69.99",
+      link: "/dailyduo",
       tags: ["Immunity Boost", "Digestive health", "Overall Wellness"]
     }
   ];
@@ -35,11 +40,15 @@ export default function Pup() {
           YOUR PUP WILL LOVE THESE
         </h2>
 
-        {/* Desktop Layout */}
+        {/* Desktop */}
         <div className="hidden lg:grid grid-cols-3 gap-6 max-w-[1440px] mx-auto mt-12 px-10">
 
           {products.map((p, i) => (
-            <div key={i} className="pup-card">
+            <NavLink
+              to={p.link}
+              key={i}
+              className="pup-card cursor-pointer block"
+            >
 
               <img src={p.img} alt="" className="pup-image"/>
 
@@ -60,16 +69,20 @@ export default function Pup() {
 
               </div>
 
-            </div>
+            </NavLink>
           ))}
 
         </div>
 
-        {/* Mobile / Tablet Slider */}
+        {/* Mobile Slider */}
         <div className="flex lg:hidden pup-slider mt-8">
 
           {products.map((p, i) => (
-            <div key={i} className="pup-card-mobile">
+            <NavLink
+              to={p.link}
+              key={i}
+              className="pup-card-mobile cursor-pointer block"
+            >
 
               <img src={p.img} alt="" className="pup-image-mobile"/>
 
@@ -104,7 +117,7 @@ export default function Pup() {
 
               </div>
 
-            </div>
+            </NavLink>
           ))}
 
         </div>

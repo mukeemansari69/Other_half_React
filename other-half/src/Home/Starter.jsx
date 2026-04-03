@@ -1,4 +1,6 @@
 import React from "react";
+         import { NavLink } from "react-router-dom";
+
 
 export default function Starter() {
   return (
@@ -100,24 +102,29 @@ export default function Starter() {
           </div>
 
           {/* Button */}
-          <div className="pt-2 w-full flex justify-center md:justify-start">
-            <a
-              href="#"
-              className="
-              inline-block h-[55px] rounded-[333px]
-              flex items-center justify-center
-              px-8 py-[14px]
-              bg-[#0F4A12] text-[#EBF466]
-              font-[700] uppercase text-[18px]
-              transition duration-200 ease-in-out
-              border-2 border-transparent
-              hover:bg-white hover:text-black
-              "
-              style={{ fontFamily: "Poppins, sans-serif",marginBottom: "30px" }}
-            >
-              Shop Daily Duo Now
-            </a>
-          </div>
+
+<div className="pt-2 w-full flex justify-center md:justify-start">
+  <NavLink
+    to="/dailyduo"
+    className={({ isActive }) =>
+      `
+      inline-block h-[55px] rounded-[333px]
+      flex items-center justify-center
+      px-8 py-[14px]
+      font-[700] uppercase text-[18px]
+      transition duration-200 ease-in-out
+      border-2
+      ${isActive 
+        ? "bg-white text-black border-black" 
+        : "bg-[#0F4A12] text-[#EBF466] border-transparent hover:bg-white hover:text-black"
+      }
+      `
+    }
+    style={{ fontFamily: "Poppins, sans-serif", marginBottom: "30px" }}
+  >
+    Shop Daily Duo Now
+  </NavLink>
+</div>
 
         </div>
       </div>

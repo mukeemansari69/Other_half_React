@@ -13,7 +13,7 @@ import GlossaryPage from './Pages/GlossaryPage.jsx';
 import QuizDestopPage from './Pages/QuizDestopPage.jsx';
 import OurCollection from './Pages/OurCollection.jsx';
 import FaqPage from './Pages/FaqPage.jsx';
-import DailyduoProduct from './Product/DailyduoProduct.jsx';
+import DailyDuoProduct from './Product/DailyDuoProduct.jsx';
 import DentalProduct from './Product/DentalProduct.jsx';
 
 
@@ -25,7 +25,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="*" element={<Home />} />
-        <Route path="/product" element={<Product />} />
+        
         <Route path="/integrity" element={<Integrity />} />
         <Route path="/story" element={<Story />} />
         <Route path="/quiz" element={<Quiz />} />
@@ -33,8 +33,9 @@ const App = () => {
         <Route path="/quizdesktop" element={<QuizDestopPage />} />
         <Route path="/collection" element={<OurCollection />} />
         <Route path="/faqPage" element={<FaqPage/>} />
-        <Route path="/dailyduo" element={<DailyduoProduct />} />
-        <Route path="/dental" element={<DentalProduct />} />
+        <Route path="/dailyduo" element={<DailyDuoProduct />} />
+        <Route path="/doggie-dental" element={<DentalProduct />} />
+        <Route path="/product" element={<Product />} />     
       </Routes>
       <Footer />
       

@@ -1,5 +1,5 @@
 import React from "react";
-import ProductBanner from "../Product/ProductBanner.jsx";
+import ProductBanner from "./ProductBanner.jsx";
 import { dailyDuoProductData } from "../productData";
 
 import Marque from "../Home/Marque";
@@ -9,20 +9,14 @@ import NotAll from "../Product/NotAll";
 import TrustedSection from "../Home/TrustedSection";
 import QualitySection from "../Home/QualitySection";
 
-const DailyduoProduct = () => {
-
-  // ✅ DEBUG (check karo console me)
-  console.log("Daily Duo Data:", dailyDuoProductData);
-
-  // ✅ IMPORTANT FIX (error se bachne ke liye)
+const DailyDuoProduct = () => {
   if (!dailyDuoProductData) {
-    return <h1>Product Data Not Found ❌</h1>;
+    return <h1>Product data not found.</h1>;
   }
 
   return (
     <>
       <ProductBanner productData={dailyDuoProductData} />
-
       <Marque />
       <ScoopOne />
       <Features />
@@ -33,4 +27,4 @@ const DailyduoProduct = () => {
   );
 };
 
-export default DailyduoProduct;
+export default DailyDuoProduct;

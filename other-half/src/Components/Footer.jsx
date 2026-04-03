@@ -68,7 +68,7 @@ const Footer = () => {
                    </li>
                   <li>
                     <NavLink
-              to="/faq"
+              to="/faqpage"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
                FAQ
@@ -277,7 +277,7 @@ const Footer = () => {
                    </li>
                   <li>
                     <NavLink
-              to="/faq"
+              to="/faqPage"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
                FAQ

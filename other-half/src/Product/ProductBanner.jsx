@@ -3,12 +3,10 @@ import {
   BadgeCheck,
   Factory,
   FlaskConical,
-  Heart,
   Minus,
   PackageCheck,
   Plus,
   ShieldCheck,
-  ShoppingCart,
   Star,
   Stethoscope,
   Truck,
@@ -27,7 +25,7 @@ const guaranteeIconMap = {
   origin: Factory,
 };
 
-export const defaultProductBannerData = {
+const defaultProductBannerData = {
   id: "everyday-one",
   breadcrumb: [
     { label: "Home", href: "/" },
@@ -388,7 +386,6 @@ const AccordionItem = ({ item, isOpen, onToggle }) => (
 const ProductBanner = ({
   productData = defaultProductBannerData,
   onAddToCart,
-  onFavoriteToggle,
 }) => {
   const product = productData;
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -407,16 +404,20 @@ const ProductBanner = ({
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [openAccordionId, setOpenAccordionId] = useState(null);
   const [isInCart, setIsInCart] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const bundleSuggestions = product.bundleSuggestions ?? [];
 
   useEffect(() => {
+    if (bundleSuggestions.length <= 1) {
+      return undefined;
+    }
+
     const timer = window.setInterval(() => {
       setActiveSuggestionIndex(
-        (current) => (current + 1) % product.bundleSuggestions.length,
+        (current) => (current + 1) % bundleSuggestions.length,
       );
     }, 30000);
     return () => window.clearInterval(timer);
-  }, [product.bundleSuggestions.length]);
+  }, [bundleSuggestions.length]);
 
   const selectedSize =
     product.sizes.find((size) => size.id === selectedSizeId) ??
@@ -426,17 +427,20 @@ const ProductBanner = ({
     selectedSize.plans[0];
   const selectedImage =
     product.gallery[selectedImageIndex] ?? product.gallery[0];
-  const activeSuggestion = product.bundleSuggestions[activeSuggestionIndex];
+  const activeSuggestion =
+    bundleSuggestions.length > 0
+      ? bundleSuggestions[activeSuggestionIndex % bundleSuggestions.length]
+      : null;
   const visibleTags = showAllTags
     ? product.tags
     : product.tags.slice(0, product.initialVisibleTags);
-  const bundleTotal = product.bundleSuggestions
+  const bundleTotal = bundleSuggestions
     .filter((item) => selectedBundleIds.includes(item.id))
     .reduce((sum, item) => sum + item.price, 0);
   const totalPrice = selectedPlan.price + bundleTotal;
-  const isActiveSuggestionAdded = selectedBundleIds.includes(
-    activeSuggestion.id,
-  );
+  const isActiveSuggestionAdded = activeSuggestion
+    ? selectedBundleIds.includes(activeSuggestion.id)
+    : false;
 
   const handleSizeChange = (sizeId) => {
     const nextSize = product.sizes.find((size) => size.id === sizeId);
@@ -463,14 +467,6 @@ const ProductBanner = ({
         bundleIds: selectedBundleIds,
         totalPrice,
       });
-    }
-  };
-
-  const handleFavoriteToggle = () => {
-    const nextValue = !isFavorite;
-    setIsFavorite(nextValue);
-    if (typeof onFavoriteToggle === "function") {
-      onFavoriteToggle({ productId: product.id, isFavorite: nextValue });
     }
   };
 
@@ -785,72 +781,76 @@ const ProductBanner = ({
                   ))}
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-bold leading-tight text-[#1A1A1A] sm:text-xl">
-                      {product.bundleHeading}
-                    </h3>
-                    <span className="rounded-full bg-[#0F4A12] px-2 py-1 text-[10px] font-semibold leading-none text-[#EBF466]">
-                      30 sec rotate
-                    </span>
-                  </div>
-
-                  <div className="product-banner-upsell-card is-active grid overflow-hidden rounded-[14px] border border-[#EDEDED] bg-white sm:grid-cols-[minmax(0,10rem)_1fr] p-mobile">
-                    <div className="border-b border-[#EDEDED] bg-[#FFFDF2] sm:border-b-0 sm:border-r p-mobile-img">
-                      <img
-                        src={activeSuggestion.image}
-                        alt={activeSuggestion.title}
-                        className="h-full min-h-[8rem] w-full object-cover"
-                      />
+                {activeSuggestion ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-lg font-bold leading-tight text-[#1A1A1A] sm:text-xl">
+                        {product.bundleHeading}
+                      </h3>
+                      <span className="rounded-full bg-[#0F4A12] px-2 py-1 text-[10px] font-semibold leading-none text-[#EBF466]">
+                        30 sec rotate
+                      </span>
                     </div>
-                    <div className="flex flex-col justify-between gap-4 p-4">
-                      <div className="space-y-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="space-y-2">
-                            <h4 className="text-lg font-semibold leading-[1.2] text-[#000000] sm:text-xl ">
-                              {activeSuggestion.title}
-                            </h4>
-                            <p className="text-sm font-medium leading-[1.2] text-[#1A1A1A]">
-                              {activeSuggestion.subtitle}
-                            </p>
-                          </div>
-                          <span className="rounded-[5px] bg-[#0F4A12] px-3 py-1.5 text-[9px] font-bold uppercase leading-none tracking-[0.02em] text-[#EBF466]">
-                            {activeSuggestion.badgeLabel}
-                          </span>
-                        </div>
 
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-lg font-semibold leading-[1.34] text-[#B2B2B2] line-through sm:text-xl">
-                              {formatCurrency(activeSuggestion.compareAtPrice)}
-                            </span>
-                            <span className="text-lg font-semibold leading-[1.34] text-[#1A1A1A] sm:text-xl">
-                              {formatCurrency(activeSuggestion.price)}
+                    <div className="product-banner-upsell-card is-active grid overflow-hidden rounded-[14px] border border-[#EDEDED] bg-white sm:grid-cols-[minmax(0,10rem)_1fr] p-mobile">
+                      <div className="border-b border-[#EDEDED] bg-[#FFFDF2] sm:border-b-0 sm:border-r p-mobile-img">
+                        <img
+                          src={activeSuggestion.image}
+                          alt={activeSuggestion.title}
+                          className="h-full min-h-[8rem] w-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col justify-between gap-4 p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="space-y-2">
+                              <h4 className="text-lg font-semibold leading-[1.2] text-[#000000] sm:text-xl ">
+                                {activeSuggestion.title}
+                              </h4>
+                              <p className="text-sm font-medium leading-[1.2] text-[#1A1A1A]">
+                                {activeSuggestion.subtitle}
+                              </p>
+                            </div>
+                            <span className="rounded-[5px] bg-[#0F4A12] px-3 py-1.5 text-[9px] font-bold uppercase leading-none tracking-[0.02em] text-[#EBF466]">
+                              {activeSuggestion.badgeLabel}
                             </span>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleToggleBundle(activeSuggestion.id)
-                            }
-                            className={`product-banner-quick-add flex items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold shadow-[0_1px_2px_0_rgba(105,81,255,0.05)] 
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-lg font-semibold leading-[1.34] text-[#B2B2B2] line-through sm:text-xl">
+                                {formatCurrency(activeSuggestion.compareAtPrice)}
+                              </span>
+                              <span className="text-lg font-semibold leading-[1.34] text-[#1A1A1A] sm:text-xl">
+                                {formatCurrency(activeSuggestion.price)}
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleToggleBundle(activeSuggestion.id)
+                              }
+                              className={`product-banner-quick-add flex items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold shadow-[0_1px_2px_0_rgba(105,81,255,0.05)] 
     ${isActiveSuggestionAdded ? "bg-[#0F4A12] text-white" : "border-black bg-[#FAF9F5] text-black"}`}
-                          >
-                            {isActiveSuggestionAdded ? (
-                              <Minus size={18} />
-                            ) : (
-                              <Plus size={18} />
-                            )}
-                            <span>
-                              {isActiveSuggestionAdded ? "Remove" : "Quick Add"}
-                            </span>
-                          </button>
+                            >
+                              {isActiveSuggestionAdded ? (
+                                <Minus size={18} />
+                              ) : (
+                                <Plus size={18} />
+                              )}
+                              <span>
+                                {isActiveSuggestionAdded
+                                  ? "Remove"
+                                  : "Quick Add"}
+                              </span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                ) : null}
               </div>
             </div>
 

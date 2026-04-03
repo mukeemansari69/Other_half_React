@@ -328,10 +328,10 @@ export const dogDentalProductData = {
   },
 
   gallery: [
-    { id: "g1", src: "public/Product/images/dogi-dental-powder.png", alt: "Dental Powder" },
-    { id: "g2", src: "public/Product/images/before.png", alt: "Before After" },
-    { id: "g3", src: "public/Product/images/dogi-dental-powder.png", alt: "Usage" },
-    { id: "g4", src: "public/Product/images/before.png", alt: "Ingredients" },
+    { id: "g1", src: "/Product/images/dogi-dental-powder.png", alt: "Dental Powder" },
+    { id: "g2", src: "/Product/images/before.png", alt: "Before After" },
+    { id: "g3", src: "/Product/images/dogi-dental-powder.png", alt: "Usage" },
+    { id: "g4", src: "/Product/images/before.png", alt: "Ingredients" },
   ],
 
   qualityHighlights: [
@@ -369,32 +369,32 @@ export const dogDentalProductData = {
   benefits: [
     {
       id: "breath",
-      icon: "public/Product/images/f.png",
+      icon: "/Product/images/f.png",
       text: "Freshens Bad Breath",
     },
     {
       id: "plaque",
-      icon: "public/Product/images/pl.jpg",
+      icon: "/Product/images/pl.jpg",
       text: "Reduces Plaque Build-up",
     },
     {
       id: "tartar",
-      icon: "public/Product/images/dog 1.png",
+      icon: "/Product/images/dog 1.png",
       text: "Prevents Tartar",
     },
     {
       id: "gums",
-      icon: "public/Product/images/allergies 1.png",
+      icon: "/Product/images/allergies 1.png",
       text: "Supports Healthy Gums",
     },
     {
       id: "microbiome",
-      icon: "public/Product/images/love 1.png",
+      icon: "/Product/images/love 1.png",
       text: "Improves Oral Microbiome",
     },
     {
       id: "easy",
-      icon: "public/Product/images/f.png",
+      icon: "/Product/images/f.png",
       text: "No Brushing Needed",
     },
   ],
@@ -540,7 +540,7 @@ export const dogDentalProductData = {
     ],
   },
 ],
-  shippingNote: "Ships within 24 hours 🚀",
+  shippingNote: "Ships within 24 hours",
 
   subscription: {
     title: "Subscribe & Save",
@@ -577,7 +577,7 @@ export const dogDentalProductData = {
   bundleSuggestions: [
     {
       id: "dental-duo",
-      image: "public/Product/images/multi.png",
+      image: "/Product/images/multi.png",
       title: "Dental Duo Pack",
       subtitle: "2x Dental Powder for long-term care",
       compareAtPrice: 69.98,
@@ -645,10 +645,10 @@ export const dailyDuoProductData = {
   },
 
   gallery: [
-    { id: "g1", src: "/Product/images/duo/1.png", alt: "Daily Duo Front" },
-    { id: "g2", src: "/Product/images/duo/2.png", alt: "Products Together" },
-    { id: "g3", src: "/Product/images/duo/3.png", alt: "Usage" },
-    { id: "g4", src: "/Product/images/duo/4.png", alt: "Benefits" },
+    { id: "g1", src: "/Product/images/multi.png", alt: "Daily Duo Front" },
+    { id: "g2", src: "/Product/images/dogi-dental-powder.png", alt: "Products Together" },
+    { id: "g3", src: "/Product/images/p1.png", alt: "Usage" },
+    { id: "g4", src: "/Product/images/before.png", alt: "Benefits" },
   ],
 
   qualityHighlights: [
@@ -685,43 +685,42 @@ export const dailyDuoProductData = {
   benefits: [
     {
       id: "health",
-      icon: "/Product/images/duo/health.png",
+      icon: "/Product/images/icon1.png",
       text: "Complete Health Support",
     },
     {
       id: "dental",
-      icon: "/Product/images/duo/dental.png",
+      icon: "/Product/images/pl.jpg",
       text: "Cleaner Teeth & Breath",
     },
     {
       id: "immunity",
-      icon: "/Product/images/duo/immunity.png",
+      icon: "/Product/images/immunity (1) 1.png",
       text: "Stronger Immunity",
     },
     {
       id: "gut",
-      icon: "/Product/images/duo/gut.png",
+      icon: "/Product/images/stomach 1.png",
       text: "Improved Digestion",
     },
     {
       id: "coat",
-      icon: "/Product/images/duo/coat.png",
+      icon: "/Product/images/allergies 1.png",
       text: "Healthy Skin & Coat",
     },
     {
       id: "easy",
-      icon: "/Product/images/duo/easy.png",
+      icon: "/Product/images/love 1.png",
       text: "Simple Daily Routine",
     },
   ],
 
-  // ✅ IMPORTANT: Bundle = single size (keep UI stable)
   sizes: [
   {
     id: "small",
     name: "Small",
     weight: "0-25 lbs",
-    icon: "/Product/images/duo/d1.png",
+    icon: "/Product/images/d1.png",
     plans: [
       {
         id: "1m",
@@ -756,7 +755,7 @@ export const dailyDuoProductData = {
     id: "medium",
     name: "Medium",
     weight: "25-75 lbs",
-    icon: "/Product/images/duo/d2.png",
+    icon: "/Product/images/d2.png",
     plans: [
       {
         id: "1m",
@@ -791,7 +790,7 @@ export const dailyDuoProductData = {
     id: "large",
     name: "Large",
     weight: "75-100 lbs",
-    icon: "/Product/images/duo/d3.png",
+    icon: "/Product/images/d3.png",
     plans: [
       {
         id: "1m",
@@ -826,7 +825,7 @@ export const dailyDuoProductData = {
     id: "xl",
     name: "XL",
     weight: "101+ lbs",
-    icon: "/Product/images/duo/d4.png",
+    icon: "/Product/images/d4.png",
     plans: [
       {
         id: "1m",
@@ -868,7 +867,7 @@ export const dailyDuoProductData = {
 
   cta: {
     addToCartLabel: "Add Bundle to Cart",
-    shopPayLabel: "Buy Now",
+    shopPayLabel: "Buy Bundle Now",
     cartHref: "/cart",
   },
 
@@ -891,8 +890,27 @@ export const dailyDuoProductData = {
   ],
 
   // ❌ IMPORTANT: bundle ke andar bundle suggestions mat dena
-  bundleHeading: "",
-  bundleSuggestions: [],
+  bundleHeading: "Complete the Routine",
+  bundleSuggestions: [
+    {
+      id: "extra-multivitamin",
+      image: "/Product/images/multi.png",
+      title: "Add an Extra Multivitamin",
+      subtitle: "Keep daily joint, gut, and immune support stocked",
+      compareAtPrice: 54,
+      price: 49,
+      badgeLabel: "9% OFF",
+    },
+    {
+      id: "extra-dental",
+      image: "/Product/images/dogi-dental-powder.png",
+      title: "Add a Second Dental Powder",
+      subtitle: "Extend fresh breath and plaque support",
+      compareAtPrice: 39.99,
+      price: 35.99,
+      badgeLabel: "10% OFF",
+    },
+  ],
 
   accordionSections: [
     {

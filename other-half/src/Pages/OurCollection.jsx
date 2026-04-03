@@ -1,8 +1,11 @@
 import React from "react";
-import "/public/Default/css/ourCollection.css"
+import { NavLink } from "react-router-dom";
+import "/public/Default/css/ourCollection.css";
+
 const products = [
   {
     id: 1,
+    link: "/product",
     tag: "Best Seller",
     tagColor: "bg-orange-500",
     image: "/public/Default/images/col1.png",
@@ -18,6 +21,7 @@ const products = [
   },
   {
     id: 2,
+    link: "/doggie-dental",
     tag: "New Release",
     tagColor: "bg-blue-500",
     image: "/public/Default/images/col2.png",
@@ -33,6 +37,7 @@ const products = [
   },
   {
     id: 3,
+    link: "/dailyduo",
     tag: "Bundle & Save",
     tagColor: "bg-pink-600",
     image: "/public/Default/images/col3.png",
@@ -53,15 +58,18 @@ const OurCollection = () => {
     <section className="ourCollection-container">
       <div className="ourCollection-inner">
 
-        {/* Heading */}
         <h2 className="ourCollection-heading">
           OUR COLLECTION
         </h2>
 
-        {/* Cards */}
         <div className="ourCollection-grid">
           {products.map((item) => (
-            <div key={item.id} className="ourCollection-card group">
+            
+            <NavLink
+              to={item.link}
+              key={item.id}
+              className="ourCollection-card group cursor-pointer block"
+            >
 
               {/* TAG */}
               <span className={`ourCollection-tag ${item.tagColor}`}>
@@ -125,7 +133,7 @@ const OurCollection = () => {
                 </span>
               </div>
 
-              {/* SUBSCRIBE BOX */}
+              {/* SUBSCRIBE */}
               <div className="ourCollection-subscribe">
                 <div className="ourCollection-tick">✔</div>
                 <div>
@@ -143,7 +151,8 @@ const OurCollection = () => {
                 + ADD TO CART
               </button>
 
-            </div>
+            </NavLink>
+
           ))}
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import "/public/Integrity/css/ourFlex.css";
 
 const OurFlex = () => {
@@ -42,13 +43,18 @@ const OurFlex = () => {
           </p>
 
           <div className="ourFlex-buttons">
-            <button className="ourFlex-btn ourFlex-btnPrimary">
-              TAKE THE QUIZ
-            </button>
-
-            <button className="ourFlex-btn ourFlex-btnSecondary">
-              EXPLORE OUR INGREDIENTS GLOSSARY
-            </button>
+           <NavLink
+  to="/quiz"
+  className="ourFlex-btn ourFlex-btnPrimary inline-block text-center"
+>
+  TAKE THE QUIZ
+</NavLink>
+<NavLink
+  to="/glossary"
+  className="ourFlex-btn ourFlex-btnSecondary inline-block text-center"
+>
+  EXPLORE OUR INGREDIENTS GLOSSARY
+</NavLink>
           </div>
 
         </div>
