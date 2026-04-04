@@ -52,7 +52,7 @@ const Footer = () => {
                    </li>
                   <li>
                     <NavLink
-              to="/aboutus"
+              to="/story"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
                About Us
@@ -93,12 +93,12 @@ const Footer = () => {
             </NavLink>
                    </li>
                   <li>
-                     <NavLink
+                    {/*  <NavLink
               to="/story"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
                  Our Story
-            </NavLink>
+            </NavLink> */}
                     </li>
                   <li>
                            <NavLink
@@ -261,7 +261,7 @@ const Footer = () => {
                    </li>
                   <li>
                     <NavLink
-              to="/aboutus"
+              to="/story"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
                About Us
@@ -301,14 +301,14 @@ const Footer = () => {
                  Ingredient Integrity
             </NavLink>
                    </li>
-                  <li>
+                 {/*  <li>
                      <NavLink
               to="/story"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
                  Our Story
             </NavLink>
-                    </li>
+                    </li> */}
                   <li>
                            <NavLink
               to="/blog"
