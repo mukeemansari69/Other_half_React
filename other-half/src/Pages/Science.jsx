@@ -5,6 +5,7 @@ import { ArrowRight, BadgeCheck, Beaker, Microscope, ShieldCheck } from "lucide-
 import Marque from "../Home/Marque";
 import Features from "../Home/Features";
 import { dailyDuoProductData, dogDentalProductData, everydayProductData } from "../productData";
+import "/public/Science/css/science.css";
 
 const formatPrice = (value) =>
   new Intl.NumberFormat("en-US", {
@@ -16,18 +17,18 @@ const formatPrice = (value) =>
 
 const scienceHighlights = [
   {
-    title: "Same brand theme",
-    text: "Luckiest Guy headings, green and lime palette, rounded cards, aur playful layout ko preserve kiya gaya hai.",
+    title: "Complete Daily Nutrition",
+    text: "A powerful blend of clinically proven ingredients that supports your dog’s overall health — from digestion to immunity and long-term vitality.",
     icon: ShieldCheck,
   },
   {
-    title: "Hover product cards",
-    text: "Banner ke neeche teen cards diye gaye hain jo current collection style ko match karte hain aur hover par zyada alive feel karte hain.",
+    title: "Gut & Immune Support",
+    text: "Formulated to improve digestion, strengthen immunity, and help your dog absorb nutrients better for a healthier and more active life.",
     icon: BadgeCheck,
   },
   {
-    title: "Deep product details",
-    text: "Har formula ke liye alag science section hai jahan benefits, tags, routine logic, aur CTA button diya gaya hai.",
+    title: "Dental & Skin Care",
+    text: "Helps reduce plaque buildup, freshens breath, and promotes a healthier coat and skin — keeping your dog looking and feeling great.",
     icon: Microscope,
   },
 ];
@@ -37,11 +38,10 @@ const products = [
     id: "everyday",
     anchor: "everyday-science",
     route: "/product",
+    detailClass: "science-product-detail--foundation",
     cardTag: "Foundation Formula",
     cardImage: "/Default/images/col1.png",
-    detailImage: "/Product/images/p1.png",
-    tone: "bg-[#F4FAE8]",
-    accent: "text-[#0F4A12]",
+    detailImage: "public/Science/images/everyday.png",
     title: "Everyday Daily Multivitamin",
     description: "A single scoop for joints, digestion, immunity, skin, and coat support.",
     product: everydayProductData,
@@ -60,11 +60,10 @@ const products = [
     id: "dental",
     anchor: "dental-science",
     route: "/doggie-dental",
+    detailClass: "science-product-detail--dental",
     cardTag: "Oral Care System",
     cardImage: "/Default/images/col2.png",
     detailImage: "/Product/images/dogi-dental-powder.png",
-    tone: "bg-[#FFF1EA]",
-    accent: "text-[#E8744A]",
     title: "Doggie Dental Powder",
     description: "A no-brush powder routine focused on plaque, tartar, breath, and gums.",
     product: dogDentalProductData,
@@ -83,11 +82,10 @@ const products = [
     id: "duo",
     anchor: "duo-science",
     route: "/dailyduo",
+    detailClass: "science-product-detail--duo",
     cardTag: "Stacked Routine",
-    cardImage: "/Default/images/col3.png",
-    detailImage: "/Product/images/multi.png",
-    tone: "bg-[#F0FFF3]",
-    accent: "text-[#56C271]",
+    cardImage: "public/Science/images/dailyduo.png",
+    detailImage: "public/Science/images/dailyduo.png",
     title: "Daily Duo Bundle",
     description: "A paired routine that combines whole-body wellness with oral care in one stack.",
     product: dailyDuoProductData,
@@ -111,11 +109,7 @@ const getTags = (product) => (product?.tags ?? []).slice(0, 4);
 const ButtonLink = ({ to, children, dark = true }) => (
   <NavLink
     to={to}
-    className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold uppercase tracking-[0.08em] transition ${
-      dark
-        ? "bg-[#0F4A12] text-[#EBF466] hover:bg-[#1A1A1A] hover:text-white"
-        : "bg-white text-[#1A1A1A] hover:bg-[#EBF466]"
-    }`}
+    className={dark ? "science-button" : "science-button science-button--light"}
   >
     {children}
     <ArrowRight size={16} />
@@ -124,36 +118,23 @@ const ButtonLink = ({ to, children, dark = true }) => (
 
 const Science = () => {
   return (
-    <main className="w-full overflow-hidden bg-[#FFFCF2] text-[#1A1A1A]">
-      <section
-        className="px-6 py-16 lg:px-[120px] lg:py-28"
-        style={{
-          backgroundImage:
-            "linear-gradient(90deg, rgba(255,252,242,0.96) 0%, rgba(255,252,242,0.88) 45%, rgba(255,252,242,0.45) 100%), url('/Home/images/banner-img.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="mx-auto max-w-[1440px]">
-          <span className="inline-flex rounded-full bg-[#EBF466] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0F4A12]">
-            The science behind the products
+    <main className="science-page">
+      <section className="science-hero">
+        <div className="science-container science-banner">
+          <span className="science-eyebrow">
+           FOR DOGS YOU CALL FAMILY
           </span>
-          <h1 className="mt-6 max-w-[860px] font-[Luckiest_Guy] text-[42px] leading-[1.08] sm:text-[56px] lg:text-[88px]">
-            Science That Matches Your Current Theme.
+          <h1 className="science-hero__title">
+           Smarter Health for Your Dog, Backed by Science
           </h1>
-          <p className="mt-6 max-w-[760px] text-[17px] leading-[1.85] text-[#1A1A1A]/78 lg:text-[20px]">
-            Yeh naya page aapke existing code ko read karke banaya gaya hai.
-            Is mein same font structure, same brand colors, banner style, hover cards,
-            aur three product-specific science sections include kiye gaye hain.
+          <p className="science-hero__text">
+           Clinically studied ingredients designed to support digestion, immunity, dental health, and overall wellbeing — because your dog deserves more than just basic nutrition.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <ButtonLink to="/collection">Shop the science</ButtonLink>
-            <a
-              href="#science-products"
-              className="inline-flex items-center gap-2 rounded-full border border-[#1A1A1A]/15 bg-white px-6 py-3 text-[14px] font-semibold uppercase tracking-[0.08em] transition hover:bg-[#0F4A12] hover:text-[#EBF466]"
-            >
-              Explore products
+          <div className="science-hero__actions">
+            <ButtonLink to="/integrity">Shop Now</ButtonLink>
+            <a href="/integrity" className="science-button science-button--outline">
+              Explore Ingredients
               <ArrowRight size={16} />
             </a>
           </div>
@@ -162,76 +143,65 @@ const Science = () => {
 
       <Marque />
 
-      <section className="px-6 py-16 lg:px-[120px] lg:py-24">
-        <div className="mx-auto grid max-w-[1440px] gap-5 lg:grid-cols-3">
+      <section className="science-section science-section--highlights">
+        <div className="science-container science-highlight-grid">
           {scienceHighlights.map(({ title, text, icon: Icon }) => (
-            <article
-              key={title}
-              className="rounded-[30px] border border-[#1A1A1A]/8 bg-white p-7 shadow-[0_18px_44px_rgba(0,0,0,0.05)]"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0F4A12] text-[#EBF466]">
+            <article key={title} className="science-highlight-card">
+              <div className="science-highlight-card__icon">
                 <Icon size={22} />
               </div>
-              <h2 className="mt-5 text-[24px] font-semibold leading-[1.25]">{title}</h2>
-              <p className="mt-3 text-[15px] leading-[1.8] text-[#1A1A1A]/74">{text}</p>
+              <h2 className="science-highlight-card__title">{title}</h2>
+              <p className="science-highlight-card__text">{text}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="science-products" className="scroll-mt-28 px-6 pb-16 lg:px-[120px] lg:pb-24">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="text-center">
-            <h2 className="font-[Luckiest_Guy] text-[38px] leading-[1.1] lg:text-[64px]">
+      <section id="science-products" className="science-section science-section--products">
+        <div className="science-container ">
+          <div className="science-products-heading">
+            <h2 className="science-products-heading__title">
               Three Products, Three Science Stories.
             </h2>
-            <p className="mx-auto mt-4 max-w-[720px] text-[16px] leading-[1.8] text-[#1A1A1A]/74">
-              Banner ke neeche aapki request ke mutabiq three hover cards add ki gayi hain.
+            <p className="science-products-heading__text">
+              From stronger immunity to better digestion and happier smiles — our science-driven formulas help your dog live a longer, healthier, and more joyful life.
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          <div className="science-product-grid">
             {products.map((item) => (
-              <article
-                key={item.id}
-                className="group relative flex flex-col rounded-[30px] border border-[#1A1A1A]/8 bg-white p-6 shadow-[0_12px_36px_rgba(0,0,0,0.06)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_28px_60px_rgba(15,74,18,0.16)]"
-              >
-                <span className="absolute left-0 top-6 rounded-r-full bg-[#E8744A] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-white">
+              <article key={item.id} className="science-product-card">
+                <span className="science-product-card__tag">
                   {item.cardTag}
                 </span>
 
-                <div className="mt-10 rounded-[24px] bg-[#FAF9F5] p-6 transition group-hover:bg-[#EBF466]">
+                <div className="science-product-card__image-wrap">
                   <img
                     src={item.cardImage}
                     alt={item.title}
-                    className="mx-auto h-[240px] w-full object-contain transition duration-300 group-hover:scale-[1.04]"
+                    className="science-product-card__image"
                   />
                 </div>
 
-                <h3 className="mt-6 text-[28px] font-semibold leading-[1.2]">{item.title}</h3>
-                <p className="mt-3 text-[15px] leading-[1.8] text-[#1A1A1A]/75">{item.description}</p>
+                <h3 className="science-product-card__title">{item.title}</h3>
+                <p className="science-product-card__text">{item.description}</p>
 
-                <div className="mt-5 flex flex-wrap gap-2">
+                <div className="science-product-card__tags">
                   {getTags(item.product).map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-[#EBF466] px-3 py-1.5 text-[12px] font-semibold text-[#0F4A12]"
-                    >
-                      {tag}
-                    </span>
+                    <span key={tag} className="science-product-card__tag-pill">{tag}</span>
                   ))}
                 </div>
 
-                <div className="mt-6 rounded-[22px] bg-[#F7FAF1] p-4">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0F4A12]">
+                <div className="science-product-card__price">
+                  <p className="science-product-card__price-label">
                     Starting from
                   </p>
-                  <p className="mt-2 text-[30px] font-bold text-[#0F4A12]">
+                  <p className="science-product-card__price-value">
                     {formatPrice(getStartingPrice(item.product))}
                   </p>
                 </div>
 
-                <div className="mt-6">
+                <div className="science-product-card__action">
                   <ButtonLink to={item.route}>Go to product page</ButtonLink>
                 </div>
               </article>
@@ -240,92 +210,87 @@ const Science = () => {
         </div>
       </section>
 
-      <section className="px-6 pb-16 lg:px-[120px] lg:pb-24">
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-8">
+      <section className="science-section science-section--details">
+        <div className="science-container science-detail-list">
           {products.map((item, index) => (
             <article
               id={item.anchor}
               key={item.id}
-              className={`overflow-hidden rounded-[36px] border border-[#1A1A1A]/8 ${item.tone} shadow-[0_24px_70px_rgba(0,0,0,0.06)]`}
+              className={`science-product-detail ${item.detailClass} ${index % 2 === 1 ? "science-product-detail--reverse" : ""}`}
             >
-              <div className={`grid gap-0 lg:grid-cols-[1fr_1.2fr] ${index % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""}`}>
-                <div className="flex min-h-[320px] items-center justify-center bg-[#1A1A1A] p-8">
-                  <img src={item.detailImage} alt={item.title} className="h-[280px] w-full max-w-[340px] object-contain" />
+              <div className="science-product-detail__layout">
+                <div className="science-product-detail__media">
+                  <img src={item.detailImage} alt={item.title} className="science-product-detail__image" />
                 </div>
 
-                <div className="p-8 lg:p-10">
-                  <span className={`inline-flex rounded-full bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.14em] ${item.accent}`}>
-                    science section
+                <div className="science-product-detail__content">
+                  <span className="science-product-detail__badge">
+                    Product u Want
                   </span>
-                  <h2 className="mt-5 font-[Luckiest_Guy] text-[34px] leading-[1.08] lg:text-[54px]">
+                  <h2 className="science-product-detail__title">
                     {item.title}
                   </h2>
-                  <p className="mt-4 text-[16px] leading-[1.85] text-[#1A1A1A]/78">
+                  <p className="science-product-detail__text">
                     {item.product.description}
                   </p>
 
-                  <div className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.95fr]">
-                    <div className="rounded-[28px] bg-white p-6 shadow-[0_10px_28px_rgba(0,0,0,0.04)]">
-                      <h3 className="text-[18px] font-semibold uppercase tracking-[0.08em] text-[#0F4A12]">
+                  <div className="science-product-detail__grid">
+                    <div className="science-product-detail__panel">
+                      <h3 className="science-product-detail__panel-title">
                         How to make it
                       </h3>
-                      <div className="mt-5 space-y-4">
+                      <div className="science-step-list">
                         {item.making.map((step, stepIndex) => (
-                          <div key={step} className="flex gap-4 rounded-[20px] bg-[#FAF9F5] p-4">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EBF466] text-[15px] font-bold text-[#0F4A12]">
+                          <div key={step} className="science-step-item">
+                            <div className="science-step-item__number">
                               {stepIndex + 1}
                             </div>
-                            <p className="text-[15px] leading-[1.8] text-[#1A1A1A]/78">{step}</p>
+                            <p className="science-step-item__text">{step}</p>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-6">
-                      <div className="rounded-[28px] bg-white p-6 shadow-[0_10px_28px_rgba(0,0,0,0.04)]">
-                        <h3 className="text-[18px] font-semibold uppercase tracking-[0.08em] text-[#0F4A12]">
+                    <div className="science-product-detail__stack">
+                      <div className="science-product-detail__panel">
+                        <h3 className="science-product-detail__panel-title">
                           Key benefits
                         </h3>
-                        <div className="mt-4 flex flex-wrap gap-2.5">
+                        <div className="science-benefit-list">
                           {getBenefits(item.product).map((benefit) => (
-                            <span
-                              key={benefit}
-                              className="rounded-full border border-[#0F4A12]/10 bg-[#F7FAF1] px-3 py-2 text-[13px] font-medium"
-                            >
-                              {benefit}
-                            </span>
+                            <span key={benefit} className="science-benefit-pill">{benefit}</span>
                           ))}
                         </div>
                       </div>
 
-                      <div className="rounded-[28px] bg-white p-6 shadow-[0_10px_28px_rgba(0,0,0,0.04)]">
-                        <h3 className="text-[18px] font-semibold uppercase tracking-[0.08em] text-[#0F4A12]">
+                      <div className="science-product-detail__panel">
+                        <h3 className="science-product-detail__panel-title">
                           Best for
                         </h3>
-                        <div className="mt-4 space-y-3">
+                        <div className="science-best-for-list">
                           {item.bestFor.map((point) => (
-                            <div key={point} className="flex gap-3">
-                              <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#0F4A12] text-[#EBF466]">
+                            <div key={point} className="science-best-for-item">
+                              <div className="science-best-for-item__icon">
                                 <BadgeCheck size={14} />
                               </div>
-                              <p className="text-[15px] leading-[1.75] text-[#1A1A1A]/78">{point}</p>
+                              <p className="science-best-for-item__text">{point}</p>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      <div className="rounded-[28px] bg-[#0F4A12] p-6 text-white shadow-[0_14px_32px_rgba(15,74,18,0.16)]">
-                        <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#EBF466]">
-                          Current site data
+                      <div className="science-product-detail__cta">
+                        <p className="science-product-detail__cta-label">
+                          Exclosive Price
                         </p>
-                        <p className="mt-3 text-[32px] font-bold leading-none">
+                        <p className="science-product-detail__cta-price">
                           {formatPrice(getStartingPrice(item.product))}
                         </p>
-                        <p className="mt-3 text-[15px] leading-[1.75] text-white/80">
-                          Existing route button ke saath connected pricing snapshot.
+                        <p className="science-product-detail__cta-text">
+                         Click to the blow visit the products
                         </p>
-                        <div className="mt-5">
-                          <ButtonLink to={item.route} dark={false}>Open product</ButtonLink>
+                        <div className="science-product-detail__cta-action">
+                          <ButtonLink to={item.route} dark={false}>Visit product</ButtonLink>
                         </div>
                       </div>
                     </div>
@@ -339,22 +304,23 @@ const Science = () => {
 
       <Features />
 
-      <section className="px-6 py-16 lg:px-[120px] lg:py-24">
-        <div className="mx-auto max-w-[1440px] rounded-[40px] bg-[#1A1A1A] p-8 text-white shadow-[0_24px_80px_rgba(0,0,0,0.18)] lg:p-12">
-          <span className="inline-flex rounded-full bg-[#EBF466] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0F4A12]">
-            Added extra section
+      <section className="science-section science-section--cta">
+        <div className="science-container">
+          <div className="science-final-cta">
+            <span className="science-final-cta__eyebrow">
+              Ready to Upgrade Your Dog’s Health?
           </span>
-          <h2 className="mt-5 max-w-[780px] font-[Luckiest_Guy] text-[36px] leading-[1.08] text-[#FFFCF2] lg:text-[58px]">
-            A Good Science Page Should Also Push The Next Action.
+            <h2 className="science-final-cta__title">
+              Find the Perfect Formula for Your Dog’s Unique Needs.
           </h2>
-          <p className="mt-4 max-w-[760px] text-[16px] leading-[1.85] text-white/76">
-            Is liye final CTA bhi add kiya gaya hai taa-ke user reading ke baad
-            ya collection par jaye ya quiz ke through correct product tak pohanche.
+            <p className="science-final-cta__text">
+              Whether you want to support their digestion, boost their immunity, or give their teeth some extra love — we’ve got a science-backed solution that fits your dog and your routine.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <ButtonLink to="/collection" dark={false}>Visit collection</ButtonLink>
-            <ButtonLink to="/quiz">Take the quiz</ButtonLink>
+            <div className="science-final-cta__actions">
+              <ButtonLink to="/collection" dark={false}>Visit collection</ButtonLink>
+              <ButtonLink to="/quiz">Take the quiz</ButtonLink>
+            </div>
           </div>
         </div>
       </section>
