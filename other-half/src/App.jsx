@@ -15,6 +15,7 @@ import OurCollection from './Pages/OurCollection.jsx';
 import FaqPage from './Pages/FaqPage.jsx';
 import DailyDuoProduct from './Product/DailyDuoProduct.jsx';
 import DentalProduct from './Product/DentalProduct.jsx';
+import Science from './Pages/Science.jsx';
 import ClinicalStudies from './Pages/ClinicalStudies.jsx';
 import Blog from './Pages/Blog.jsx';
 
@@ -28,7 +29,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/integrity" element={<Integrity />} />
         <Route path="/story" element={<Story />} />
-        <Route path="/science" element={<ClinicalStudies />} />
+        <Route path="/science" element={<Science />} />
         <Route path="/clinical" element={<ClinicalStudies />} />
         <Route path="/clinical-studies" element={<ClinicalStudies />} />
         <Route path="/blog" element={<Blog />} />

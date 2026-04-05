@@ -19,7 +19,7 @@ import {
   dogDentalProductData,
   everydayProductData,
 } from "../productData";
-import "./clinicalStudies.css";
+import "/public/Clinical/css/clinicalStudies.css";
 
 const heroSignals = [
   {
@@ -201,7 +201,7 @@ const ClinicalStudies = () => {
   return (
     <main className={`clinical-page ${isRedirecting ? "clinical-page--play" : ""}`}>
       <section className="clinical-hero relative overflow-visible px-4 pb-16 pt-8 sm:px-6 lg:px-10 lg:pb-24 lg:pt-12">
-        <div className="mx-auto max-w-[1440px]">
+        <div className="mx-auto clinical-banner">
           <div className="clinical-hero__frame">
             <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.02fr)_minmax(480px,0.98fr)] lg:gap-10">
               <div className="relative z-20">
