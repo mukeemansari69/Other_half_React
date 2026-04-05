@@ -200,11 +200,11 @@ const ClinicalStudies = () => {
 
   return (
     <main className={`clinical-page ${isRedirecting ? "clinical-page--play" : ""}`}>
-      <section className="clinical-hero relative overflow-visible px-4 pb-16 pt-8 sm:px-6 lg:px-10 lg:pb-24 lg:pt-12">
-        <div className="mx-auto clinical-banner">
+      <section className="clinical-hero clinical-section clinical-section--hero">
+        <div className="clinical-banner">
           <div className="clinical-hero__frame">
-            <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.02fr)_minmax(480px,0.98fr)] lg:gap-10">
-              <div className="relative z-20">
+            <div className="grid clinical-hero__layout">
+              <div className="clinical-hero__content">
                 <span className="clinical-chip">Clinical Studies</span>
                 <h1 className="clinical-hero__title">
                   A modern clinical page with a living dog scene, not another static lab layout.
@@ -241,7 +241,7 @@ const ClinicalStudies = () => {
                   <p className="clinical-status-box__copy">{activeDogState.copy}</p>
                 </div>
 
-                <div className="mt-8 grid gap-4 md:grid-cols-3">
+                <div className="grid clinical-signal-grid">
                   {heroSignals.map((signal) => (
                     <article key={signal.label} className="clinical-signal-card">
                       <p className="clinical-signal-card__value">{signal.value}</p>
@@ -252,7 +252,7 @@ const ClinicalStudies = () => {
                 </div>
               </div>
 
-              <div className="relative z-30">
+              <div className="clinical-hero__visual">
                 <div className="clinical-stage">
                   <div className="clinical-stage__glow clinical-stage__glow--one" aria-hidden="true" />
                   <div className="clinical-stage__glow clinical-stage__glow--two" aria-hidden="true" />
@@ -319,7 +319,7 @@ const ClinicalStudies = () => {
                     </div>
                   </div>
 
-                  <div className="grid gap-4 lg:grid-cols-2">
+                  <div className="grid clinical-stage-notes">
                     <article className="clinical-stage-note">
                       <div className="clinical-stage-note__icon">
                         <Beaker size={18} />
@@ -351,8 +351,8 @@ const ClinicalStudies = () => {
         </div>
       </section>
 
-      <section className="px-4 pb-6 sm:px-6 lg:px-10 lg:pb-10">
-        <div className="mx-auto grid max-w-[1440px] gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+      <section className="clinical-section clinical-section--story">
+        <div className="grid clinical-section__inner clinical-evidence-layout">
           <div className="clinical-panel clinical-panel--story">
             <span className="clinical-chip clinical-chip--soft">Evidence Focus</span>
             <h2 className="clinical-section-title">
@@ -379,7 +379,7 @@ const ClinicalStudies = () => {
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid clinical-evidence-grid">
             {evidenceAreas.map(({ title, description, icon: Icon }) => (
               <article key={title} className="clinical-evidence-card">
                 <div className="clinical-evidence-card__icon">
@@ -393,8 +393,8 @@ const ClinicalStudies = () => {
         </div>
       </section>
 
-      <section className="px-4 py-10 sm:px-6 lg:px-10 lg:py-14">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="clinical-section clinical-section--flow">
+        <div className="clinical-section__inner">
           <div className="clinical-section-header">
             <span className="clinical-chip clinical-chip--soft">Lab To Bowl</span>
             <h2 className="clinical-section-title">Three clean moves shape the whole clinical story.</h2>
@@ -404,7 +404,7 @@ const ClinicalStudies = () => {
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid clinical-flow-grid">
             {clinicalFlow.map(({ step, title, text, icon: Icon }) => (
               <article key={step} className="clinical-flow-card">
                 <div className="clinical-flow-card__top">
@@ -421,8 +421,8 @@ const ClinicalStudies = () => {
         </div>
       </section>
 
-      <section className="px-4 pb-12 sm:px-6 lg:px-10 lg:pb-20">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="clinical-section clinical-section--formulas">
+        <div className="clinical-section__inner">
           <div className="clinical-section-header">
             <span className="clinical-chip clinical-chip--soft">Formula Studies</span>
             <h2 className="clinical-section-title">Each product gets its own study-style card.</h2>
@@ -432,7 +432,7 @@ const ClinicalStudies = () => {
             </p>
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-3">
+          <div className="grid clinical-formula-grid">
             {formulaStudies.map((study) => (
               <article key={study.id} className={`clinical-formula-card ${study.accent}`}>
                 <div className="clinical-formula-card__media">
@@ -475,8 +475,8 @@ const ClinicalStudies = () => {
         </div>
       </section>
 
-      <section className="px-4 pb-20 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-[1440px]">
+      <section className="clinical-section clinical-section--cta">
+        <div className="clinical-section__inner">
           <div className="clinical-cta">
             <div className="clinical-cta__shape clinical-cta__shape--one" aria-hidden="true" />
             <div className="clinical-cta__shape clinical-cta__shape--two" aria-hidden="true" />

@@ -18,6 +18,66 @@
   box-sizing: border-box;
 }
 
+
+.clinical-section--hero {
+  position: relative;
+  overflow: visible;
+  padding-bottom: 4rem;
+}
+
+.clinical-section--story {
+  padding-bottom: 1.5rem;
+}
+
+.clinical-section--flow {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.clinical-section--formulas {
+  padding-bottom: 3rem;
+}
+
+.clinical-section--cta {
+  padding-bottom: 5rem;
+}
+
+.clinical-section__inner {
+  width: min(100%, 1440px);
+  margin-inline: auto;
+}
+
+.clinical-hero__layout {
+  gap:10px
+}
+
+.clinical-hero__content {
+  position: relative;
+  z-index: 20;
+}
+
+.clinical-hero__visual {
+  position: relative;
+  z-index: 30;
+  padding-top:6%
+}
+
+.clinical-signal-grid {
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.clinical-stage-notes {
+  gap: 1rem;
+}
+
+.clinical-evidence-layout,
+.clinical-evidence-grid,
+.clinical-flow-grid,
+.clinical-formula-grid {
+  gap: 1.5rem;
+}
+
 .clinical-hero__frame,
 .clinical-panel,
 .clinical-stage,
@@ -82,7 +142,7 @@
 
 .clinical-hero__title {
   margin-top: 18px;
-  max-width: 13ch;
+  width: 100%;
   font-size: clamp(2.8rem, 6vw, 5.25rem);
   color: var(--clinical-ink);
 }
@@ -97,7 +157,7 @@
 
 .clinical-hero__text {
   margin-top: 20px;
-  max-width: 62ch;
+ 
 }
 
 .clinical-section-header {
@@ -189,7 +249,6 @@
 
 .clinical-status-box {
   margin-top: 28px;
-  max-width: 620px;
   border-radius: 28px;
   padding: 20px 22px;
   background: rgba(255, 255, 255, 0.78);
@@ -1147,6 +1206,58 @@
 
   .clinical-dog-actor {
     right: 28px;
+  }
+}
+
+
+@media (min-width: 768px) {
+  .clinical-signal-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .clinical-evidence-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+ 
+
+ 
+  .clinical-section--story {
+    padding-bottom: 2.5rem;
+  }
+
+  .clinical-section--flow {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .clinical-section--formulas {
+    padding-bottom: 5rem;
+  }
+
+  .clinical-hero__layout {
+    grid-template-columns: minmax(0, 1.02fr) minmax(480px, 0.98fr);
+   
+  }
+
+  .clinical-stage-notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .clinical-evidence-layout {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  }
+
+  .clinical-flow-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .clinical-formula-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
