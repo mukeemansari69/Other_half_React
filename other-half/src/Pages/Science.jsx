@@ -148,7 +148,7 @@ const Science = () => {
           {scienceHighlights.map(({ title, text, icon: Icon }) => (
             <article key={title} className="science-highlight-card">
               <div className="science-highlight-card__icon">
-                <Icon size={22} />
+                {React.createElement(Icon, { size: 22 })}
               </div>
               <h2 className="science-highlight-card__title">{title}</h2>
               <p className="science-highlight-card__text">{text}</p>

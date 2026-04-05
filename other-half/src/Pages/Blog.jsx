@@ -198,7 +198,7 @@ const Blog = () => {
             {categoryCards.map(({ title, text, icon: Icon }) => (
               <article key={title} className="blog-category-card">
                 <div className="blog-category-card__icon">
-                  <Icon size={22} />
+                  {React.createElement(Icon, { size: 22 })}
                 </div>
                 <h3 className="blog-category-card__title">{title}</h3>
                 <p className="blog-category-card__text">{text}</p>
