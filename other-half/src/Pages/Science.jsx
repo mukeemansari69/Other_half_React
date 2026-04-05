@@ -202,7 +202,7 @@ const Science = () => {
                 </div>
 
                 <div className="science-product-card__action">
-                  <ButtonLink to={item.route}>Go to product page</ButtonLink>
+                  <ButtonLink to={item.route}>Buy This Product </ButtonLink>
                 </div>
               </article>
             ))}
