@@ -39,6 +39,48 @@ const heroSignals = [
   },
 ];
 
+const clinicalStageStats = [
+  {
+    value: "3",
+    label: "formula pathways",
+    copy: "Daily nutrition, oral care, and bundle logic now read like one connected system.",
+    icon: FlaskConical,
+  },
+  {
+    value: "5",
+    label: "support zones",
+    copy: "Digestion, immunity, coat, mobility, and oral care keep the science story grounded.",
+    icon: ShieldCheck,
+  },
+  {
+    value: "1",
+    label: "daily ritual",
+    copy: "The whole page resolves into one simple bowl-time habit, not a complicated routine.",
+    icon: PawPrint,
+  },
+];
+
+const clinicalStageTracks = [
+  {
+    title: "Everyday Multivitamin",
+    kicker: "Foundation",
+    copy: "Full-body wellness language keeps this formula at the center of the routine.",
+    level: 4,
+  },
+  {
+    title: "Doggie Dental",
+    kicker: "Targeted care",
+    copy: "A tighter oral-care track supports breath and plaque care without extra friction.",
+    level: 3,
+  },
+  {
+    title: "Daily Duo",
+    kicker: "Complete stack",
+    copy: "The bundle carries the broadest support story, so it gets the strongest readout.",
+    level: 5,
+  },
+];
+
 const evidenceAreas = [
   {
     title: "Digestive stability",
@@ -133,7 +175,7 @@ const dogStates = {
     copy: "The banner starts in feed mode, then auto-switches to bark mode after 5 seconds.",
   },
   bark: {
-    label: "Bark check",
+    label: "More clarity.",
     title: "Dog wants your attention now.",
     copy: "Hit the shop button and the pup jumps over to treat it like a playful pillow before opening collection.",
   },
@@ -205,14 +247,13 @@ const ClinicalStudies = () => {
           <div className="clinical-hero__frame">
             <div className="grid clinical-hero__layout">
               <div className="clinical-hero__content">
-                <span className="clinical-chip">Clinical Studies</span>
+                <span className="clinical-chip">BARK CHECK</span>
                 <h1 className="clinical-hero__title">
-                  A modern clinical page with a living dog scene, not another static lab layout.
+                 Your dog’s behavior speaks — we help you understand what it truly needs.
                 </h1>
                 <p className="clinical-hero__text">
-                  This experience keeps your theme fonts and colors, then turns the science story
-                  into motion: the dog eats, barks after 5 seconds, and when shoppers press the
-                  button the pup dives into play mode before opening the collection page.
+                  When your dog seeks attention, it’s often more than just a playful moment—it can be a subtle signal of unmet physical, emotional, or nutritional needs. From low energy levels to digestive discomfort or even oral health issues, these small behaviors can reflect deeper imbalances in their daily routine.
+                  Our clinically balanced formulas are designed to recognize and support these signals at their root. By combining essential nutrients, targeted ingredients, and behavior-based insights, we help transform everyday attention-seeking moments into opportunities for better health. Instead of ignoring these cues, we turn them into a consistent, supportive routine that nourishes your dog from the inside out—supporting vitality, comfort, and long-term well-being.
                 </p>
 
                 <div className="clinical-hero__actions">
@@ -259,12 +300,12 @@ const ClinicalStudies = () => {
 
                   <div className="clinical-stage__hud">
                     <div className="clinical-stage__hud-item">
-                      <span>Banner behavior</span>
+                      <span>Less complexity. </span>
                       <strong>{activeDogState.label}</strong>
                     </div>
                     <div className="clinical-stage__hud-item">
-                      <span>Trigger</span>
-                      <strong>{dogMode === "play" ? "Shop click" : dogMode === "bark" ? "Auto bark" : "Auto feed"}</strong>
+                      <span>Every small action</span>
+                      <strong>{dogMode === "play" ? "Shop click" : dogMode === "bark" ? "builds long-term health" : "Auto feed"}</strong>
                     </div>
                   </div>
 
@@ -327,7 +368,7 @@ const ClinicalStudies = () => {
                       <div>
                         <p className="clinical-stage-note__eyebrow">Scene logic</p>
                         <p className="clinical-stage-note__text">
-                          5 second feed animation, bark state, then CTA-triggered play motion.
+                           A short behavior-based interaction where your dog moves, reacts, and engages—making the experience feel alive and natural.
                         </p>
                       </div>
                     </article>
@@ -339,11 +380,42 @@ const ClinicalStudies = () => {
                       <div>
                         <p className="clinical-stage-note__eyebrow">Theme locked</p>
                         <p className="clinical-stage-note__text">
-                          Lime accent, deep green, warm neutrals, Luckiest Guy, and Poppins stay intact.
+                         Carefully designed visuals, colors, and typography that maintain a warm, clean, and pet-friendly clinical feel.  
                         </p>
                       </div>
                     </article>
                   </div>
+                </div>
+
+                <div className="clinical-stage-dashboard">
+                  <div className="clinical-stage-dashboard__header">
+                    <div>
+                      <p className="clinical-stage-dashboard__eyebrow">Clinical Snapshot</p>
+                      <h3 className="clinical-stage-dashboard__title">
+                        Motion up top, structured evidence rhythm below.
+                      </h3>
+                    </div>
+                    <div className="clinical-stage-dashboard__badge">
+                      <span aria-hidden="true" />
+                      LIVE HEALTH SYSTEM
+                    </div>
+                  </div>
+
+
+                  <div className="grid clinical-stage-dashboard__stats">
+                    {clinicalStageStats.map(({ value, label, copy, icon: Icon }) => (
+                      <article key={label} className="clinical-stage-stat">
+                        <div className="clinical-stage-stat__icon">
+                          {React.createElement(Icon, { size: 18 })}
+                        </div>
+                        <p className="clinical-stage-stat__value">{value}</p>
+                        <p className="clinical-stage-stat__label">{label}</p>
+                        <p className="clinical-stage-stat__copy">{copy}</p>
+                      </article>
+                    ))}
+                  </div>
+
+                 
                 </div>
               </div>
             </div>
@@ -359,8 +431,7 @@ const ClinicalStudies = () => {
               The page feels playful in the hero, but the structure underneath stays disciplined.
             </h2>
             <p className="clinical-section-copy">
-              The layout is built like a clean wellness control room: support zones, routine logic,
-              and product stories stay easy to scan while motion adds personality instead of noise.
+              Everything comes down to one smooth routine that’s easy to follow, easy to maintain, and powerful over time.
             </p>
 
             <div className="clinical-story-list">
@@ -399,8 +470,7 @@ const ClinicalStudies = () => {
             <span className="clinical-chip clinical-chip--soft">Lab To Bowl</span>
             <h2 className="clinical-section-title">Three clean moves shape the whole clinical story.</h2>
             <p className="clinical-section-copy clinical-section-copy--wide">
-              This keeps the page unique and animated without losing the product logic already present
-              across your collection.
+              Supports gut health, immune strength, coat quality, joint mobility, and oral hygiene—covering the most critical aspects of your dog’s well-being.
             </p>
           </div>
 
@@ -481,13 +551,12 @@ const ClinicalStudies = () => {
             <div className="clinical-cta__shape clinical-cta__shape--one" aria-hidden="true" />
             <div className="clinical-cta__shape clinical-cta__shape--two" aria-hidden="true" />
 
-            <span className="clinical-chip">Ready To Launch</span>
+            <span className="clinical-chip">READY FOR BETTER CARE</span>
             <h2 className="clinical-cta__title">
-              Keep the dog in motion, keep the science clear, and send shoppers into collection with energy.
+             Keep your dog active, your care simple, and your routine built on real science.
             </h2>
             <p className="clinical-cta__copy">
-              The page now works as a polished clinical studies experience with a premium animated
-              hero, grounded product storytelling, and a playful CTA handoff into the shopping flow.
+             A modern approach to dog wellness that blends behavior, nutrition, and simplicity—helping you move from confusion to clarity with every step.
             </p>
 
             <div className="clinical-cta__actions">

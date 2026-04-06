@@ -23,6 +23,8 @@
   position: relative;
   overflow: visible;
   padding-bottom: 4rem;
+  max-width: 1920px;
+  margin: auto;
 }
 
 .clinical-section--story {
@@ -48,7 +50,7 @@
 }
 
 .clinical-hero__layout {
-  gap:10px
+  gap: 10px;
 }
 
 .clinical-hero__content {
@@ -59,7 +61,10 @@
 .clinical-hero__visual {
   position: relative;
   z-index: 30;
-  padding-top:6%
+  display: grid;
+  gap: 18px;
+  align-content: start;
+  padding-top: 6%;
 }
 
 .clinical-signal-grid {
@@ -81,6 +86,7 @@
 .clinical-hero__frame,
 .clinical-panel,
 .clinical-stage,
+.clinical-stage-dashboard,
 .clinical-evidence-card,
 .clinical-flow-card,
 .clinical-formula-card,
@@ -329,6 +335,8 @@
 .clinical-stage {
   position: relative;
   overflow: visible;
+  display: flex;
+  flex-direction: column;
   border-radius: 34px;
   padding: 20px;
   background:
@@ -394,6 +402,7 @@
 
 .clinical-dog-scene {
   position: relative;
+  flex: 1;
   min-height: 420px;
   border-radius: 28px;
   overflow: visible;
@@ -788,6 +797,204 @@
   margin: 6px 0 0;
   color: rgba(26, 26, 26, 0.72);
   line-height: 1.6;
+}
+
+.clinical-stage-dashboard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 30px;
+  padding: 22px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(235, 244, 102, 0.34), transparent 30%),
+    radial-gradient(circle at 0% 100%, rgba(200, 243, 212, 0.4), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 252, 236, 0.9));
+}
+
+.clinical-stage-dashboard::before {
+  content: "";
+  position: absolute;
+  right: -42px;
+  top: -36px;
+  width: 144px;
+  height: 144px;
+  border-radius: 34px;
+  background: rgba(255, 214, 191, 0.34);
+  transform: rotate(18deg);
+}
+
+.clinical-stage-dashboard__header,
+.clinical-stage-dashboard__stats{
+  position: relative;
+  z-index: 1;
+}
+
+.clinical-stage-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.clinical-stage-dashboard__eyebrow {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: rgba(15, 74, 18, 0.6);
+}
+
+.clinical-stage-dashboard__title {
+  margin: 10px 0 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--clinical-ink);
+}
+
+.clinical-stage-dashboard__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(15, 74, 18, 0.08);
+  color: var(--clinical-green);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.clinical-stage-dashboard__badge span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--clinical-lime);
+  box-shadow: 0 0 0 0 rgba(15, 74, 18, 0.18);
+  animation: clinical-badge-pulse 1.9s ease-out infinite;
+}
+
+
+
+.clinical-stage-dashboard__stats {
+  margin-top: 18px;
+  gap: 12px;
+}
+
+.clinical-stage-stat {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 100%;
+  border: 1px solid rgba(15, 74, 18, 0.1);
+  border-radius: 24px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.clinical-stage-stat__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(15, 74, 18, 0.08);
+  color: var(--clinical-green);
+}
+
+.clinical-stage-stat__value {
+  margin: 8px 0 0;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--clinical-green);
+}
+
+.clinical-stage-stat__label {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(15, 74, 18, 0.6);
+}
+
+.clinical-stage-stat__copy,
+.clinical-stage-lane__copy {
+  margin: 0;
+  color: rgba(26, 26, 26, 0.68);
+  line-height: 1.7;
+}
+
+
+
+.clinical-stage-lane {
+  border: 1px solid rgba(15, 74, 18, 0.08);
+  border-radius: 22px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.clinical-stage-lane__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.clinical-stage-lane__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--clinical-ink);
+}
+
+.clinical-stage-lane__kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(235, 244, 102, 0.58);
+  color: var(--clinical-green);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.clinical-stage-lane__meter {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 14px 0 12px;
+}
+
+.clinical-stage-lane__meter span {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(15, 74, 18, 0.08);
+  overflow: hidden;
+}
+
+.clinical-stage-lane__meter span.is-active {
+  background: linear-gradient(90deg, rgba(15, 74, 18, 0.95), rgba(235, 244, 102, 0.96));
+  box-shadow: 0 8px 16px rgba(15, 74, 18, 0.12);
+  transform-origin: left center;
+  animation: clinical-meter-load 0.72s ease both;
+  animation-delay: var(--clinical-meter-delay);
+}
+
+.clinical-stage-lane__meter span.is-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: clinical-meter-sheen 2.6s linear infinite;
 }
 
 .clinical-panel {
@@ -1195,10 +1402,43 @@
   }
 }
 
+@keyframes clinical-badge-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(15, 74, 18, 0.18);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(15, 74, 18, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(15, 74, 18, 0);
+  }
+}
+
+@keyframes clinical-meter-load {
+  0% {
+    opacity: 0.45;
+    transform: scaleX(0.35);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes clinical-meter-sheen {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
 @media (max-width: 1100px) {
   .clinical-hero__frame,
   .clinical-cta,
-  .clinical-panel {
+  .clinical-panel,
+  .clinical-stage-dashboard {
     padding: 24px;
   }
 
@@ -1214,6 +1454,10 @@
 
 @media (min-width: 768px) {
   .clinical-signal-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .clinical-stage-dashboard__stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
@@ -1241,7 +1485,13 @@
 
   .clinical-hero__layout {
     grid-template-columns: minmax(0, 1.02fr) minmax(480px, 0.98fr);
-   
+    align-items: stretch;
+  }
+
+  .clinical-hero__visual {
+    height: 100%;
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding-top: 0;
   }
 
   .clinical-stage-notes {
@@ -1265,11 +1515,17 @@
 
 @media (max-width: 767px) {
   .clinical-hero__frame,
-  .clinical-cta {
+  .clinical-cta,
+  .clinical-stage-dashboard {
     border-radius: 28px;
     padding: 20px;
   }
- 
+
+  .clinical-hero__visual {
+    gap: 14px;
+    padding-top: 0;
+  }
+
   .clinical-hero__title {
     max-width: none;
     font-size: clamp(2.3rem, 11vw, 3.7rem);
@@ -1302,6 +1558,16 @@
 
   .clinical-stage__hud-item {
     padding: 10px 12px;
+  }
+
+  .clinical-stage-dashboard__header,
+  .clinical-stage-lane__top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .clinical-stage-dashboard__title {
+    font-size: 1.28rem;
   }
 
   .clinical-story-list__item,
