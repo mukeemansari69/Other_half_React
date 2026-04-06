@@ -7,12 +7,12 @@ import Features from "../Home/Features";
 import "/public/Blog/css/blog.css";
 
 const featuredPost = {
-  category: "Featured Story",
+  category: "Editor’s Pick ⭐",
   date: "April 2026",
   readTime: "6 min read",
-  title: "Why daily routines matter more than dramatic one-time fixes.",
+  title: "Real Dog Health Starts with Daily Habits, Not Trends",
   excerpt:
-    "Strong dog wellness habits are built from repeatable actions. This feature story shows how simple scoop-based routines create better long-term outcomes for energy, digestion, immunity, and oral care.",
+    "Long-term dog health isn’t built overnight. From better digestion to stronger immunity and cleaner teeth, consistent daily routines create results that quick fixes never can. Here’s how simple habits can transform your dog’s wellbeing.",
   image: "/OurStory/images/story-banner.jpg",
   route: "/science",
 };
@@ -20,17 +20,17 @@ const featuredPost = {
 const categoryCards = [
   {
     title: "Nutrition Science",
-    text: "Ingredient logic, formula thinking, and how wellness blends are built to solve multiple needs at once.",
+    text: "Understand what actually goes into your dog’s body — from ingredient quality to how balanced formulas support digestion, energy, and long-term health.",
     icon: Microscope,
   },
   {
     title: "Everyday Routines",
-    text: "Practical feeding habits, scoop systems, and ways to make healthy support easier for busy dog parents.",
+    text: "Simple daily habits that create lasting results — from feeding schedules to dental care routines that fit easily into your lifestyle.",
     icon: Sparkles,
   },
   {
     title: "Product Education",
-    text: "Short reads that connect your product pages with deeper context shoppers can understand quickly.",
+    text: "Clear, honest breakdowns of how our products work, why they matter, and how to use them effectively for real results.",
     icon: BookOpenText,
   },
 ];
@@ -108,17 +108,17 @@ const quickNotes = [
   {
     label: "Fresh insights",
     value: "06",
-    text: "Blog-style articles are already prepared in a card-based layout with hover interaction.",
+    text: "Expert-written blog posts designed to simplify dog health into actionable insights",
   },
   {
-    label: "Core themes",
-    value: "03",
-    text: "Science, routines, and education are highlighted so the page feels useful, not just decorative.",
+    label: "What We Focus On",
+    value: "05",
+    text: "Carefully selected topics that actually impact your dog’s daily life.",
   },
   {
     label: "Direct paths",
     value: "100%",
-    text: "Each post card sends users to a relevant existing page in your project.",
+    text: "Every article connects you to relevant products and deeper insights instantly.",
   },
 ];
 
@@ -140,21 +140,19 @@ const Blog = () => {
     <main className="blog-page">
       <section className="blog-hero">
         <div className="blog-container">
-          <span className="blog-eyebrow">Latest reads for the pack</span>
-          <h1 className="blog-hero__title">A Blog Page That Feels Like The Rest Of Your Brand.</h1>
+          <span className="blog-eyebrow">Expert Tips for Happy Paws</span>
+          <h1 className="blog-hero__title">Where Smart Dog Parents Learn Better Care.</h1>
           <p className="blog-hero__text">
-            Is page ko project ke current look and feel ke mutabiq design kiya gaya hai.
-            React component hai, external CSS use ho rahi hai, aur layout playful green-yellow
-            brand language ke saath blog style cards mein build hua hai.
+            Your dog depends on you for everything — we make it easier with trusted advice, simple routines, and science-backed care guides.
           </p>
 
           <div className="blog-hero__actions">
             <a href="#latest-reads" className="blog-button blog-button--dark">
-              Browse articles
+              Start Learning
               <ArrowRight size={16} />
             </a>
             <NavLink to="/science" className="blog-button blog-button--light">
-              Explore science
+             Explore Dog Health Science ⭐
               <ArrowRight size={16} />
             </NavLink>
           </div>
@@ -176,7 +174,7 @@ const Blog = () => {
               <h2 className="blog-featured-card__title">{featuredPost.title}</h2>
               <p className="blog-featured-card__text">{featuredPost.excerpt}</p>
               <NavLink to={featuredPost.route} className="blog-button blog-button--dark">
-                Read featured post
+                Read Full Story
                 <ArrowRight size={16} />
               </NavLink>
             </div>
@@ -187,10 +185,10 @@ const Blog = () => {
       <section className="blog-section blog-section--categories">
         <div className="blog-container">
           <div className="blog-heading">
-            <span className="blog-chip blog-chip--green">What the blog covers</span>
-            <h2 className="blog-heading__title">Useful topics, not filler content.</h2>
+            <span className="blog-chip blog-chip--green">What You’ll Learn</span>
+            <h2 className="blog-heading__title">Real Knowledge for Better Dog Care, Not Just Content.</h2>
             <p className="blog-heading__text">
-              Blog page mein aise sections rakhe gaye hain jo brand, science, aur product education ko ek saath support karte hain.
+             Our blog is designed to simplify dog health — combining science, practical routines, and product education so you can make better decisions every day.
             </p>
           </div>
 
@@ -211,10 +209,10 @@ const Blog = () => {
       <section id="latest-reads" className="blog-section blog-section--posts">
         <div className="blog-container">
           <div className="blog-heading">
-            <span className="blog-chip blog-chip--lime">Latest reads</span>
-            <h2 className="blog-heading__title">Fresh posts styled like clickable product cards.</h2>
+            <span className="blog-chip blog-chip--lime">Must Read for Dog Parents</span>
+            <h2 className="blog-heading__title">Why Daily Routines Matter More Than Quick Fixes for Your Dog’s Health</h2>
             <p className="blog-heading__text">
-              Hover effect, image-first layout, clear headings aur CTA buttons ke saath blog page ko same project energy di gayi hai.
+              From nutrition and dental care to daily wellness routines, explore expert-backed guides designed to keep your dog healthier, happier, and full of life.
             </p>
           </div>
 
@@ -261,11 +259,10 @@ const Blog = () => {
       <section className="blog-section blog-section--cta">
         <div className="blog-container">
           <div className="blog-cta">
-            <span className="blog-eyebrow blog-eyebrow--dark">Final section</span>
-            <h2 className="blog-cta__title">Turn readers into product-aware shoppers.</h2>
+            <span className="blog-eyebrow blog-eyebrow--dark">Start Your Journey ⭐</span>
+            <h2 className="blog-cta__title">Turn Knowledge Into Better Care for Your Dog.</h2>
             <p className="blog-cta__text">
-              Blog page ko sirf articles tak limited nahi rakha gaya. Isay is tarah design kiya gaya hai ke user
-              reading ke baad science, story, glossary, ya direct product pages ki taraf move kar sake.
+             Don’t stop at learning. Take action with products and routines built to deliver real, visible results for your dog.
             </p>
 
             <div className="blog-cta__actions">
@@ -274,7 +271,7 @@ const Blog = () => {
                 <ArrowRight size={16} />
               </NavLink>
               <NavLink to="/story" className="blog-button blog-button--dark">
-                Read our story
+               Explore Our Approach
                 <ArrowRight size={16} />
               </NavLink>
             </div>

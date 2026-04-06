@@ -1,134 +1,94 @@
-import { NavLink } from "react-router-dom";
+import { useRef, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { A11y, Autoplay } from "swiper/modules";
+
+import ClinicalHero from "../Clinical/ClinicalHero";
+import HomeHeroSection from "./HomeHeroSection";
+import ScienceHero from "../Science/ScienceHero";
+
+import "swiper/css";
+import "/public/Home/css/heroBanner.css";
+
+const heroSlides = [
+  {
+    id: "home",
+    label: "Home banner",
+    render: () => <HomeHeroSection />,
+  },
+  {
+    id: "clinical",
+    label: "Clinical banner",
+    render: () => <ClinicalHero isolated />,
+  },
+  {
+    id: "science",
+    label: "Science banner",
+    render: () => <ScienceHero />,
+  },
+];
+
 export default function HeroBanner() {
+  const swiperRef = useRef(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+
   return (
     <section
-      className="
-      w-full
-      bg-no-repeat
-      bg-cover
-      bg-center
-      pt-[41px] pb-[41px] px-[24px]
-      lg:pt-[160px] lg:pb-[160px] lg:px-[120px]
-      "
-      style={{
-        backgroundImage: "url('/Home/images/banner-img.png')",
-      }}
+      className="home-hero-slider"
+      onMouseEnter={() => swiperRef.current?.autoplay.stop()}   // ✅ hover pause
+      onMouseLeave={() => swiperRef.current?.autoplay.start()} // ✅ resume
     >
-      {/* Desktop Background */}
-      <style>
-        {`
-          @media (min-width: 1024px){
-            section{
-             /*  background-image:url('/mobile-banner.png'); */
-            }
-          }
-        `}
-      </style>
+      <div className="home-hero-slider__shell">
+        <Swiper
+          modules={[Autoplay, A11y]}
+          slidesPerView={1}
+          loop
+          speed={850}
+          grabCursor
+          allowTouchMove
 
-      <div className="max-w-[1920px] mx-auto">
+          // ✅ AUTOPLAY
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
 
-        {/* TEXT CONTAINER */}
-        <div
-          className="
-          max-w-[795px]
-          flex
-          flex-col
-          gap-[21px]
-          lg:gap-[53px]
-          text-center
-          lg:text-left
-          "
+          // ✅ HEIGHT FIX
+          autoHeight={true}
+          observer={true}
+          observeParents={true}
+
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+            setActiveSlide(swiper.realIndex);
+          }}
+
+          onSlideChange={(swiper) => {
+            setActiveSlide(swiper.realIndex);
+          }}
+
+          className="home-hero-slider__swiper"
         >
+          {heroSlides.map((slide) => (
+            <SwiperSlide key={slide.id}>
+              <div className="home-hero-slider__slide">
+                {slide.render()}
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
 
-          {/* HEADING */}
-          <h1
-            className="
-            font-[Luckiest_Guy]
-            text-[38px]
-            leading-[122%]
-            lg:text-[80px]
-            lg:leading-[125%]
-            text-[#1A1A1A]
-            "
-          >
-            Better Health, One Scoop At A Time.
-          </h1>
-
-          {/* SUB HEADING */}
-          <p
-            className="
-            font-[Poppins]
-            text-[16px]
-            lg:text-[20px]
-            leading-[150%]
-            text-[#1A1A1A]
-            max-w-[620px]
-            mx-auto
-            lg:mx-0
-            "
-          >
-            Fix Every Pup Problem with the Daily Duo, Perfectly Matched to Their
-            Breed, Age, and Tail-Wagging Needs!
-          </p>
-
-          {/* BUTTONS */}
-          <div
-            className="
-            flex
-            gap-[12px]
-            justify-center
-            lg:justify-start
-            "
-          >
-
-            {/* LEARN MORE */}
-            <a
-  href="https://pmc.ncbi.nlm.nih.gov/search/?term=dog+health"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="
-    inline-block
-    px-[30px]
-    py-[14px]
-    rounded-[333px]
-    bg-[#FAF9F5]
-    text-black
-    font-semibold
-    text-[18px]
-    uppercase
-    transition
-    hover:bg-[#0F4A12]
-    hover:text-[#EBF466]
-  "
->
-  Learn More
-</a>
-
-            {/* SHOP NOW */}
-            <NavLink
-  to="/collection"
-  className={({ isActive }) =>
-    `
-    inline-block
-    px-[30px]
-    py-[14px]
-    rounded-[333px]
-    bg-[#0F4A12]
-    text-[#EBF466]
-    font-bold
-    text-[18px]
-    uppercase
-    transition
-    hover:bg-[#FAF9F5]
-    hover:text-black
-    ${isActive ? "text-[#EBF466]" : ""}
-    `
-  }
->
-  Shop Now
-</NavLink>
-
-          </div>
+        {/* PAGINATION */}
+        <div className="home-hero-slider__pagination">
+          {heroSlides.map((slide, index) => (
+            <button
+              key={slide.id}
+              type="button"
+              className={`home-hero-slider__indicator ${
+                activeSlide === index ? "is-active" : ""
+              }`}
+              onClick={() => swiperRef.current?.slideToLoop(index)}
+            />
+          ))}
         </div>
       </div>
     </section>

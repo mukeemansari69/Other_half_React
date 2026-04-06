@@ -1,11 +1,15 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { ArrowRight, BadgeCheck, Beaker, Microscope, ShieldCheck } from "lucide-react";
+import { ArrowRight, BadgeCheck, Microscope, ShieldCheck } from "lucide-react";
 
-import Marque from "../Home/Marque";
 import Features from "../Home/Features";
-import { dailyDuoProductData, dogDentalProductData, everydayProductData } from "../productData";
-import "/public/Science/css/science.css";
+import Marque from "../Home/Marque";
+import ScienceHero from "../Science/ScienceHero";
+import {
+  dailyDuoProductData,
+  dogDentalProductData,
+  everydayProductData,
+} from "../productData";
 
 const formatPrice = (value) =>
   new Intl.NumberFormat("en-US", {
@@ -18,7 +22,7 @@ const formatPrice = (value) =>
 const scienceHighlights = [
   {
     title: "Complete Daily Nutrition",
-    text: "A powerful blend of clinically proven ingredients that supports your dog’s overall health — from digestion to immunity and long-term vitality.",
+    text: "A powerful blend of clinically proven ingredients that supports your dog's overall health - from digestion to immunity and long-term vitality.",
     icon: ShieldCheck,
   },
   {
@@ -28,7 +32,7 @@ const scienceHighlights = [
   },
   {
     title: "Dental & Skin Care",
-    text: "Helps reduce plaque buildup, freshens breath, and promotes a healthier coat and skin — keeping your dog looking and feeling great.",
+    text: "Helps reduce plaque buildup, freshens breath, and promotes a healthier coat and skin - keeping your dog looking and feeling great.",
     icon: Microscope,
   },
 ];
@@ -119,27 +123,7 @@ const ButtonLink = ({ to, children, dark = true }) => (
 const Science = () => {
   return (
     <main className="science-page">
-      <section className="science-hero">
-        <div className="science-container science-banner">
-          <span className="science-eyebrow">
-           FOR DOGS YOU CALL FAMILY
-          </span>
-          <h1 className="science-hero__title">
-           Smarter Health for Your Dog, Backed by Science
-          </h1>
-          <p className="science-hero__text">
-           Clinically studied ingredients designed to support digestion, immunity, dental health, and overall wellbeing — because your dog deserves more than just basic nutrition.
-          </p>
-
-          <div className="science-hero__actions">
-            <ButtonLink to="/integrity">Shop Now</ButtonLink>
-            <a href="/integrity" className="science-button science-button--outline">
-              Explore Ingredients
-              <ArrowRight size={16} />
-            </a>
-          </div>
-        </div>
-      </section>
+      <ScienceHero />
 
       <Marque />
 
@@ -164,16 +148,16 @@ const Science = () => {
               Three Products, Three Science Stories.
             </h2>
             <p className="science-products-heading__text">
-              From stronger immunity to better digestion and happier smiles — our science-driven formulas help your dog live a longer, healthier, and more joyful life.
+              From stronger immunity to better digestion and happier smiles - our
+              science-driven formulas help your dog live a longer, healthier, and more joyful
+              life.
             </p>
           </div>
 
           <div className="science-product-grid">
             {products.map((item) => (
               <article key={item.id} className="science-product-card">
-                <span className="science-product-card__tag">
-                  {item.cardTag}
-                </span>
+                <span className="science-product-card__tag">{item.cardTag}</span>
 
                 <div className="science-product-card__image-wrap">
                   <img
@@ -188,14 +172,14 @@ const Science = () => {
 
                 <div className="science-product-card__tags">
                   {getTags(item.product).map((tag) => (
-                    <span key={tag} className="science-product-card__tag-pill">{tag}</span>
+                    <span key={tag} className="science-product-card__tag-pill">
+                      {tag}
+                    </span>
                   ))}
                 </div>
 
                 <div className="science-product-card__price">
-                  <p className="science-product-card__price-label">
-                    Starting from
-                  </p>
+                  <p className="science-product-card__price-label">Starting from</p>
                   <p className="science-product-card__price-value">
                     {formatPrice(getStartingPrice(item.product))}
                   </p>
@@ -216,35 +200,31 @@ const Science = () => {
             <article
               id={item.anchor}
               key={item.id}
-              className={`science-product-detail ${item.detailClass} ${index % 2 === 1 ? "science-product-detail--reverse" : ""}`}
+              className={`science-product-detail ${item.detailClass} ${
+                index % 2 === 1 ? "science-product-detail--reverse" : ""
+              }`}
             >
               <div className="science-product-detail__layout">
                 <div className="science-product-detail__media">
-                  <img src={item.detailImage} alt={item.title} className="science-product-detail__image" />
+                  <img
+                    src={item.detailImage}
+                    alt={item.title}
+                    className="science-product-detail__image"
+                  />
                 </div>
 
                 <div className="science-product-detail__content">
-                  <span className="science-product-detail__badge">
-                    Product u Want
-                  </span>
-                  <h2 className="science-product-detail__title">
-                    {item.title}
-                  </h2>
-                  <p className="science-product-detail__text">
-                    {item.product.description}
-                  </p>
+                  <span className="science-product-detail__badge">Product u Want</span>
+                  <h2 className="science-product-detail__title">{item.title}</h2>
+                  <p className="science-product-detail__text">{item.product.description}</p>
 
                   <div className="science-product-detail__grid">
                     <div className="science-product-detail__panel">
-                      <h3 className="science-product-detail__panel-title">
-                        How to make it
-                      </h3>
+                      <h3 className="science-product-detail__panel-title">How to make it</h3>
                       <div className="science-step-list">
                         {item.making.map((step, stepIndex) => (
                           <div key={step} className="science-step-item">
-                            <div className="science-step-item__number">
-                              {stepIndex + 1}
-                            </div>
+                            <div className="science-step-item__number">{stepIndex + 1}</div>
                             <p className="science-step-item__text">{step}</p>
                           </div>
                         ))}
@@ -253,20 +233,18 @@ const Science = () => {
 
                     <div className="science-product-detail__stack">
                       <div className="science-product-detail__panel">
-                        <h3 className="science-product-detail__panel-title">
-                          Key benefits
-                        </h3>
+                        <h3 className="science-product-detail__panel-title">Key benefits</h3>
                         <div className="science-benefit-list">
                           {getBenefits(item.product).map((benefit) => (
-                            <span key={benefit} className="science-benefit-pill">{benefit}</span>
+                            <span key={benefit} className="science-benefit-pill">
+                              {benefit}
+                            </span>
                           ))}
                         </div>
                       </div>
 
                       <div className="science-product-detail__panel">
-                        <h3 className="science-product-detail__panel-title">
-                          Best for
-                        </h3>
+                        <h3 className="science-product-detail__panel-title">Best for</h3>
                         <div className="science-best-for-list">
                           {item.bestFor.map((point) => (
                             <div key={point} className="science-best-for-item">
@@ -280,17 +258,17 @@ const Science = () => {
                       </div>
 
                       <div className="science-product-detail__cta">
-                        <p className="science-product-detail__cta-label">
-                          Exclosive Price
-                        </p>
+                        <p className="science-product-detail__cta-label">Exclosive Price</p>
                         <p className="science-product-detail__cta-price">
                           {formatPrice(getStartingPrice(item.product))}
                         </p>
                         <p className="science-product-detail__cta-text">
-                         Click to the blow visit the products
+                          Click to the blow visit the products
                         </p>
                         <div className="science-product-detail__cta-action">
-                          <ButtonLink to={item.route} dark={false}>Visit product</ButtonLink>
+                          <ButtonLink to={item.route} dark={false}>
+                            Visit product
+                          </ButtonLink>
                         </div>
                       </div>
                     </div>
@@ -307,18 +285,20 @@ const Science = () => {
       <section className="science-section science-section--cta">
         <div className="science-container">
           <div className="science-final-cta">
-            <span className="science-final-cta__eyebrow">
-              Ready to Upgrade Your Dog’s Health?
-          </span>
+            <span className="science-final-cta__eyebrow">Ready to Upgrade Your Dog's Health?</span>
             <h2 className="science-final-cta__title">
-              Find the Perfect Formula for Your Dog’s Unique Needs.
-          </h2>
+              Find the Perfect Formula for Your Dog's Unique Needs.
+            </h2>
             <p className="science-final-cta__text">
-              Whether you want to support their digestion, boost their immunity, or give their teeth some extra love — we’ve got a science-backed solution that fits your dog and your routine.
-          </p>
+              Whether you want to support their digestion, boost their immunity, or give
+              their teeth some extra love - we've got a science-backed solution that fits
+              your dog and your routine.
+            </p>
 
             <div className="science-final-cta__actions">
-              <ButtonLink to="/collection" dark={false}>Visit collection</ButtonLink>
+              <ButtonLink to="/collection" dark={false}>
+                Visit collection
+              </ButtonLink>
               <ButtonLink to="/quiz">Take the quiz</ButtonLink>
             </div>
           </div>

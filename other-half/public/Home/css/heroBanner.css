@@ -1,0 +1,348 @@
+.home-hero-banner {
+  position: relative;
+  overflow: hidden;
+}
+
+.home-hero-banner__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 249, 234, 0.82) 0%, rgba(255, 249, 234, 0.52) 38%, rgba(255, 249, 234, 0.18) 100%),
+    radial-gradient(circle at 78% 28%, rgba(235, 244, 102, 0.18), transparent 28%);
+  pointer-events: none;
+}
+
+.home-hero-banner__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 28px;
+  align-items: center;
+}
+
+.home-hero-banner__content {
+  display: grid;
+  gap: 21px;
+}
+
+.home-hero-banner__cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.home-hero-banner__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 14px 30px;
+  border-radius: 333px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 18px;
+  font-weight: 700;
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.home-hero-banner__cta:hover {
+  transform: translateY(-2px);
+}
+
+.home-hero-banner__cta--primary {
+  background: #0f4a12;
+  color: #ebf466;
+  box-shadow: 0 18px 30px rgba(15, 74, 18, 0.18);
+}
+
+.home-hero-banner__cta--primary:hover {
+  background: #faf9f5;
+  color: #1a1a1a;
+}
+
+.home-hero-banner__cta--secondary {
+  background: rgba(250, 249, 245, 0.92);
+  color: #1a1a1a;
+  border: 1px solid rgba(15, 74, 18, 0.12);
+}
+
+.home-hero-banner__cta--secondary:hover {
+  background: #0f4a12;
+  color: #ebf466;
+}
+
+.home-hero-banner__cta--active {
+  animation: clinical-button-pillow 0.75s ease-in-out infinite alternate;
+}
+
+.home-hero-banner__cta--busy {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.home-hero-banner__dog-zone {
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  padding: 20px;
+  border: 1px solid rgba(15, 74, 18, 0.12);
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.72), transparent 24%),
+    radial-gradient(circle at 86% 16%, rgba(235, 244, 102, 0.36), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(243, 247, 223, 0.84) 100%);
+  box-shadow:
+    0 28px 48px rgba(15, 74, 18, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.home-hero-banner__badge,
+.home-hero-banner__hint,
+.home-hero-banner__dog-scene {
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero-banner__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(235, 244, 102, 0.92);
+  color: #0f4a12;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home-hero-banner__hint {
+  max-width: 28ch;
+  margin: 14px 0 0;
+  color: rgba(26, 26, 26, 0.74);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.home-hero-banner__dog-scene {
+  min-height: 310px;
+  margin-top: 10px;
+}
+
+.home-hero-banner__orbit {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 74, 18, 0.1);
+}
+
+.home-hero-banner__orbit--one {
+  top: 28px;
+  left: 12px;
+  width: 220px;
+  height: 220px;
+}
+
+.home-hero-banner__orbit--two {
+  top: 82px;
+  right: 28px;
+  width: 140px;
+  height: 140px;
+}
+
+.home-hero-banner__dog-zone .clinical-dog-scene__floor {
+  bottom: 28px;
+}
+
+.home-hero-banner__dog-zone .clinical-dog-actor {
+  right: 18px;
+  bottom: 42px;
+  width: 280px;
+  height: 206px;
+}
+
+@media (min-width: 1024px) {
+  .home-hero-banner__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 520px);
+    gap: 42px;
+  }
+
+  .home-hero-banner__content {
+    gap: 42px;
+  }
+
+  .home-hero-banner__cta-row {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 1023px) {
+  .home-hero-banner__dog-zone {
+    max-width: 520px;
+    width: 100%;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .home-hero-banner__content {
+    gap: 18px;
+  }
+
+  .home-hero-banner__cta {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .home-hero-banner__dog-zone {
+    min-height: 360px;
+    padding: 16px;
+  }
+
+  .home-hero-banner__hint {
+    max-width: none;
+    font-size: 0.94rem;
+  }
+
+  .home-hero-banner__dog-scene {
+    min-height: 260px;
+  }
+
+  .home-hero-banner__dog-zone .clinical-dog-actor {
+    right: 4px;
+    bottom: 30px;
+    width: 232px;
+    height: 170px;
+  }
+
+  .home-hero-banner__orbit--one {
+    width: 180px;
+    height: 180px;
+  }
+
+  .home-hero-banner__orbit--two {
+    width: 112px;
+    height: 112px;
+    right: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-banner__cta,
+  .home-hero-banner .clinical-dog-actor,
+  .home-hero-banner .clinical-dog__body,
+  .home-hero-banner .clinical-dog__tail {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.home-hero-slider {
+  padding: 0 0 20px;
+  background-color: #FAF9F5;
+
+}
+
+.home-hero-slider__shell {
+  width: min(100%, 1920px);
+  margin: 0 auto;
+}
+
+.home-hero-slider__swiper {
+  overflow: hidden;
+}
+
+.home-hero-slider__swiper .swiper-slide {
+  height: auto;
+}
+
+.home-hero-slider__slide {
+  width: 100%;
+}
+
+.home-hero-slider__slide > * {
+  width: 100%;
+}
+
+.home-hero-slider__slide .science-hero,
+.home-hero-slider__slide .clinical-section--hero {
+  margin-inline: auto;
+}
+
+.home-hero-slider__slide .science-container,
+.home-hero-slider__slide .science-banner {
+  max-width: 1920px;
+}
+
+.home-hero-slider__slide .clinical-section--hero {
+  padding-bottom: 2rem;
+}
+
+.home-hero-slider__pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-inline: 24px;
+}
+
+.home-hero-slider__indicator {
+  width: 52px;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(15, 74, 18, 0.18);
+  cursor: pointer;
+  filter: blur(1.2px);
+  opacity: 0.45;
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease,
+    opacity 0.3s ease,
+    background 0.3s ease;
+}
+
+.home-hero-slider__indicator.is-active {
+  background: linear-gradient(90deg, #0f4a12, #ebf466);
+  filter: blur(0);
+  opacity: 1;
+  transform: scaleX(1.08);
+}
+
+.home-hero-slider__indicator:hover {
+  opacity: 0.85;
+}
+
+
+@media (max-width: 767px) {
+  .home-hero-slider {
+    padding-bottom: 36px;
+  }
+
+  .home-hero-slider__slide .clinical-section--hero {
+    padding-bottom: 1rem;
+  }
+
+  .home-hero-slider__pagination {
+    gap: 10px;
+    margin-top: 16px;
+    padding-inline: 16px;
+  }
+
+  .home-hero-slider__indicator {
+    width: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-slider__indicator {
+    transition: none !important;
+  }
+}

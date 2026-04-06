@@ -1,4 +1,5 @@
-.clinical-page {
+.clinical-page,
+.clinical-hero-host {
   --clinical-lime: #ebf466;
   --clinical-green: #0f4a12;
   --clinical-ink: #1a1a1a;
@@ -14,7 +15,8 @@
   font-family: "Poppins", sans-serif;
 }
 
-.clinical-page * {
+.clinical-page *,
+.clinical-hero-host * {
   box-sizing: border-box;
 }
 
@@ -1585,7 +1587,10 @@
 @media (prefers-reduced-motion: reduce) {
   .clinical-page *,
   .clinical-page *::before,
-  .clinical-page *::after {
+  .clinical-page *::after,
+  .clinical-hero-host *,
+  .clinical-hero-host *::before,
+  .clinical-hero-host *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

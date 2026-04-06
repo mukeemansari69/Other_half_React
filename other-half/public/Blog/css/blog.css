@@ -12,9 +12,9 @@
 
 .blog-hero {
   padding: 64px 24px;
-  background-image:
-    linear-gradient(90deg, rgba(255, 252, 242, 0.95) 0%, rgba(255, 252, 242, 0.86) 46%, rgba(255, 252, 242, 0.38) 100%),
-    url("/Home/images/banner-img.png");
+  background-image: 
+    linear-gradient(246.81deg, rgba(0, 0, 0, 0) 0.46%, #000000 84.51%), 
+    url("/public/Blog/images/blog-banner2.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -43,6 +43,7 @@
 .blog-cta__title {
   font-family: "Luckiest Guy";
   font-weight: 400;
+
 }
 
 .blog-hero__title {
@@ -50,6 +51,7 @@
   margin-top: 24px;
   font-size: 42px;
   line-height: 1.08;
+  color: #ffffff;
 }
 
 .blog-hero__text {
@@ -58,6 +60,7 @@
   font-size: 17px;
   line-height: 1.85;
   color: rgba(26, 26, 26, 0.78);
+  color: #ffffff;
 }
 
 .blog-hero__actions,
@@ -468,5 +471,8 @@
 
   .blog-featured-card__title {
     font-size: 30px;
+  }
+  .blog-section{
+    padding: 24px 24px;
   }
 }
