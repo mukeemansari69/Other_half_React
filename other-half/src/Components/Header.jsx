@@ -59,13 +59,13 @@ export default function Header() {
             >
               SCIENCE
             </NavLink>
-
+{/* 
             <NavLink
               to="/glossary"
               className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
             >
               GLOSSARY
-            </NavLink>
+            </NavLink> */}
 
             <NavLink
               to="/faqPage"

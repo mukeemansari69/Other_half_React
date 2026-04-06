@@ -452,8 +452,8 @@
 
 .clinical-bowl {
   position: absolute;
-  left: 54px;
-  bottom: 108px;
+  left: 54%;
+  bottom: 16%;
   width: 128px;
   height: 72px;
   border-radius: 24px 24px 40px 40px;
@@ -553,8 +553,8 @@
 
 .clinical-dog__tail {
   position: absolute;
-  right: 0;
-  bottom: 122px;
+  right:-15%;
+  bottom: 120px;
   width: 88px;
   height: 22px;
   border-radius: 999px;
@@ -698,13 +698,14 @@
 }
 
 .clinical-dog-scene__bark {
-  position: absolute;
-  left: 86px;
-  top: 120px;
-  width: 140px;
-  height: 120px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+     position: absolute;
+    left: 46%;
+    top: 30%;
+    width: 140px;
+    height: 120px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    transform: rotate(215deg);
 }
 
 .clinical-dog-scene--bark .clinical-dog-scene__bark {
@@ -713,7 +714,8 @@
 
 .clinical-dog-scene__bark-tag {
   position: absolute;
-  left: 0;
+  left: 6%;
+  transform: rotate(155deg);
   top: 0;
   padding: 10px 16px;
   border-radius: 999px;
@@ -1267,7 +1269,7 @@
     border-radius: 28px;
     padding: 20px;
   }
-
+ 
   .clinical-hero__title {
     max-width: none;
     font-size: clamp(2.3rem, 11vw, 3.7rem);
@@ -1292,12 +1294,6 @@
     width: 106px;
   }
 
-  .clinical-dog-actor {
-    right: 6px;
-    bottom: 78px;
-    width: 250px;
-    height: 184px;
-  }
 
   .clinical-dog-scene__scanner,
   .clinical-dog-scene__orbit--two {
@@ -1324,5 +1320,61 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+@media (max-width:1024px){
+  .clinical-bowl{
+    left: 14%;
+  }
+   .clinical-dog-scene__bark-tag{
+    left: 33%;
+  }
+  .clinical-dog-scene__bark{
+    left: 10%;
+  }
+}
+@media (max-width:768px) {
+   .clinical-dog-scene__bark-tag{
+    left: 69%;
+  }
+  .clinical-dog-scene__bark{
+    left: 38%;
+  }
+.clinical-bowl{
+  left: 44%;
+}
+}
+@media (max-width:430px){
+       .clinical-dog-scene__bark-tag {
+        left: 71%;
+        top: 69%;
+        font-size: 10px;
+    }
+  .clinical-dog-scene__bark{
+    left: -10%;
+  }
+.clinical-bowl{
+  left: 0%;
+}
+.clinical-dog-scene__floor{
+  bottom: 71px;
+}
+}
+@media (max-width :380px){
+.clinical-dog-scene__bark-tag {
+       display: none;
+    }
+  .clinical-dog-scene__bark{
+    display: none;
+  }
+.clinical-bowl{
+  display: none;
+}
+
+}
+@media (max-width :320px){
+  .clinical-dog{
+    left: 13%;
+    overflow:hidden;
   }
 }
