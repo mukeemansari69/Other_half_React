@@ -232,9 +232,13 @@
   cursor: default;
 }
 
-.clinical-shop-button--active,
-.clinical-page--play .clinical-shop-button {
+.clinical-cta-target--active {
   animation: clinical-button-pillow 0.75s ease-in-out infinite alternate;
+}
+
+.clinical-cta-target--busy {
+  pointer-events: none;
+  opacity: 0.76;
 }
 
 .clinical-secondary-button {

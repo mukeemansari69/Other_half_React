@@ -21,6 +21,10 @@ import {
 } from "../productData";
 import "/public/Clinical/css/clinicalStudies.css";
 
+const EATING_DURATION_MS = 5000;
+const BARK_DURATION_MS = 2200;
+const CTA_REDIRECT_MS = 3000;
+
 const heroSignals = [
   {
     value: "45+",
@@ -172,51 +176,65 @@ const dogStates = {
   eating: {
     label: "Crunch loop",
     title: "Dog is eating from the bowl.",
-    copy: "The banner starts in feed mode, then auto-switches to bark mode after 5 seconds.",
+    copy: "The hero keeps looping through feed mode for 5 seconds before switching into bark mode.",
   },
   bark: {
-    label: "More clarity.",
+    label: "Bark check",
     title: "Dog wants your attention now.",
-    copy: "Hit the shop button and the pup jumps over to treat it like a playful pillow before opening collection.",
+    copy: "After each feed cycle the dog barks for attention, then returns to the bowl and repeats the routine.",
   },
   play: {
     label: "Play mode",
-    title: "Dog is playing with the shop button.",
-    copy: "The button gets squishy, the dog hops across, and collection opens after a 3 second beat.",
+    title: "Dog is chasing the selected CTA.",
+    copy: "The clicked button gets the playful dog handoff, then the chosen route opens after a 3 second beat.",
   },
 };
 
 const ClinicalStudies = () => {
   const navigate = useNavigate();
   const dogActorRef = useRef(null);
-  const shopButtonRef = useRef(null);
-  const barkTimeoutRef = useRef(null);
+  const cycleTimeoutRef = useRef(null);
   const redirectTimeoutRef = useRef(null);
 
   const [dogMode, setDogMode] = useState("eating");
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [activeCtaKey, setActiveCtaKey] = useState("");
   const [travelVector, setTravelVector] = useState({ x: -320, y: -170 });
 
   useEffect(() => {
-    barkTimeoutRef.current = window.setTimeout(() => {
-      setDogMode((currentMode) => (currentMode === "eating" ? "bark" : currentMode));
-    }, 5000);
+    if (isRedirecting) {
+      return undefined;
+    }
+
+    cycleTimeoutRef.current = window.setTimeout(() => {
+      setDogMode((currentMode) => (currentMode === "eating" ? "bark" : "eating"));
+    }, dogMode === "eating" ? EATING_DURATION_MS : BARK_DURATION_MS);
 
     return () => {
-      window.clearTimeout(barkTimeoutRef.current);
-      window.clearTimeout(redirectTimeoutRef.current);
+      window.clearTimeout(cycleTimeoutRef.current);
     };
-  }, []);
+  }, [dogMode, isRedirecting]);
 
-  const handleShopClick = () => {
+  useEffect(
+    () => () => {
+      window.clearTimeout(cycleTimeoutRef.current);
+      window.clearTimeout(redirectTimeoutRef.current);
+    },
+    []
+  );
+
+  const handleCtaClick = (event, nextPath, ctaKey) => {
+    event.preventDefault();
+
     if (isRedirecting) {
       return;
     }
 
-    window.clearTimeout(barkTimeoutRef.current);
+    window.clearTimeout(cycleTimeoutRef.current);
+    window.clearTimeout(redirectTimeoutRef.current);
 
     const dogRect = dogActorRef.current?.getBoundingClientRect();
-    const buttonRect = shopButtonRef.current?.getBoundingClientRect();
+    const buttonRect = event.currentTarget?.getBoundingClientRect?.();
 
     if (dogRect && buttonRect) {
       const dogCenterX = dogRect.left + dogRect.width * 0.5;
@@ -230,12 +248,13 @@ const ClinicalStudies = () => {
       });
     }
 
+    setActiveCtaKey(ctaKey);
     setDogMode("play");
     setIsRedirecting(true);
 
     redirectTimeoutRef.current = window.setTimeout(() => {
-      startTransition(() => navigate("/collection"));
-    }, 3000);
+      startTransition(() => navigate(nextPath));
+    }, CTA_REDIRECT_MS);
   };
 
   const activeDogState = dogStates[dogMode];
@@ -258,18 +277,28 @@ const ClinicalStudies = () => {
 
                 <div className="clinical-hero__actions">
                   <button
-                    ref={shopButtonRef}
                     type="button"
-                    onClick={handleShopClick}
+                    onClick={(event) => handleCtaClick(event, "/collection", "hero-shop")}
                     disabled={isRedirecting}
-                    className={`clinical-shop-button ${isRedirecting ? "clinical-shop-button--active" : ""}`}
+                    className={`clinical-shop-button clinical-cta-target ${activeCtaKey === "hero-shop" ? "clinical-cta-target--active" : ""}`}
                   >
-                    <span>{isRedirecting ? "Playtime opening collection..." : "Shop the formulas"}</span>
+                    <span>
+                      {activeCtaKey === "hero-shop" && isRedirecting
+                        ? "Playtime opening collection..."
+                        : "Shop the formulas"}
+                    </span>
                     <ArrowRight size={18} />
                   </button>
 
-                  <Link to="/quiz" className="clinical-secondary-button">
-                    Find the right routine
+                  <Link
+                    to="/quiz"
+                    onClick={(event) => handleCtaClick(event, "/quiz", "hero-quiz")}
+                    className={`clinical-secondary-button clinical-cta-target ${activeCtaKey === "hero-quiz" ? "clinical-cta-target--active" : ""} ${isRedirecting ? "clinical-cta-target--busy" : ""}`}
+                    aria-disabled={isRedirecting}
+                  >
+                    {activeCtaKey === "hero-quiz" && isRedirecting
+                      ? "Dog is finding your routine..."
+                      : "Find the right routine"}
                   </Link>
                 </div>
 
@@ -560,13 +589,29 @@ const ClinicalStudies = () => {
             </p>
 
             <div className="clinical-cta__actions">
-              <button type="button" onClick={handleShopClick} className="clinical-shop-button">
-                <span>Play and open collection</span>
+              <button
+                type="button"
+                onClick={(event) => handleCtaClick(event, "/collection", "footer-shop")}
+                disabled={isRedirecting}
+                className={`clinical-shop-button clinical-cta-target ${activeCtaKey === "footer-shop" ? "clinical-cta-target--active" : ""}`}
+              >
+                <span>
+                  {activeCtaKey === "footer-shop" && isRedirecting
+                    ? "Playtime opening collection..."
+                    : "Play and open collection"}
+                </span>
                 <ArrowRight size={18} />
               </button>
 
-              <Link to="/quiz" className="clinical-secondary-button clinical-secondary-button--dark">
-                Take the quiz
+              <Link
+                to="/quiz"
+                onClick={(event) => handleCtaClick(event, "/quiz", "footer-quiz")}
+                className={`clinical-secondary-button clinical-secondary-button--dark clinical-cta-target ${activeCtaKey === "footer-quiz" ? "clinical-cta-target--active" : ""} ${isRedirecting ? "clinical-cta-target--busy" : ""}`}
+                aria-disabled={isRedirecting}
+              >
+                {activeCtaKey === "footer-quiz" && isRedirecting
+                  ? "Dog is taking you to the quiz..."
+                  : "Take the quiz"}
               </Link>
             </div>
           </div>
