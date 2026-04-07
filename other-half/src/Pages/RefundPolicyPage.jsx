@@ -19,7 +19,7 @@ const page = {
   title: "Refund Policy",
   intro:
     "We want every order to feel low risk and easy to understand. This policy explains when a purchase may be eligible for a refund, what information helps us review a request faster, and how we handle damaged or incorrect shipments.",
-  image: "/Clinical/images/dog-bowl-alt.jpg",
+  image: "public/Default/images/dogs.webp",
   imageAlt: "Dog eating from a bowl",
   stats: [
     { label: "Policy date", value: LAST_UPDATED },
