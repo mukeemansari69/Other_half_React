@@ -1,175 +1,426 @@
-import { useState } from "react";
-import { Menu, X, Search, ShoppingCart, User } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
+
+import "/public/Home/css/header.css";
+
+const desktopLinks = [
+  { label: "HOME", to: "/" },
+  { label: "SHOP", to: "/collection" },
+  { label: "ABOUT", to: "/story" },
+  { label: "SCIENCE", to: "/science" },
+  { label: "FAQ", to: "/faqPage" },
+];
+
+const mobileSections = [
+  {
+    title: "Shop & Discover",
+    links: [
+      {
+        label: "Home",
+        to: "/",
+        description: "Start from the homepage and latest featured content.",
+      },
+      {
+        label: "Shop All",
+        to: "/collection",
+        description: "Browse the full product collection.",
+      },
+      {
+        label: "Product Overview",
+        to: "/product",
+        description: "See the main product experience and daily benefits.",
+      },
+      {
+        label: "Daily Duo",
+        to: "/dailyduo",
+        description: "Explore the wellness + dental bundle routine.",
+      },
+      {
+        label: "Doggie Dental",
+        to: "/doggie-dental",
+        description: "Discover the no-brush oral care product.",
+      },
+      {
+        label: "Take the Quiz",
+        to: "/quiz",
+        description: "Find the best routine for your dog.",
+      },
+    ],
+  },
+  {
+    title: "Learn More",
+    links: [
+      {
+        label: "About Us",
+        to: "/story",
+        description: "Read the brand story and product vision.",
+      },
+      {
+        label: "Ingredient Integrity",
+        to: "/integrity",
+        description: "See how sourcing and ingredient standards are handled.",
+      },
+      {
+        label: "Science",
+        to: "/science",
+        description: "Learn how ingredients support daily dog wellness.",
+      },
+      {
+        label: "Clinical Studies",
+        to: "/clinical",
+        description: "Explore study-style product and formula pages.",
+      },
+      {
+        label: "Blog",
+        to: "/blog",
+        description: "Read practical dog care and product education content.",
+      },
+      {
+        label: "Glossary",
+        to: "/glossary",
+        description: "Understand ingredients and what they do.",
+      },
+      {
+        label: "FAQ",
+        to: "/faqPage",
+        description: "Find answers about products and subscriptions.",
+      },
+    ],
+  },
+  {
+    title: "Customer Care",
+    links: [
+      {
+        label: "Terms & Conditions",
+        to: "/terms",
+        description: "Review general site, order, and billing terms.",
+      },
+      {
+        label: "Manage Subscription",
+        to: "/manage-subscription",
+        description: "Update cadence, address, or payment details.",
+      },
+      {
+        label: "Refund Policy",
+        to: "/refund-policy",
+        description: "Understand returns, damage reviews, and refunds.",
+      },
+      {
+        label: "Privacy Policy",
+        to: "/privacy-policy",
+        description: "See how customer and order data is handled.",
+      },
+      {
+        label: "Subscription Policy",
+        to: "/subscription-policy",
+        description: "Read the rules behind recurring billing and renewals.",
+      },
+      {
+        label: "Contact Us",
+        to: "/contact",
+        description: "Reach support for orders, billing, and product questions.",
+      },
+    ],
+  },
+];
+
+const searchCatalog = mobileSections.flatMap((section) =>
+  section.links.map((link) => ({
+    ...link,
+    group: section.title,
+    keywords: `${section.title} ${link.label} ${link.description}`.toLowerCase(),
+  }))
+);
+
+const quickSearchResults = [
+  "/collection",
+  "/dailyduo",
+  "/science",
+  "/faqPage",
+  "/manage-subscription",
+  "/contact",
+].map((path) => searchCatalog.find((item) => item.to === path));
+
+const desktopNavClass = ({ isActive }) =>
+  `header-nav-link ${isActive ? "is-active" : ""}`;
 
 export default function Header() {
+  const location = useLocation();
+  const searchInputRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const trimmedSearch = searchQuery.trim().toLowerCase();
+
+  const visibleSearchResults = useMemo(() => {
+    if (!trimmedSearch) {
+      return quickSearchResults.filter(Boolean);
+    }
+
+    return searchCatalog
+      .filter((item) => item.keywords.includes(trimmedSearch))
+      .slice(0, 8);
+  }, [trimmedSearch]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+    setSearchOpen(false);
+    setSearchQuery("");
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchOpen]);
+
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        setSearchOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  const toggleMenu = () => {
+    setMenuOpen((currentValue) => {
+      const nextValue = !currentValue;
+      if (nextValue) {
+        setSearchOpen(false);
+      }
+      return nextValue;
+    });
+  };
+
+  const toggleSearch = () => {
+    setSearchOpen((currentValue) => {
+      const nextValue = !currentValue;
+      if (nextValue) {
+        setMenuOpen(false);
+      }
+      if (!nextValue) {
+        setSearchQuery("");
+      }
+      return nextValue;
+    });
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  };
 
   return (
-    <header className="w-full">
-      {/* Announcement Bar */}
+    <header className="w-full header-shell">
       <div className="w-full bg-[#EBF466] h-[48px] flex items-center justify-center">
         <p className="font-semibold text-[14px] md:text-[16px] text-[#1A1A1A]">
           Subscribe & save on every order!
         </p>
       </div>
 
-      {/* Main Header */}
-      <div className="w-full bg-white border-b border-black/20 backdrop-blur-md">
-        <div className="max-w-[1920px] mx-auto px-[20px] lg:px-[120px] py-[12px] flex items-center justify-between">
-          {/* LEFT CONTAINER (LOGO) */}
-          <div className="flex items-center w-[262px]">
+      <div className="w-full bg-white border-b border-black/20 backdrop-blur-md header-main">
+        <div className="max-w-[1920px] mx-auto px-[20px] lg:px-[120px] py-[12px] flex items-center justify-between header-main__bar">
+          <Link to="/" className="flex items-center w-[262px] header-logo" aria-label="Other Half home">
             <img
               src="/Home/images/dog-logo.svg"
-              alt="logo"
+              alt="Other Half logo"
               className="w-[40px] h-[40px]"
             />
-          </div>
+          </Link>
 
-          {/* CENTER MENU (DESKTOP) */}
           <nav className="hidden lg:flex gap-[16px] text-[16px] font-semibold text-[#0F4A12]">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-[#EBF466] border-b-2 border-[#EBF466]"
-                  : "text-[#0F4A12]"
-              }
-            >
-              HOME
-            </NavLink>
-
-            <NavLink
-              to="/collection"
-              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-            >
-              SHOP
-            </NavLink>
-
-            <NavLink
-              to="/story"
-              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-            >
-              ABOUT
-            </NavLink>
-
-            <NavLink
-              to="/science"
-              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-            >
-              SCIENCE
-            </NavLink>
-{/* 
-            <NavLink
-              to="/glossary"
-              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-            >
-              GLOSSARY
-            </NavLink> */}
-
-            <NavLink
-              to="/faqPage"
-              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-            >
-              FAQ
-            </NavLink>
+            {desktopLinks.map((link) => (
+              <NavLink key={link.to} to={link.to} className={desktopNavClass}>
+                {link.label}
+              </NavLink>
+            ))}
           </nav>
 
-          {/* RIGHT CONTAINER */}
-          <div className="flex items-center justify-end gap-[8px]">
-            {/* QUIZ BUTTON (DESKTOP) */}
-            <button className="hidden lg:flex items-center justify-center bg-[#1A1A1A] text-white text-sm px-[14px] py-[6px] rounded-full h-[40px]">
-               <NavLink
-              to="/Quiz"
-              className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-            >
-             Take the Quiz
+          <div className="flex items-center justify-end gap-[8px] header-actions">
+            <NavLink to="/quiz" className="hidden lg:flex items-center justify-center bg-[#1A1A1A] text-white text-sm px-[14px] py-[6px] rounded-full h-[40px] header-quiz-button">
+              Take the Quiz
             </NavLink>
-             
+
+            <button
+              type="button"
+              className={`w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded header-icon-button ${
+                searchOpen ? "is-active" : ""
+              }`}
+              onClick={toggleSearch}
+              aria-expanded={searchOpen}
+              aria-controls="site-search-panel"
+              aria-label="Toggle site search"
+            >
+              {searchOpen ? <X size={20} /> : <Search size={20} />}
             </button>
 
-            {/* ICONS */}
-            <button className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded">
-              <Search size={20} />
-            </button>
-
-            <button className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded relative">
+            <button type="button" className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded relative header-icon-button" aria-label="Open cart">
               <ShoppingCart size={20} />
               <span className="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white w-4 h-4 flex items-center justify-center rounded-full">
                 2
               </span>
             </button>
 
-            <button className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded">
+            <button type="button" className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded header-icon-button" aria-label="Open account">
               <User size={20} />
             </button>
 
-            {/* MOBILE MENU BUTTON */}
             <button
-              className="lg:hidden w-[40px] h-[40px] flex items-center justify-center"
-              onClick={() => setMenuOpen(!menuOpen)}
+              type="button"
+              className="lg:hidden w-[40px] h-[40px] flex items-center justify-center header-icon-button"
+              onClick={toggleMenu}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-navigation-drawer"
+              aria-label="Toggle mobile menu"
             >
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
-        {/* MOBILE MENU */}
-        {menuOpen && (
-          <div className="lg:hidden border-t border-black/10 px-6 pb-6 text-align-center mobile-menu">
-            <nav className="flex flex-col gap-4 mt-4 text-[#0F4A12] font-semibold">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-[#EBF466] border-b-2 border-[#EBF466]"
-                    : "text-[#0F4A12]"
-                }
-              >
-                HOME
-              </NavLink>
+        <div
+          id="site-search-panel"
+          className={`header-search-panel ${searchOpen ? "is-open" : ""}`}
+          aria-hidden={!searchOpen}
+        >
+          <div className="header-search-panel__shell">
+            <div className="header-search-panel__inner">
+              <div className="header-search-panel__top">
+                <p className="header-search-panel__eyebrow">Search the site</p>
+                <button
+                  type="button"
+                  className="header-search-panel__close"
+                  onClick={closeSearch}
+                >
+                  Close
+                </button>
+              </div>
 
-              <NavLink
-                to="/collection"
-                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-              >
-                SHOP
-              </NavLink>
+              <div className="header-search-form">
+                <Search size={18} />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search products, science, policies, or support pages"
+                  aria-label="Search pages"
+                />
+              </div>
 
-              <NavLink
-                to="/story"
-                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-              >
-                ABOUT
-              </NavLink>
+              <div className="header-search-results">
+                {visibleSearchResults.length > 0 ? (
+                  visibleSearchResults.map((item) => (
+                    <Link
+                      key={`${item.group}-${item.to}`}
+                      to={item.to}
+                      className="header-search-result-card"
+                    >
+                      <span className="header-search-result-card__group">{item.group}</span>
+                      <p className="header-search-result-card__title">{item.label}</p>
+                      <p className="header-search-result-card__text">{item.description}</p>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="header-search-empty">
+                    <p className="header-search-empty__title">No matching pages found</p>
+                    <p className="header-search-empty__text">
+                      Try searching for shop, science, refund, subscription, or contact.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <NavLink
-                to="/science"
-                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-              >
-                SCIENCE
-              </NavLink>
+      <div
+        className={`header-mobile-backdrop lg:hidden ${menuOpen ? "is-open" : ""}`}
+        onClick={closeMenu}
+        aria-hidden={!menuOpen}
+      />
 
-              <NavLink
-                to="/glossary"
-                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-              >
-                GLOSSARY
-              </NavLink>
+      <div
+        id="mobile-navigation-drawer"
+        className={`header-mobile-drawer lg:hidden ${menuOpen ? "is-open" : ""}`}
+        aria-hidden={!menuOpen}
+      >
+        <div className="header-mobile-drawer__panel">
+          <div className="header-mobile-drawer__top">
+            <Link to="/" className="header-mobile-drawer__brand" onClick={closeMenu}>
+              <img src="/Home/images/dog-logo.svg" alt="Other Half logo" />
+              <div>
+                <p className="header-mobile-drawer__brand-title">Other Half</p>
+                <p className="header-mobile-drawer__brand-text">Everything in one place</p>
+              </div>
+            </Link>
 
-              <NavLink
-                to="/quiz"
-                className={({ isActive }) => (isActive ? "text-[#EBF466]" : "")}
-              >
-                FAQ
-              </NavLink>
-            </nav>
-
-            <button className="mt-4 bg-black text-white px-6 py-2 rounded-full">
-              Take the Quiz
+            <button
+              type="button"
+              className="header-mobile-drawer__close"
+              onClick={closeMenu}
+              aria-label="Close mobile menu"
+            >
+              <X size={20} />
             </button>
           </div>
-        )}
+
+          <div className="header-mobile-drawer__body">
+            {mobileSections.map((section) => (
+              <section key={section.title} className="header-mobile-section">
+                <p className="header-mobile-section__title">{section.title}</p>
+                <div className="header-mobile-section__links">
+                  {section.links.map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      className={({ isActive }) =>
+                        `header-mobile-link ${isActive ? "is-active" : ""}`
+                      }
+                      onClick={closeMenu}
+                    >
+                      <span className="header-mobile-link__label">{link.label}</span>
+                      <span className="header-mobile-link__text">{link.description}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          <div className="header-mobile-drawer__footer">
+            <NavLink to="/quiz" className="header-mobile-drawer__quiz" onClick={closeMenu}>
+              Take the Quiz
+            </NavLink>
+          </div>
+        </div>
       </div>
     </header>
   );
