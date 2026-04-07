@@ -18,6 +18,12 @@ import DentalProduct from './Product/DentalProduct.jsx';
 import Science from './Pages/Science.jsx';
 import ClinicalStudies from './Pages/ClinicalStudies.jsx';
 import Blog from './Pages/Blog.jsx';
+import TermsConditionsPage from './Pages/TermsConditionsPage.jsx';
+import ManageSubscriptionPage from './Pages/ManageSubscriptionPage.jsx';
+import RefundPolicyPage from './Pages/RefundPolicyPage.jsx';
+import PrivacyPolicyPage from './Pages/PrivacyPolicyPage.jsx';
+import SubscriptionPolicyPage from './Pages/SubscriptionPolicyPage.jsx';
+import ContactUsPage from './Pages/ContactUsPage.jsx';
 
 
 const App = () => {
@@ -38,6 +44,12 @@ const App = () => {
         <Route path="/quizdesktop" element={<QuizDestopPage />} />
         <Route path="/collection" element={<OurCollection />} />
         <Route path="/faqPage" element={<FaqPage/>} />
+        <Route path="/terms" element={<TermsConditionsPage />} />
+        <Route path="/manage-subscription" element={<ManageSubscriptionPage />} />
+        <Route path="/refund-policy" element={<RefundPolicyPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/subscription-policy" element={<SubscriptionPolicyPage />} />
+        <Route path="/contact" element={<ContactUsPage />} />
         <Route path="/dailyduo" element={<DailyDuoProduct />} />
         <Route path="/doggie-dental" element={<DentalProduct />} />
         <Route path="/product" element={<Product />} />
