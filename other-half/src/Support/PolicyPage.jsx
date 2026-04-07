@@ -41,6 +41,11 @@ const PolicyPage = ({ page }) => {
     return null;
   }
 
+  const customSection =
+    typeof page.customSection === "function"
+      ? page.customSection()
+      : page.customSection;
+
   return (
     <main className={`w-full flex flex-col support-page ${page.themeClass}`}>
       <section className="w-full support-hero">
@@ -94,6 +99,12 @@ const PolicyPage = ({ page }) => {
           </div>
         </div>
       </section>
+
+      {customSection ? (
+        <section className="w-full support-extra">
+          <div className="support-shell">{customSection}</div>
+        </section>
+      ) : null}
 
       <section className="w-full support-body">
         <div className="support-shell grid support-body__layout">

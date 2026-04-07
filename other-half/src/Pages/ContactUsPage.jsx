@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 import PolicyPage from "../Support/PolicyPage";
+import ContactSupportFormSection from "../Support/ContactSupportFormSection";
 
 const SUPPORT_EMAIL = "care@otherhalfpets.com";
 const SUBSCRIPTION_EMAIL = "subscriptions@otherhalfpets.com";
@@ -20,7 +21,7 @@ const page = {
   title: "Contact Us",
   intro:
     "Whether you need order help, subscription support, product guidance, or a quick answer before checkout, we are here to make the process calm and clear. The more detail you share up front, the faster we can help.",
-  image: "public/Default/images/dogs4.avif",
+  image: "/Default/images/dogs4.avif",
   imageAlt: "Dog carrying an object in its mouth",
   stats: [
     { label: "General response goal", value: "Within 1 business day" },
@@ -130,6 +131,7 @@ const page = {
       { label: "Open subscription policy", to: "/subscription-policy", variant: "outline" },
     ],
   },
+  customSection: () => <ContactSupportFormSection />,
 };
 
 const ContactUsPage = () => {
