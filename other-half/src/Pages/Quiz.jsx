@@ -416,7 +416,7 @@ const Quiz = () => {
     let isActive = true;
 
     const saveQuizResult = async () => {
-      setSaveState({ type: "loading", message: "Saving your result..." });
+      setSaveState({ type: "loading", message: "Saving your dog's result..." });
 
       try {
         const response = await apiRequest("/quiz/submissions", {
@@ -430,14 +430,14 @@ const Quiz = () => {
             type: "success",
             message:
               response.message ||
-              (user ? "Quiz result saved to your account." : "Quiz result saved."),
+              (user ? "Your dog's result has been saved to your account." : "Your result has been saved."),
           });
         }
       } catch (error) {
         if (isActive) {
           setSaveState({
             type: "error",
-            message: error.message || "We could not save your quiz result.",
+            message: error.message || "We could not save your dog's quiz result.",
           });
         }
       }
@@ -456,12 +456,12 @@ const Quiz = () => {
         <section className="quiz-page__hero quiz-page__hero--compact">
           <div className="quiz-page__shell">
             <div className="quiz-page__hero-copy">
-              <span className="quiz-page__kicker">Your tailored result</span>
-              <h1 className="quiz-page__hero-title">A smarter daily routine for your dog.</h1>
+              <span className="quiz-page__kicker">Your dog's care match</span>
+              <h1 className="quiz-page__hero-title">A daily routine shaped around what your dog is showing you.</h1>
               <p className="quiz-page__hero-text">
                 We looked at the signals you shared and picked the routine that feels
                 strongest for the pattern showing up across energy, digestion, movement,
-                skin, and oral care.
+                skin, and oral care so your next step feels more personal than random.
               </p>
             </div>
           </div>
@@ -595,25 +595,25 @@ const Quiz = () => {
           <div className="quiz-page__hero-copy">
             <span className="quiz-page__kicker">2 minute care finder</span>
             <h1 className="quiz-page__hero-title">
-              Find the daily routine your dog will actually benefit from.
+              Find the care routine that fits your dog and your real daily life.
             </h1>
             <p className="quiz-page__hero-text">
-              We turn the signals you are already noticing into a cleaner product match,
-              so the recommendation feels useful instead of random.
+              Answer a few quick questions about what you are noticing. We turn that into a
+              practical starting point, not a generic guess.
             </p>
 
             <div className="quiz-page__hero-points">
               <div className="quiz-page__hero-point">
                 <ShieldCheck size={18} />
-                <span>Theme-matched, product-aware guidance</span>
+                <span>Built around real dog-parent concerns</span>
               </div>
               <div className="quiz-page__hero-point">
                 <Bone size={18} />
-                <span>Questions built around real dog wellness routines</span>
+                <span>Saved to your account when you are logged in</span>
               </div>
               <div className="quiz-page__hero-point">
                 <Sparkles size={18} />
-                <span>Quick result with a stronger next step</span>
+                <span>Clear next step without information overload</span>
               </div>
             </div>
           </div>
@@ -704,7 +704,7 @@ const Quiz = () => {
               </button>
 
               <p className="quiz-page__footer-note">
-                We use your answers to shape a practical product match, not a medical diagnosis.
+                These answers help shape an everyday product match. They are not medical advice.
               </p>
             </div>
           </article>
@@ -713,7 +713,7 @@ const Quiz = () => {
             <div className="quiz-page__insight-top">
               <span className="quiz-page__insight-kicker">What we are noticing</span>
               <h2 className="quiz-page__insight-title">
-                Your answers are already building a clearer direction.
+                Your answers are already painting a clearer picture of your dog's needs.
               </h2>
             </div>
 

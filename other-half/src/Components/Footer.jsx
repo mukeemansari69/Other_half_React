@@ -111,8 +111,8 @@ const NewsletterSignup = ({ source, compact = false }) => {
         </div>
       </form>
       <p className="text-[14px] font-normal leading-[1.4] text-[#1A1A1A]">
-        Sign up for exclusive deals, new drops, and the occasional meme. No spam. Just
-        tail-wag-worthy content.
+        Get thoughtful care tips, product drops, and helpful notes for people who love
+        their dogs like family.
       </p>
       {status.message ? (
         <p

@@ -49,11 +49,11 @@ const RegisterPage = () => {
             Create account
           </p>
           <h1 className="mt-4 text-3xl font-semibold text-[#1A1A1A] md:text-4xl">
-            Start with a real account-backed customer dashboard.
+            Create a home base for your dog's daily care.
           </h1>
           <p className="mt-4 text-sm leading-7 text-[#5F5B4F]">
-            Registration now creates a user in the Express backend, signs you in, and gives
-            you a saved account area for support requests and quiz history.
+            Register once and we will save your dog's name, care routine, support history,
+            and quiz results to a real account that stays with you each time you return.
           </p>
           <p className="mt-2 text-xs leading-5 text-[#7A7468]">
             If signup cannot reach the API, run <code>npm run dev:server</code> in a second terminal.
@@ -64,9 +64,9 @@ const RegisterPage = () => {
               What you get
             </p>
             <ul className="mt-4 space-y-3 text-sm leading-6 text-[#4E4A40]">
-              <li>Authenticated access to your account page.</li>
-              <li>Saved quiz recommendations tied to your user.</li>
-              <li>Support tickets that appear in the admin dashboard.</li>
+              <li>A saved dashboard built around your dog's routine.</li>
+              <li>Quiz results and support requests tied to the same account.</li>
+              <li>Faster follow-up when you need help with orders, deliveries, or subscriptions.</li>
             </ul>
           </div>
         </section>
@@ -80,7 +80,7 @@ const RegisterPage = () => {
                 value={formState.name}
                 onChange={(event) => handleFieldChange("name", event.target.value)}
                 className="w-full rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/45 focus:border-[#EBF466]"
-                placeholder="Your name"
+                placeholder="Your full name"
               />
             </label>
 
@@ -113,7 +113,7 @@ const RegisterPage = () => {
                 value={formState.dogName}
                 onChange={(event) => handleFieldChange("dogName", event.target.value)}
                 className="w-full rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/45 focus:border-[#EBF466]"
-                placeholder="Optional"
+                placeholder="Your dog's name"
               />
             </label>
 
@@ -139,12 +139,12 @@ const RegisterPage = () => {
               className="w-full rounded-full bg-[#EBF466] px-6 py-3 text-sm font-semibold text-[#163B1D] transition hover:bg-[#DDE95F] disabled:cursor-not-allowed disabled:opacity-70"
               disabled={submitting}
             >
-              {submitting ? "Creating account..." : "Create account"}
+              {submitting ? "Creating account..." : "Create my account"}
             </button>
           </form>
 
           <p className="mt-6 text-sm text-white/78">
-            Already have an account?{" "}
+            Already part of the pack?{" "}
             <Link to="/login" className="font-semibold text-[#EBF466]">
               Sign in here
             </Link>

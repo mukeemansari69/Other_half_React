@@ -126,7 +126,7 @@ const AdminDashboardPage = () => {
             Admin
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-[#1A1A1A]">
-            Loading dashboard data...
+            Loading care operations...
           </h1>
         </div>
       </main>
@@ -139,7 +139,7 @@ const AdminDashboardPage = () => {
         <div className="mx-auto max-w-3xl rounded-[32px] border border-[#F3D3CC] bg-white px-8 py-14 text-center shadow-[0_24px_80px_rgba(34,30,18,0.08)]">
           <h1 className="text-3xl font-semibold text-[#1A1A1A]">Admin dashboard unavailable</h1>
           <p className="mt-3 text-sm leading-6 text-[#695B54]">
-            {statusMessage.message || "We could not load the backend data."}
+            {statusMessage.message || "We could not load the support and account data right now."}
           </p>
         </div>
       </main>
@@ -147,16 +147,16 @@ const AdminDashboardPage = () => {
   }
 
   const overviewCards = [
-    { label: "Users", value: dashboard.overview.users, icon: Users },
+    { label: "Dog parents", value: dashboard.overview.users, icon: Users },
     { label: "Admins", value: dashboard.overview.admins, icon: ShieldCheck },
-    { label: "Support requests", value: dashboard.overview.supportRequests, icon: CircleCheckBig },
+    { label: "Support tickets", value: dashboard.overview.supportRequests, icon: CircleCheckBig },
     {
-      label: "Open requests",
+      label: "Open tickets",
       value: dashboard.overview.openSupportRequests,
       icon: CircleCheckBig,
     },
-    { label: "Newsletter leads", value: dashboard.overview.newsletterSubscribers, icon: Mail },
-    { label: "Quiz submissions", value: dashboard.overview.quizSubmissions, icon: Sparkles },
+    { label: "Newsletter members", value: dashboard.overview.newsletterSubscribers, icon: Mail },
+    { label: "Quiz saves", value: dashboard.overview.quizSubmissions, icon: Sparkles },
   ];
 
   return (
@@ -169,12 +169,12 @@ const AdminDashboardPage = () => {
                 Admin control room
               </p>
               <h1 className="mt-4 text-4xl font-semibold leading-tight md:text-5xl">
-                {user?.name}, the backend dashboard is ready for ops.
+                {user?.name}, the pack is counting on this dashboard.
               </h1>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-white/74 md:text-base">
-                This view is protected by admin auth and powered by the new Express API. It
-                gives you live access to user accounts, support requests, quiz leads, and
-                newsletter signups from the frontend.
+                This protected view keeps dog-parent conversations, account activity, quiz
+                results, and subscriber interest in one place so the team can respond with
+                more care and less delay.
               </p>
             </div>
 
@@ -223,7 +223,7 @@ const AdminDashboardPage = () => {
                 <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
                   Support queue
                 </p>
-                <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Incoming requests</h2>
+                <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Incoming care requests</h2>
               </div>
             </div>
 
@@ -277,7 +277,7 @@ const AdminDashboardPage = () => {
           <div className="space-y-6">
             <article className="rounded-[36px] border border-[#E6DFCF] bg-white p-8 shadow-[0_24px_80px_rgba(34,30,18,0.08)] md:p-10">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
-                Users
+                Dog parents
               </p>
               <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Registered accounts</h2>
 
@@ -306,7 +306,7 @@ const AdminDashboardPage = () => {
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
                 Newsletter
               </p>
-              <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Latest subscribers</h2>
+              <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Latest pack subscribers</h2>
 
               <div className="mt-8 space-y-3">
                 {subscribers.map((subscriber) => (
@@ -326,7 +326,7 @@ const AdminDashboardPage = () => {
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
             Quiz insights
           </p>
-          <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Latest recommendations</h2>
+          <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Recent care recommendations</h2>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {quizSubmissions.map((submission) => (

@@ -139,7 +139,7 @@ const AccountDashboardPage = () => {
             Dashboard
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-[#1A1A1A]">
-            Loading your account details...
+            Bringing your dog's care snapshot together...
           </h1>
         </div>
       </main>
@@ -152,12 +152,14 @@ const AccountDashboardPage = () => {
         <div className="mx-auto max-w-3xl rounded-[32px] border border-[#F3D3CC] bg-white px-8 py-14 text-center shadow-[0_24px_80px_rgba(34,30,18,0.08)]">
           <h1 className="text-3xl font-semibold text-[#1A1A1A]">Account unavailable</h1>
           <p className="mt-3 text-sm leading-6 text-[#695B54]">
-            {status.message || "We could not load your dashboard right now."}
+            {status.message || "We could not load your dog's saved dashboard right now."}
           </p>
         </div>
       </main>
     );
   }
+
+  const dogName = summary.subscription?.dogProfile?.name || "your dog";
 
   return (
     <main className="bg-[#FBF8EF] px-6 py-8 md:px-10 lg:px-16">
@@ -165,14 +167,14 @@ const AccountDashboardPage = () => {
         <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[36px] bg-[#163B1D] p-8 text-white shadow-[0_32px_100px_rgba(13,32,18,0.22)] md:p-10">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#EBF466]">
-              Customer dashboard
+              Care dashboard
             </p>
             <h1 className="mt-4 text-4xl font-semibold leading-tight md:text-5xl">
-              {user?.name || summary.user.name}, your backend-connected account is live.
+              {user?.name || summary.user.name}, {dogName}'s routine is all in one place.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/78 md:text-base">
-              This area is now powered by the Express API. Your support requests, saved quiz
-              results, and subscription snapshot are all coming from authenticated data.
+              From saved quiz answers to delivery timing and support messages, this space keeps
+              the little details that help you care for {dogName} with less guesswork.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -196,13 +198,13 @@ const AccountDashboardPage = () => {
                 to="/quiz"
                 className="rounded-full bg-[#EBF466] px-5 py-3 text-sm font-semibold text-[#163B1D]"
               >
-                Take the quiz again
+                Retake care quiz
               </Link>
               <Link
                 to="/contact"
                 className="rounded-full border border-white/16 px-5 py-3 text-sm font-semibold text-white"
               >
-                Create support request
+                Contact support
               </Link>
               <button
                 type="button"
@@ -218,7 +220,7 @@ const AccountDashboardPage = () => {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
-                  Subscription snapshot
+                  Routine snapshot
                 </p>
                 <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">
                   {summary.subscription.planName}
@@ -233,7 +235,7 @@ const AccountDashboardPage = () => {
               <div className="flex items-center gap-3 text-[#1A1A1A]">
                 <PawPrint size={18} className="text-[#0F4A12]" />
                 <div>
-                  <p className="text-sm text-[#6A6458]">Dog profile</p>
+                  <p className="text-sm text-[#6A6458]">Dog you are caring for</p>
                   <p className="font-semibold">{summary.subscription.dogProfile.name}</p>
                 </div>
               </div>
@@ -241,7 +243,7 @@ const AccountDashboardPage = () => {
               <div className="flex items-center gap-3 text-[#1A1A1A]">
                 <CalendarClock size={18} className="text-[#0F4A12]" />
                 <div>
-                  <p className="text-sm text-[#6A6458]">Next delivery</p>
+                  <p className="text-sm text-[#6A6458]">Next box</p>
                   <p className="font-semibold">{formatDate(summary.subscription.nextDelivery)}</p>
                 </div>
               </div>
@@ -249,7 +251,7 @@ const AccountDashboardPage = () => {
               <div className="flex items-center gap-3 text-[#1A1A1A]">
                 <CircleCheckBig size={18} className="text-[#0F4A12]" />
                 <div>
-                  <p className="text-sm text-[#6A6458]">Cadence</p>
+                  <p className="text-sm text-[#6A6458]">Delivery rhythm</p>
                   <p className="font-semibold">{summary.subscription.deliveryCadence}</p>
                 </div>
               </div>
@@ -259,7 +261,7 @@ const AccountDashboardPage = () => {
               to="/manage-subscription"
               className="mt-6 inline-flex rounded-full border border-[#D6D0C1] px-5 py-3 text-sm font-semibold text-[#1A1A1A]"
             >
-              Read subscription guidance
+              View subscription help
             </Link>
           </div>
         </section>
@@ -269,7 +271,7 @@ const AccountDashboardPage = () => {
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
               Update profile
             </p>
-            <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Keep account details current</h2>
+            <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Keep {dogName}'s details current</h2>
 
             <form className="mt-8 space-y-5" onSubmit={handleSaveProfile}>
               <label className="block">
@@ -344,13 +346,13 @@ const AccountDashboardPage = () => {
                   <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
                     Support history
                   </p>
-                  <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Your recent requests</h2>
+                  <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Recent conversations about {dogName}</h2>
                 </div>
                 <Link
                   to="/contact"
                   className="rounded-full border border-[#D6D0C1] px-5 py-3 text-sm font-semibold text-[#1A1A1A]"
                 >
-                  New request
+                  Ask for help
                 </Link>
               </div>
 
@@ -385,8 +387,8 @@ const AccountDashboardPage = () => {
                   ))
                 ) : (
                   <p className="rounded-[28px] bg-[#FBF8EF] px-5 py-6 text-sm leading-6 text-[#5C584D]">
-                    You have not submitted a support request yet. The contact form will now
-                    store future submissions in the backend and surface them here.
+                    You have not needed help yet. If anything feels off with an order,
+                    delivery, or plan, send a request and it will appear here.
                   </p>
                 )}
               </div>
@@ -399,7 +401,7 @@ const AccountDashboardPage = () => {
                     Saved quiz results
                   </p>
                   <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">
-                    Recommendation history
+                    Saved care matches
                   </h2>
                 </div>
                 <Link
@@ -434,8 +436,8 @@ const AccountDashboardPage = () => {
                   ))
                 ) : (
                   <p className="rounded-[28px] bg-[#FBF8EF] px-5 py-6 text-sm leading-6 text-[#5C584D]">
-                    Complete the quiz while logged in and the result will be saved to your
-                    account automatically.
+                    Complete the quiz while logged in and we will save the result here so you
+                    can revisit what fits {dogName} best.
                   </p>
                 )}
               </div>

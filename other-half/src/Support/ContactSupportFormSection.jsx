@@ -37,21 +37,21 @@ const teamOptions = [
     id: "support",
     label: "Customer Support",
     email: "care@otherhalfpets.com",
-    description: "Best for orders, damaged shipments, product questions, and general help.",
+    description: "Best for order questions, product guidance, and anything affecting your dog's routine.",
     icon: Mail,
   },
   {
     id: "subscription",
     label: "Subscription Team",
     email: "subscriptions@otherhalfpets.com",
-    description: "Best for renewals, skips, pause requests, billing issues, and plan changes.",
+    description: "Best for skips, pauses, billing changes, and keeping deliveries aligned with your dog's needs.",
     icon: RefreshCw,
   },
   {
     id: "admin",
     label: "Admin Escalations",
     email: "admin@otherhalfpets.com",
-    description: "Best for urgent escalations, service issues, or requests that need manager review.",
+    description: "Best for urgent issues, repeated service problems, or requests that need faster review.",
     icon: ShieldAlert,
   },
   {
@@ -235,7 +235,7 @@ const ContactSupportFormSection = () => {
     }
 
     if (!formState.message.trim() || formState.message.trim().length < 20) {
-      return "Please describe the issue in a little more detail.";
+      return "Please describe what happened and how it is affecting your dog, order, or plan.";
     }
 
     if (!formState.consent) {
@@ -292,7 +292,7 @@ const ContactSupportFormSection = () => {
         title: "Request sent successfully",
         message:
           response.message ||
-          "Your message was sent and stored in the new support dashboard.",
+          "Your message was sent to the support dashboard with the details your team needs.",
       });
       resetForm({ keepStatus: true });
     } catch (error) {
@@ -308,7 +308,7 @@ const ContactSupportFormSection = () => {
           type: "warning",
           title: "Email draft opened instead",
           message:
-            "The backend is unavailable right now, so we opened a ready-to-send email draft as a fallback.",
+            "The backend is unavailable right now, so we opened a ready-to-send email draft so you do not lose your request.",
         });
       } else {
         setStatus({
@@ -327,24 +327,24 @@ const ContactSupportFormSection = () => {
       <section className="support-form-card">
         <div className="support-form-card__header">
           <div>
-            <span className="support-kicker support-kicker--soft">Send a support request</span>
+            <span className="support-kicker support-kicker--soft">Support for dog parents</span>
             <h2 className="support-form-card__title">
-              Share the issue, attach screenshots or images, and route it to the right team.
+              Share what happened, add photos if needed, and send it to the team that can help fastest.
             </h2>
             <p className="support-form-card__text">
-              This form now posts into the Express backend, so new requests appear inside
-              the protected admin dashboard instead of staying as static-only UI.
+              This form sends your note straight into the support dashboard, so the right
+              team can follow up with context instead of starting from scratch.
             </p>
           </div>
 
           <div className="support-form-card__badges">
             <div className="support-form-card__badge">
               <CircleCheckBig size={16} />
-              <span>Structured issue intake</span>
+              <span>Structured care request</span>
             </div>
             <div className="support-form-card__badge">
               <Paperclip size={16} />
-              <span>Images and documents supported</span>
+              <span>Photos and documents welcome</span>
             </div>
           </div>
         </div>
@@ -437,7 +437,7 @@ const ContactSupportFormSection = () => {
                 value={formState.subject}
                 onChange={(event) => updateField("subject", event.target.value)}
                 className="support-field__control"
-                placeholder="A short summary of the issue"
+                placeholder="A short summary of what went wrong"
               />
             </label>
 
@@ -492,7 +492,7 @@ const ContactSupportFormSection = () => {
                 value={formState.message}
                 onChange={(event) => updateField("message", event.target.value)}
                 className="support-field__control support-field__control--textarea"
-                placeholder="Tell us what happened, what you have already tried, and what outcome you want from the team."
+                placeholder="Tell us what happened, what you noticed with your dog or order, and what kind of help you need from us."
               />
             </label>
           </div>
@@ -501,8 +501,8 @@ const ContactSupportFormSection = () => {
             <div className="support-upload-card__copy">
               <p className="support-upload-card__title">Attachments</p>
               <p className="support-upload-card__text">
-                Upload up to 5 files. Images, screenshots, PDFs, and receipts help the
-                team review issues like damaged shipments, wrong items, or billing proof.
+                Upload up to 5 files. Photos, screenshots, PDFs, and receipts help the
+                team understand issues like damaged orders, wrong items, or delivery problems faster.
               </p>
             </div>
 
@@ -554,8 +554,8 @@ const ContactSupportFormSection = () => {
               onChange={(event) => updateField("consent", event.target.checked)}
             />
             <span>
-              I agree that the selected team can contact me using the details above to
-              resolve this request.
+              I agree that the selected team can contact me using the details above so they
+              can help with this request.
             </span>
           </label>
 
@@ -591,7 +591,7 @@ const ContactSupportFormSection = () => {
         <div className="support-form-side-card__section">
           <p className="support-form-side-card__eyebrow">Where this goes</p>
           <h2 className="support-form-side-card__title">
-            Your request is routed to the team you choose.
+            Your request goes to the right team with your dog's details attached.
           </h2>
           <p className="support-form-side-card__text">
             Right now your selected team is <strong>{selectedTeam.label}</strong>. Replies
@@ -607,17 +607,17 @@ const ContactSupportFormSection = () => {
             <span>{selectedTeam.email}</span>
           </div>
           <p className="support-form-side-card__text">
-            Requests submit straight into the backend and stay visible inside the admin
-            dashboard, with email fallback only if the server is unavailable.
+            Requests land in the backend dashboard and stay visible for follow-up, with
+            email fallback only if the server is unavailable.
           </p>
         </div>
 
         <div className="support-form-side-card__section">
           <p className="support-form-side-card__eyebrow">Best things to include</p>
           <ul className="support-form-side-card__list">
-            <li>Order number, tracking issue, or subscription email if the request is account-related.</li>
-            <li>Photos of damaged items, wrong products, leaking tubs, or shipping labels.</li>
-            <li>Clear explanation of what outcome you want: refund, replacement, plan update, or callback.</li>
+            <li>Order number, tracking details, or subscription email if the request is account-related.</li>
+            <li>Photos of damaged items, wrong products, leaking tubs, labels, or anything visible.</li>
+            <li>What outcome you want most: refund, replacement, plan update, guidance, or a callback.</li>
           </ul>
         </div>
 
