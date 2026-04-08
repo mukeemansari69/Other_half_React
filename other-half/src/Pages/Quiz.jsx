@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Activity,
@@ -13,6 +13,8 @@ import {
   Stars,
 } from "lucide-react";
 
+import { useAuth } from "../context/AuthContext.jsx";
+import { apiRequest } from "../lib/api.js";
 import "/public/QuizDesktop/css/Quiz.css";
 
 const focusMeta = {
@@ -350,8 +352,11 @@ const formatStepLabel = (step) => {
 };
 
 const Quiz = () => {
+  const { token, user } = useAuth();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState([]);
+  const [saveState, setSaveState] = useState({ type: "", message: "" });
+  const submittedSignatureRef = useRef("");
 
   const currentQuestion = quizData[step];
   const progress = (step / quizData.length) * 100;
@@ -373,14 +378,77 @@ const Quiz = () => {
   };
 
   const handleRestart = () => {
+    submittedSignatureRef.current = "";
     setAnswers([]);
     setStep(0);
+    setSaveState({ type: "", message: "" });
   };
 
   const visibleFocuses =
     profile.topFocuses.length > 0
       ? profile.topFocuses
       : ["gut", "dental", "mobility"];
+
+  useEffect(() => {
+    if (step !== quizData.length || answers.length !== quizData.length) {
+      return;
+    }
+
+    const nextResult = buildProfile(answers);
+    const payload = {
+      recommendationKey: nextResult.recommendationKey,
+      recommendationTitle: nextResult.recommendation.title,
+      topFocuses: nextResult.topFocuses,
+      scores: nextResult.scores,
+      answers: answers.map((answer, index) => ({
+        questionId: quizData[index]?.id || `question-${index + 1}`,
+        title: answer.title,
+      })),
+    };
+    const submissionSignature = JSON.stringify(payload);
+
+    if (submittedSignatureRef.current === submissionSignature) {
+      return;
+    }
+
+    submittedSignatureRef.current = submissionSignature;
+
+    let isActive = true;
+
+    const saveQuizResult = async () => {
+      setSaveState({ type: "loading", message: "Saving your result..." });
+
+      try {
+        const response = await apiRequest("/quiz/submissions", {
+          method: "POST",
+          body: payload,
+          token,
+        });
+
+        if (isActive) {
+          setSaveState({
+            type: "success",
+            message:
+              response.message ||
+              (user ? "Quiz result saved to your account." : "Quiz result saved."),
+          });
+        }
+      } catch (error) {
+        if (isActive) {
+          setSaveState({
+            type: "error",
+            message: error.message || "We could not save your quiz result.",
+          });
+        }
+      }
+    };
+
+    saveQuizResult();
+
+    return () => {
+      isActive = false;
+    };
+  }, [answers, step, token, user]);
 
   if (step >= quizData.length) {
     return (
@@ -499,6 +567,20 @@ const Quiz = () => {
                   Restart quiz
                 </button>
               </div>
+
+              {saveState.message ? (
+                <div
+                  className={`mt-4 rounded-full px-4 py-3 text-sm font-medium ${
+                    saveState.type === "success"
+                      ? "bg-[#EEF6E7] text-[#0F4A12]"
+                      : saveState.type === "error"
+                        ? "bg-[#FFF1EE] text-[#A13A2C]"
+                        : "bg-[#FBF3D6] text-[#8A5A09]"
+                  }`}
+                >
+                  {saveState.message}
+                </div>
+              ) : null}
             </div>
           </div>
         </section>

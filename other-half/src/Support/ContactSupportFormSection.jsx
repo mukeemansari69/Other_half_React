@@ -11,24 +11,26 @@ import {
   ShieldAlert,
 } from "lucide-react";
 
-const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_FORM_ENDPOINT?.trim();
+import { useAuth } from "../context/AuthContext.jsx";
+import { apiRequest } from "../lib/api.js";
+
 const MAX_FILE_COUNT = 5;
 const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024;
 
-const initialFormState = {
+const buildInitialFormState = (user = null) => ({
   team: "support",
-  name: "",
-  email: "",
-  phone: "",
+  name: user?.name || "",
+  email: user?.email || "",
+  phone: user?.phone || "",
   orderNumber: "",
-  dogName: "",
+  dogName: user?.subscription?.dogProfile?.name || "",
   subject: "",
   category: "order-support",
   priority: "standard",
   preferredContact: "email",
   message: "",
   consent: false,
-};
+});
 
 const teamOptions = [
   {
@@ -127,7 +129,8 @@ const createMailtoUrl = ({ recipient, subject, formState, files }) => {
 };
 
 const ContactSupportFormSection = () => {
-  const [formState, setFormState] = useState(initialFormState);
+  const { token, user } = useAuth();
+  const [formState, setFormState] = useState(() => buildInitialFormState(user));
   const [attachments, setAttachments] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
@@ -148,6 +151,20 @@ const ContactSupportFormSection = () => {
   }, [attachments]);
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    setFormState((currentState) => ({
+      ...currentState,
+      name: currentState.name || user.name || "",
+      email: currentState.email || user.email || "",
+      phone: currentState.phone || user.phone || "",
+      dogName: currentState.dogName || user.subscription?.dogProfile?.name || "",
+    }));
+  }, [user]);
+
+  useEffect(() => {
     return () => {
       imagePreviews.forEach((item) => URL.revokeObjectURL(item.url));
     };
@@ -160,9 +177,12 @@ const ContactSupportFormSection = () => {
     }));
   };
 
-  const resetForm = () => {
-    setFormState(initialFormState);
+  const resetForm = ({ keepStatus = false } = {}) => {
+    setFormState(buildInitialFormState(user));
     setAttachments([]);
+    if (!keepStatus) {
+      setStatus(null);
+    }
   };
 
   const handleFileSelection = (event) => {
@@ -240,24 +260,6 @@ const ContactSupportFormSection = () => {
     }
 
     const subject = `[${selectedTeam.label}] ${formState.subject.trim()}`;
-
-    if (!CONTACT_ENDPOINT) {
-      window.location.href = createMailtoUrl({
-        recipient: selectedTeam.email,
-        subject,
-        formState,
-        files: attachments,
-      });
-
-      setStatus({
-        type: "success",
-        title: "Email draft opened",
-        message:
-          "Your details were prepared for the selected team. If you added files, attach the same files in the email window before sending.",
-      });
-      return;
-    }
-
     setSubmitting(true);
     setStatus(null);
 
@@ -279,36 +281,42 @@ const ContactSupportFormSection = () => {
         payload.append("attachments", file);
       });
 
-      const response = await fetch(CONTACT_ENDPOINT, {
+      const response = await apiRequest("/support/requests", {
         method: "POST",
         body: payload,
+        token,
       });
-
-      if (!response.ok) {
-        throw new Error("Support endpoint rejected the request.");
-      }
 
       setStatus({
         type: "success",
         title: "Request sent successfully",
         message:
-          "Your message was sent to the selected team. Someone should reach out using your preferred contact details.",
+          response.message ||
+          "Your message was sent and stored in the new support dashboard.",
       });
-      resetForm();
+      resetForm({ keepStatus: true });
     } catch (error) {
-      window.location.href = createMailtoUrl({
-        recipient: selectedTeam.email,
-        subject,
-        formState,
-        files: attachments,
-      });
+      if (!error.status) {
+        window.location.href = createMailtoUrl({
+          recipient: selectedTeam.email,
+          subject,
+          formState,
+          files: attachments,
+        });
 
-      setStatus({
-        type: "warning",
-        title: "Email draft opened instead",
-        message:
-          "The direct contact endpoint is not available right now, so we opened a ready-to-send email draft as a fallback.",
-      });
+        setStatus({
+          type: "warning",
+          title: "Email draft opened instead",
+          message:
+            "The backend is unavailable right now, so we opened a ready-to-send email draft as a fallback.",
+        });
+      } else {
+        setStatus({
+          type: "error",
+          title: "Request could not be sent",
+          message: error.message || "Please try again in a moment.",
+        });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -324,9 +332,8 @@ const ContactSupportFormSection = () => {
               Share the issue, attach screenshots or images, and route it to the right team.
             </h2>
             <p className="support-form-card__text">
-              Use this form for order help, subscription issues, refund reviews, account
-              questions, or admin escalation. Attach photos of damaged products, shipping
-              labels, or screenshots if they will help the team review faster.
+              This form now posts into the Express backend, so new requests appear inside
+              the protected admin dashboard instead of staying as static-only UI.
             </p>
           </div>
 
@@ -600,8 +607,8 @@ const ContactSupportFormSection = () => {
             <span>{selectedTeam.email}</span>
           </div>
           <p className="support-form-side-card__text">
-            If a direct support endpoint is configured, the form can submit straight to
-            your team workflow. Otherwise it opens a ready-made email draft with the same details.
+            Requests submit straight into the backend and stay visible inside the admin
+            dashboard, with email fallback only if the server is unavailable.
           </p>
         </div>
 

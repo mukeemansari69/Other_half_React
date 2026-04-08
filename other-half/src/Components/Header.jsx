@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 
 import "/public/Home/css/header.css";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const desktopLinks = [
   { label: "HOME", to: "/" },
@@ -147,12 +148,21 @@ const desktopNavClass = ({ isActive }) =>
 
 export default function Header() {
   const location = useLocation();
+  const { isAdmin, isAuthenticated, logout, user } = useAuth();
   const searchInputRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const trimmedSearch = searchQuery.trim().toLowerCase();
+  const accountPath = isAuthenticated ? (isAdmin ? "/admin" : "/account") : "/login";
+  const accountLabel = isAuthenticated ? (isAdmin ? "Admin" : "Account") : "Login";
+  const userInitials = user?.name
+    ?.split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   const visibleSearchResults = useMemo(() => {
     if (!trimmedSearch) {
@@ -267,6 +277,13 @@ export default function Header() {
               Take the Quiz
             </NavLink>
 
+            <NavLink
+              to={accountPath}
+              className="hidden lg:flex items-center justify-center rounded-full border border-[#D9D4C8] bg-[#F7F4EA] px-[14px] py-[6px] text-sm font-semibold text-[#1A1A1A] h-[40px]"
+            >
+              {accountLabel}
+            </NavLink>
+
             <button
               type="button"
               className={`w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded header-icon-button ${
@@ -287,9 +304,27 @@ export default function Header() {
               </span>
             </button>
 
-            <button type="button" className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded header-icon-button" aria-label="Open account">
-              <User size={20} />
-            </button>
+            <Link
+              to={accountPath}
+              className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded header-icon-button"
+              aria-label={isAuthenticated ? `Open ${accountLabel}` : "Open login"}
+            >
+              {isAuthenticated && userInitials ? (
+                <span className="text-[12px] font-bold text-[#1A1A1A]">{userInitials}</span>
+              ) : (
+                <User size={20} />
+              )}
+            </Link>
+
+            {isAuthenticated ? (
+              <button
+                type="button"
+                className="hidden lg:flex items-center justify-center rounded-full border border-[#D9D4C8] px-[14px] py-[6px] text-sm font-semibold text-[#1A1A1A] h-[40px]"
+                onClick={logout}
+              >
+                Sign out
+              </button>
+            ) : null}
 
             <button
               type="button"
@@ -419,6 +454,27 @@ export default function Header() {
             <NavLink to="/quiz" className="header-mobile-drawer__quiz" onClick={closeMenu}>
               Take the Quiz
             </NavLink>
+            <div className="mt-3 grid gap-2">
+              <NavLink
+                to={accountPath}
+                className="header-mobile-drawer__quiz bg-white text-[#1A1A1A] border border-[#D9D4C8]"
+                onClick={closeMenu}
+              >
+                {accountLabel}
+              </NavLink>
+              {isAuthenticated ? (
+                <button
+                  type="button"
+                  className="header-mobile-drawer__quiz"
+                  onClick={() => {
+                    logout();
+                    closeMenu();
+                  }}
+                >
+                  Sign out
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>

@@ -1,0 +1,12 @@
+{
+  "name": "other-half-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix other-half run dev",
+    "dev:server": "npm --prefix other-half run dev:server",
+    "server": "npm --prefix other-half run server",
+    "start": "npm --prefix other-half run start",
+    "build": "npm --prefix other-half run build",
+    "lint": "npm --prefix other-half run lint"
+  }
+}

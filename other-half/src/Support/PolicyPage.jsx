@@ -86,15 +86,19 @@ const PolicyPage = ({ page }) => {
             </div>
 
             <div className="grid support-highlight-grid">
-              {page.highlights.map(({ icon: Icon, title, text }) => (
-                <article key={title} className="support-highlight-card">
+              {page.highlights.map((highlight) => {
+                const Icon = highlight.icon;
+
+                return (
+                <article key={highlight.title} className="support-highlight-card">
                   <div className="support-highlight-card__icon">
                     <Icon size={20} />
                   </div>
-                  <h2 className="support-highlight-card__title">{title}</h2>
-                  <p className="support-highlight-card__text">{text}</p>
+                  <h2 className="support-highlight-card__title">{highlight.title}</h2>
+                  <p className="support-highlight-card__text">{highlight.text}</p>
                 </article>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -176,22 +180,26 @@ const PolicyPage = ({ page }) => {
           </div>
 
           <aside className="w-full flex flex-col support-rail">
-            {page.infoCards.map(({ icon: Icon, title, text, action }) => (
-              <article key={title} className="support-rail-card">
+            {page.infoCards.map((card) => {
+              const Icon = card.icon;
+
+              return (
+              <article key={card.title} className="support-rail-card">
                 <div className="support-rail-card__icon">
                   <Icon size={20} />
                 </div>
-                <h2 className="support-rail-card__title">{title}</h2>
-                <p className="support-rail-card__text">{text}</p>
-                {action ? (
+                <h2 className="support-rail-card__title">{card.title}</h2>
+                <p className="support-rail-card__text">{card.text}</p>
+                {card.action ? (
                   <ActionLink
-                    action={action}
+                    action={card.action}
                     className="support-rail-card__link"
                     showArrow={false}
                   />
                 ) : null}
               </article>
-            ))}
+              );
+            })}
           </aside>
         </div>
       </section>
