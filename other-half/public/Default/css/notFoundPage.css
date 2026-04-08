@@ -1,0 +1,1027 @@
+.not-found-page {
+  --nf-lime: #ebf466;
+  --nf-green: #0f4a12;
+  --nf-ink: #1a1a1a;
+  --nf-cream: #fffaf0;
+  --nf-soft: #f7f4ea;
+  --nf-border: rgba(15, 74, 18, 0.12);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(235, 244, 102, 0.32), transparent 24%),
+    radial-gradient(circle at 100% 10%, rgba(255, 214, 191, 0.42), transparent 22%),
+    linear-gradient(180deg, #fffdf6 0%, #fff8ec 48%, #fffdf8 100%);
+  color: var(--nf-ink);
+  font-family: "Poppins", sans-serif;
+}
+
+.not-found-page *,
+.not-found-page *::before,
+.not-found-page *::after {
+  box-sizing: border-box;
+}
+
+.not-found-hero,
+.not-found-guides {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding-inline: clamp(20px, 4vw, 48px);
+}
+
+.not-found-hero {
+  padding-top: clamp(34px, 5vw, 72px);
+  padding-bottom: clamp(36px, 5vw, 76px);
+}
+
+.not-found-hero__banner {
+  max-width: 900px;
+  margin: 0 auto 36px;
+  text-align: center;
+}
+
+.not-found-hero__code,
+.not-found-hero__heading {
+  margin: 0;
+  font-family: "Luckiest Guy", cursive;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.not-found-hero__code {
+  font-size: clamp(4.5rem, 12vw, 8.5rem);
+  color: var(--nf-green);
+  text-shadow: 0 14px 28px rgba(15, 74, 18, 0.12);
+}
+
+.not-found-hero__heading {
+  margin-top: 8px;
+  font-size: clamp(2.1rem, 5vw, 4rem);
+  color: var(--nf-ink);
+}
+
+.not-found-hero__subheading {
+  max-width: 44ch;
+  margin: 14px auto 0;
+  color: rgba(26, 26, 26, 0.72);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.not-found-hero__inner {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+}
+
+.not-found-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--nf-lime);
+  color: var(--nf-green);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.not-found-chip--soft {
+  background: rgba(235, 244, 102, 0.72);
+}
+
+.not-found-title,
+.not-found-guides__title {
+  margin: 0;
+  font-family: "Luckiest Guy", cursive;
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+}
+
+.not-found-title {
+  margin-top: 18px;
+  max-width: 10ch;
+  font-size: clamp(2.85rem, 6vw, 5.45rem);
+  color: var(--nf-ink);
+}
+
+.not-found-copy__lead,
+.not-found-status-card__copy,
+.not-found-reassurance-card__text,
+.not-found-guides__copy,
+.not-found-guide-card__text,
+.not-found-scene__note-copy {
+  color: rgba(26, 26, 26, 0.74);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.not-found-copy__lead {
+  max-width: 61ch;
+  margin: 20px 0 0;
+}
+
+.not-found-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.not-found-button,
+.not-found-guide-card__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    background 0.28s ease,
+    color 0.28s ease,
+    border-color 0.28s ease;
+}
+
+.not-found-button:hover,
+.not-found-guide-card__link:hover {
+  transform: translateY(-2px);
+}
+
+.not-found-button--primary {
+  padding: 16px 24px;
+  background: var(--nf-green);
+  color: #fffef8;
+  font-size: 0.96rem;
+  font-weight: 700;
+  box-shadow: 0 18px 30px rgba(15, 74, 18, 0.22);
+}
+
+.not-found-button--secondary {
+  padding: 16px 24px;
+  border: 1px solid rgba(15, 74, 18, 0.18);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--nf-green);
+  font-size: 0.96rem;
+  font-weight: 700;
+  box-shadow: 0 14px 24px rgba(15, 74, 18, 0.08);
+}
+
+.not-found-button--ghost {
+  padding: 16px 6px;
+  color: var(--nf-ink);
+  font-size: 0.96rem;
+  font-weight: 700;
+}
+
+.not-found-status-card,
+.not-found-reassurance-card,
+.not-found-guide-card {
+  border: 1px solid var(--nf-border);
+  box-shadow:
+    0 26px 50px rgba(15, 74, 18, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.not-found-status-card {
+  margin-top: 28px;
+  border-radius: 30px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(235, 244, 102, 0.2), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 244, 234, 0.88));
+}
+
+.not-found-status-card__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(15, 74, 18, 0.08);
+  color: var(--nf-green);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.not-found-status-card__title,
+.not-found-reassurance-card__title,
+.not-found-guide-card__title {
+  margin: 18px 0 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--nf-ink);
+}
+
+.not-found-status-card__copy {
+  max-width: 58ch;
+  margin: 12px 0 0;
+}
+
+.not-found-reassurance-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.not-found-reassurance-card {
+  border-radius: 26px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.not-found-reassurance-card__icon,
+.not-found-guide-card__icon,
+.not-found-scene__note-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  background: rgba(15, 74, 18, 0.08);
+  color: var(--nf-green);
+}
+
+.not-found-reassurance-card__text {
+  margin: 10px 0 0;
+}
+
+.not-found-visual {
+  position: relative;
+}
+
+.not-found-scene {
+  position: relative;
+  min-height: 660px;
+  overflow: hidden;
+  border: 1px solid var(--nf-border);
+  border-radius: 38px;
+  background:
+    radial-gradient(circle at 15% 18%, rgba(235, 244, 102, 0.64), transparent 20%),
+    radial-gradient(circle at 78% 16%, rgba(255, 214, 191, 0.58), transparent 22%),
+    linear-gradient(180deg, #123c15 0%, #173f17 48%, #f2f5df 48.2%, #fff9ea 100%);
+  box-shadow:
+    0 34px 60px rgba(15, 74, 18, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.not-found-scene__glow,
+.not-found-scene__orbit,
+.not-found-scene__watermark {
+  position: absolute;
+  pointer-events: none;
+}
+
+.not-found-scene__glow {
+  border-radius: 50%;
+  filter: blur(26px);
+}
+
+.not-found-scene__glow--one {
+  left: 18px;
+  top: 46px;
+  width: 170px;
+  height: 170px;
+  background: rgba(235, 244, 102, 0.2);
+}
+
+.not-found-scene__glow--two {
+  right: -24px;
+  bottom: 176px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 214, 191, 0.26);
+}
+
+.not-found-scene__orbit {
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.not-found-scene__orbit--one {
+  top: 72px;
+  left: 40px;
+  width: 220px;
+  height: 220px;
+}
+
+.not-found-scene__orbit--two {
+  top: 140px;
+  right: 52px;
+  width: 140px;
+  height: 140px;
+}
+
+.not-found-scene__watermark {
+  left: 30px;
+  top: 24px;
+  font-family: "Luckiest Guy", cursive;
+  font-size: clamp(4rem, 10vw, 7rem);
+  color: rgba(255, 255, 255, 0.08);
+  line-height: 1;
+}
+
+.not-found-scene__photo-card,
+.not-found-product-card,
+.not-found-scene__note-card {
+  position: absolute;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 24px 40px rgba(15, 74, 18, 0.16);
+  backdrop-filter: blur(12px);
+}
+
+.not-found-scene__photo-card {
+  top: 30px;
+  right: 28px;
+  width: min(220px, calc(100% - 56px));
+  padding: 14px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.18);
+  animation: notfound-float 5.6s ease-in-out infinite;
+}
+
+.not-found-scene__photo-label,
+.not-found-scene__note-label,
+.not-found-guide-card__kicker,
+.not-found-product-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(235, 244, 102, 0.82);
+  color: var(--nf-green);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.not-found-scene__photo-image {
+  display: block;
+  width: 100%;
+  height: 208px;
+  margin-top: 12px;
+  border-radius: 22px;
+  object-fit: cover;
+}
+
+.not-found-product-card {
+  width: 168px;
+  padding: 14px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.not-found-product-card--one {
+  left: 26px;
+  top: 180px;
+  animation: notfound-float 4.8s ease-in-out infinite;
+}
+
+.not-found-product-card--two {
+  right: 34px;
+  bottom: 64px;
+  animation: notfound-float 5.2s ease-in-out infinite reverse;
+}
+
+.not-found-product-card__image {
+  display: block;
+  width: 100%;
+  height: 150px;
+  margin-top: 12px;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 20px rgba(15, 74, 18, 0.15));
+}
+
+.not-found-scene__note-card {
+  left: 26px;
+  bottom: 34px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: min(270px, calc(100% - 52px));
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.not-found-scene__note-label {
+  background: rgba(15, 74, 18, 0.08);
+}
+
+.not-found-scene__note-copy {
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.not-found-scene__floor {
+  position: absolute;
+  left: 50%;
+  bottom: 44px;
+  width: min(90%, 430px);
+  height: 92px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.94), rgba(226, 236, 184, 0.92) 56%, rgba(157, 170, 104, 0.12) 100%);
+  box-shadow:
+    0 18px 28px rgba(15, 74, 18, 0.1),
+    inset 0 10px 22px rgba(255, 255, 255, 0.76);
+}
+
+.not-found-bowl {
+  position: absolute;
+  left: 34%;
+  bottom: 120px;
+  width: 128px;
+  height: 72px;
+  border-radius: 24px 24px 40px 40px;
+  background:
+    linear-gradient(180deg, #fff2ae 0%, #f3c654 42%, #d89b18 100%);
+  box-shadow:
+    0 24px 28px rgba(15, 74, 18, 0.14),
+    inset 0 8px 12px rgba(255, 255, 255, 0.48);
+}
+
+.not-found-bowl::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 6px;
+  height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.08));
+}
+
+.not-found-bowl__food {
+  position: absolute;
+  inset: 10px 18px 34px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 18px 12px, #896320 0 8px, transparent 9px),
+    radial-gradient(circle at 44px 16px, #9b742b 0 8px, transparent 9px),
+    radial-gradient(circle at 68px 10px, #7d5614 0 8px, transparent 9px),
+    radial-gradient(circle at 88px 16px, #94691e 0 8px, transparent 9px);
+  animation: notfound-kibble 1.4s ease-in-out infinite;
+}
+
+.not-found-dog-actor {
+  position: absolute;
+  left: 48%;
+  bottom: 88px;
+  width: 316px;
+  height: 228px;
+  transform: translateX(-10%);
+  z-index: 3;
+}
+
+.not-found-dog {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.not-found-dog__shadow {
+  position: absolute;
+  left: 52px;
+  bottom: 8px;
+  width: 206px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(15, 74, 18, 0.12);
+  filter: blur(8px);
+}
+
+.not-found-dog__body {
+  position: absolute;
+  right: 18px;
+  bottom: 52px;
+  width: 196px;
+  height: 112px;
+  border-radius: 78px 82px 72px 62px;
+  background:
+    linear-gradient(145deg, #d99762 0%, #bf7748 52%, #9d5933 100%);
+  box-shadow:
+    inset -18px -18px 24px rgba(124, 67, 32, 0.4),
+    inset 18px 18px 24px rgba(255, 216, 180, 0.32);
+  animation: notfound-dog-float 3.8s ease-in-out infinite;
+}
+
+.not-found-dog__chest {
+  position: absolute;
+  left: 126px;
+  bottom: 66px;
+  width: 72px;
+  height: 88px;
+  border-radius: 50px;
+  background: linear-gradient(180deg, #f7ebdb 0%, #f1caa6 100%);
+  transform: rotate(10deg);
+}
+
+.not-found-dog__tail {
+  position: absolute;
+  right: -18px;
+  bottom: 120px;
+  width: 92px;
+  height: 22px;
+  border-radius: 999px;
+  transform-origin: 10px center;
+  background: linear-gradient(180deg, #b56d3f 0%, #8f4d28 100%);
+  animation: notfound-tail 1.45s ease-in-out infinite;
+}
+
+.not-found-dog__leg {
+  position: absolute;
+  bottom: 24px;
+  width: 32px;
+  height: 90px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #e2a577 0%, #a86239 100%);
+  box-shadow: inset 0 -12px 16px rgba(124, 67, 32, 0.28);
+}
+
+.not-found-dog__leg::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  bottom: -2px;
+  height: 18px;
+  border-radius: 999px;
+  background: #f7ebdb;
+}
+
+.not-found-dog__leg--front {
+  left: 132px;
+}
+
+.not-found-dog__leg--rear {
+  left: 198px;
+}
+
+.not-found-dog__leg--back {
+  left: 234px;
+  height: 78px;
+}
+
+.not-found-dog__neck {
+  position: absolute;
+  left: 102px;
+  bottom: 104px;
+  width: 72px;
+  height: 54px;
+  border-radius: 32px;
+  transform: rotate(-14deg);
+  background: linear-gradient(160deg, #e9b081 0%, #b86b40 100%);
+}
+
+.not-found-dog__head {
+  position: absolute;
+  left: 32px;
+  bottom: 102px;
+  width: 108px;
+  height: 90px;
+  border-radius: 56px 46px 46px 58px;
+  transform-origin: 78px 74px;
+  background:
+    linear-gradient(145deg, #ecb784 0%, #cd8551 48%, #a85d35 100%);
+  box-shadow:
+    inset -12px -14px 18px rgba(124, 67, 32, 0.32),
+    inset 14px 14px 20px rgba(255, 225, 196, 0.3);
+}
+
+.not-found-dog__ear {
+  position: absolute;
+  top: -4px;
+  width: 30px;
+  height: 44px;
+  border-radius: 22px 22px 10px 10px;
+  background: linear-gradient(180deg, #80421f 0%, #633019 100%);
+}
+
+.not-found-dog__ear--front {
+  left: 16px;
+  transform: rotate(-24deg);
+}
+
+.not-found-dog__ear--back {
+  right: 24px;
+  height: 38px;
+  transform: rotate(10deg);
+}
+
+.not-found-dog__muzzle {
+  position: absolute;
+  left: -6px;
+  bottom: 10px;
+  width: 64px;
+  height: 48px;
+  border-radius: 26px 30px 26px 28px;
+  background: linear-gradient(180deg, #f8ecdc 0%, #e7be92 100%);
+}
+
+.not-found-dog__nose {
+  position: absolute;
+  left: -6px;
+  bottom: 28px;
+  width: 18px;
+  height: 14px;
+  border-radius: 999px;
+  background: #2b201d;
+}
+
+.not-found-dog__eye {
+  position: absolute;
+  left: 36px;
+  top: 34px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 6px 5px, #ffffff 0 2px, #2b201d 3px 100%);
+}
+
+.not-found-dog__collar {
+  position: absolute;
+  left: 42px;
+  bottom: 2px;
+  width: 42px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--nf-lime);
+  box-shadow: 0 0 0 3px rgba(15, 74, 18, 0.05);
+}
+
+.not-found-scene__bubble {
+  position: absolute;
+  left: 46%;
+  top: 190px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--nf-green);
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow: 0 18px 26px rgba(15, 74, 18, 0.14);
+  animation: notfound-bubble 1.8s ease-in-out infinite;
+}
+
+.not-found-scene--sniff .not-found-dog__head {
+  animation: notfound-head-sniff 1.2s ease-in-out infinite;
+}
+
+.not-found-scene--bark .not-found-dog__head {
+  animation: notfound-head-bark 0.82s ease-in-out infinite;
+}
+
+.not-found-scene--wag .not-found-dog__head {
+  animation: notfound-head-wag 0.9s ease-in-out infinite;
+}
+
+.not-found-scene--bark .not-found-scene__bubble {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.not-found-scene--wag .not-found-product-card {
+  box-shadow: 0 28px 44px rgba(15, 74, 18, 0.18);
+}
+
+.not-found-guides {
+  padding-bottom: clamp(52px, 7vw, 92px);
+}
+
+.not-found-guides__header {
+  max-width: 68ch;
+}
+
+.not-found-guides__title {
+  margin-top: 18px;
+  font-size: clamp(2.1rem, 4vw, 3.75rem);
+  color: var(--nf-green);
+}
+
+.not-found-guides__copy {
+  margin-top: 14px;
+}
+
+.not-found-guide-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.not-found-guide-card {
+  overflow: hidden;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.not-found-guide-card__media {
+  position: relative;
+  min-height: 220px;
+  background:
+    radial-gradient(circle at top right, rgba(235, 244, 102, 0.24), transparent 30%),
+    linear-gradient(180deg, #faf7ee 0%, #ffffff 100%);
+}
+
+.not-found-guide-card__image {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+}
+
+.not-found-guide-card__body {
+  padding: 22px;
+}
+
+.not-found-guide-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.not-found-guide-card__title {
+  font-size: 1.34rem;
+}
+
+.not-found-guide-card__text {
+  margin: 12px 0 0;
+}
+
+.not-found-guide-card__link {
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: var(--nf-green);
+  color: #fffef8;
+  font-size: 0.94rem;
+  font-weight: 700;
+  box-shadow: 0 16px 24px rgba(15, 74, 18, 0.16);
+}
+
+@keyframes notfound-kibble {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes notfound-dog-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes notfound-tail {
+  0%,
+  100% {
+    transform: rotate(18deg);
+  }
+  50% {
+    transform: rotate(-12deg);
+  }
+}
+
+@keyframes notfound-head-sniff {
+  0%,
+  100% {
+    transform: rotate(2deg) translateY(0);
+  }
+  50% {
+    transform: rotate(16deg) translate(-6px, 14px);
+  }
+}
+
+@keyframes notfound-head-bark {
+  0%,
+  100% {
+    transform: rotate(-5deg) translateY(0);
+  }
+  35% {
+    transform: rotate(-15deg) translate(-2px, -4px);
+  }
+  65% {
+    transform: rotate(8deg) translateY(2px);
+  }
+}
+
+@keyframes notfound-head-wag {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes notfound-bubble {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes notfound-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (min-width: 768px) {
+  .not-found-reassurance-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .not-found-guide-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .not-found-hero__inner {
+    grid-template-columns: minmax(0, 0.96fr) minmax(500px, 1.04fr);
+  }
+}
+
+@media (max-width: 1099px) {
+  .not-found-scene {
+    min-height: 620px;
+  }
+
+  .not-found-scene__photo-card {
+    right: 22px;
+  }
+}
+
+@media (max-width: 767px) {
+  .not-found-hero,
+  .not-found-guides {
+    padding-inline: 16px;
+  }
+
+  .not-found-hero__banner {
+    margin-bottom: 28px;
+  }
+
+  .not-found-title {
+    max-width: none;
+    font-size: clamp(2.45rem, 11vw, 4rem);
+  }
+
+  .not-found-guides__title {
+    font-size: clamp(1.9rem, 10vw, 3rem);
+  }
+
+  .not-found-status-card,
+  .not-found-reassurance-card,
+  .not-found-guide-card__body {
+    padding: 20px;
+  }
+
+  .not-found-scene {
+    min-height: 700px;
+    border-radius: 30px;
+  }
+
+  .not-found-scene__photo-card {
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    width: auto;
+  }
+
+  .not-found-scene__photo-image {
+    height: 190px;
+  }
+
+  .not-found-product-card {
+    width: 150px;
+  }
+
+  .not-found-product-card--one {
+    left: 18px;
+    top: 256px;
+  }
+
+  .not-found-product-card--two {
+    right: 18px;
+    bottom: 180px;
+  }
+
+  .not-found-dog-actor {
+    left: 50%;
+    bottom: 120px;
+    width: 286px;
+    transform: translateX(-42%);
+  }
+
+  .not-found-bowl {
+    left: 14px;
+    bottom: 140px;
+    width: 112px;
+  }
+
+  .not-found-scene__bubble {
+    left: auto;
+    right: 20px;
+    top: 420px;
+  }
+
+  .not-found-scene__note-card {
+    left: 18px;
+    right: 18px;
+    bottom: 20px;
+    width: auto;
+  }
+}
+
+@media (max-width: 479px) {
+  .not-found-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .not-found-button,
+  .not-found-guide-card__link {
+    width: 100%;
+  }
+
+  .not-found-button--ghost {
+    justify-content: center;
+    padding-inline: 16px;
+    border: 1px solid rgba(15, 74, 18, 0.12);
+    background: rgba(255, 255, 255, 0.72);
+    border-radius: 999px;
+  }
+
+  .not-found-scene {
+    min-height: 760px;
+  }
+
+  .not-found-product-card {
+    width: 136px;
+    padding: 12px;
+  }
+
+  .not-found-product-card--one {
+    top: 248px;
+  }
+
+  .not-found-product-card--two {
+    right: 12px;
+    bottom: 188px;
+  }
+
+  .not-found-dog-actor {
+    width: 250px;
+    bottom: 126px;
+    transform: translateX(-45%);
+  }
+
+  .not-found-scene__bubble {
+    right: 12px;
+    top: 436px;
+    min-width: 98px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .not-found-page *,
+  .not-found-page *::before,
+  .not-found-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

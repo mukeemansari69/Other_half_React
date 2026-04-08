@@ -32,6 +32,7 @@ import RegisterPage from './Pages/RegisterPage.jsx';
 import AccountDashboardPage from './Pages/AccountDashboardPage.jsx';
 import AdminDashboardPage from './Pages/AdminDashboardPage.jsx';
 import CartPage from './Pages/CartPage.jsx';
+import NotFoundPage from './Pages/NotFoundPage.jsx';
 
 
 const App = () => {
@@ -96,7 +97,7 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="*" element={<Home />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
           <Footer />
         </CartProvider>

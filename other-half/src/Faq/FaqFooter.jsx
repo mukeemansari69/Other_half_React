@@ -1,5 +1,6 @@
 import React from "react";
 import "/public/Default/css/FaqFooter.css";
+import { NavLink } from "react-router-dom";
 
 const FaqFooter = () => {
   return (
@@ -26,9 +27,11 @@ const FaqFooter = () => {
             </p>
 
             {/* BUTTON */}
-            <a href="#" className="FaqFooter-btn">
+           <NavLink to="/contact" className="FaqFooter-btn">
+               <a >
               CONTACT US
             </a>
+            </NavLink>
          
           </div>
           
@@ -39,9 +42,11 @@ const FaqFooter = () => {
       <div className="FaqFooter-bottom">
         <p>
           See for yourself how convenient otherhalf can be and{" "}
-          <a href="#" className="FaqFooter-link">
-            sign up
-          </a>{" "}
+          <NavLink to="/login" className="FaqFooter-link">
+sign up
+            </NavLink>
+          
+          {" "}
           for a subscription today!
         </p>
       </div>
