@@ -33,6 +33,7 @@ import AccountDashboardPage from './Pages/AccountDashboardPage.jsx';
 import AdminDashboardPage from './Pages/AdminDashboardPage.jsx';
 import CartPage from './Pages/CartPage.jsx';
 import NotFoundPage from './Pages/NotFoundPage.jsx';
+import ReviewPage from './Pages/ReviewPage.jsx';
 
 
 const App = () => {
@@ -86,6 +87,14 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <AccountDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/review"
+              element={
+                <ProtectedRoute>
+                  <ReviewPage />
                 </ProtectedRoute>
               }
             />

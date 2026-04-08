@@ -5,6 +5,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
+
 const ROOT_DIR = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const LEGACY_DATA_DIR = path.join(ROOT_DIR, "server", "data");
 const LEGACY_DATABASE_FILE = path.join(LEGACY_DATA_DIR, "db.json");
@@ -32,6 +34,7 @@ const baseDatabase = () => ({
   newsletterSubscribers: [],
   quizSubmissions: [],
   orders: [],
+  reviews: [],
 });
 
 let writeQueue = Promise.resolve();
@@ -173,6 +176,7 @@ const createSeedOrders = (user) => [
     deliveryDueAt: createIsoDate(-8),
     items: [
       {
+        productId: "daily-duo",
         name: "Daily Duo Bundle",
         quantity: 1,
         unitPrice: 89,
@@ -199,6 +203,7 @@ const createSeedOrders = (user) => [
     deliveryDueAt: createIsoDate(2),
     items: [
       {
+        productId: "doggie-dental",
         name: "Doggie Dental Powder",
         quantity: 1,
         unitPrice: 49,
@@ -225,6 +230,7 @@ const createSeedOrders = (user) => [
     deliveryDueAt: createIsoDate(4),
     items: [
       {
+        productId: "everyday-one",
         name: "Everyday Wellness Plan",
         quantity: 1,
         unitPrice: 199,
@@ -236,6 +242,67 @@ const createSeedOrders = (user) => [
     updatedAt: createIsoDate(-1),
   },
 ];
+
+const createSeedReviews = (user) => {
+  const productEntries = [
+    {
+      productId: "everyday-one",
+      title: "He feels more active through the whole day",
+      description:
+        "We started using Everyday for Milo and within a few weeks his routine felt steadier, his energy looked better, and his coat started looking healthier too.",
+      rating: 5,
+      profile: "Golden Retriever mom | Everyday customer",
+    },
+    {
+      productId: "doggie-dental",
+      title: "Way easier than brushing every night",
+      description:
+        "Dental support was always a struggle here, so having something simple to add to food made a real difference. Breath improved and the routine felt much calmer.",
+      rating: 4,
+      profile: "Rescue dog parent | Doggie Dental user",
+    },
+    {
+      productId: "daily-duo",
+      title: "One bundle made the whole routine easier",
+      description:
+        "The Daily Duo worked well for us because it covered both daily wellness and mouth care in one repeatable habit. It feels easier to stay consistent now.",
+      rating: 5,
+      profile: "Labrador dad | Daily Duo subscriber",
+    },
+  ];
+
+  return productEntries
+    .map((entry, index) => {
+      const product = resolveReviewProduct({ productId: entry.productId });
+
+      if (!product) {
+        return null;
+      }
+
+      const reviewCreatedAt = createIsoDate(-6 + index);
+
+      return {
+        id: randomUUID(),
+        userId: user?.id || null,
+        productId: product.productId,
+        productName: product.productName,
+        productRoute: product.route,
+        title: entry.title,
+        description: entry.description,
+        rating: entry.rating,
+        customerName: user?.name || "Other Half customer",
+        customerEmail: user?.email || "",
+        customerProfile: entry.profile,
+        customerImage: product.testimonialImage,
+        sourceOrderId: null,
+        sourceOrderNumber: null,
+        status: "approved",
+        createdAt: reviewCreatedAt,
+        updatedAt: reviewCreatedAt,
+      };
+    })
+    .filter(Boolean);
+};
 
 const ensureDirectories = async () => {
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -284,6 +351,7 @@ const normalizeDatabaseShape = (database) => {
     newsletterSubscribers: ensureArray(safeDatabase.newsletterSubscribers),
     quizSubmissions: ensureArray(safeDatabase.quizSubmissions),
     orders: ensureArray(safeDatabase.orders),
+    reviews: ensureArray(safeDatabase.reviews),
   };
 };
 
@@ -372,6 +440,11 @@ export const seedDatabase = async () => {
 
   if (database.orders.length === 0) {
     database.orders = createSeedOrders(demoUser);
+    didChange = true;
+  }
+
+  if (demoUser && database.reviews.length === 0) {
+    database.reviews = createSeedReviews(demoUser);
     didChange = true;
   }
 

@@ -1,146 +1,180 @@
-
-.testimonial-section{
-background:#FAF9F5;
-padding:80px 0;
-width:100%;
-overflow:hidden;
+.testimonial-section {
+  background: #faf9f5;
+  padding: 80px 0;
+  width: 100%;
+  overflow: hidden;
 }
 
-.testimonial-container{
-
-padding:0 20px;
-display:flex;
-flex-direction:column;
-gap:48px;
+.testimonial-container {
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 }
 
-.testimonial-heading{
-font-family:'Luckiest Guy',cursive;
-font-size:48px;
-line-height:125%;
-text-align:center;
-color:#1A1A1A;
+.testimonial-heading {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 48px;
+  line-height: 125%;
+  text-align: center;
+  color: #1a1a1a;
 }
 
-.testimonial-card{
-background:#FFFFFF;
-border-radius:16px;
-padding:16px;
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-height:100%;
+.testimonial-kicker {
+  margin: 0;
+  text-align: center;
+  color: #0f4a12;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-.card-content{
-display:flex;
-flex-direction:column;
-gap:14px;
+.testimonial-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
-.stars{
-display:flex;
-gap:4px;
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.star{
-font-size:28px;
-color:#d1d5db;
+.stars {
+  display: flex;
+  gap: 4px;
 }
 
-.star.filled{
-color:#0F4A12;
+.star {
+  font-size: 28px;
+  color: #d1d5db;
 }
 
-.card-title{
-font-family:'Poppins',sans-serif;
-font-weight:700;
-font-size:16px;
-line-height:24px;
-color:#1E1E1E;
+.star.filled {
+  color: #0f4a12;
 }
 
-.card-desc{
-font-family:'Poppins',sans-serif;
-font-size:14px;
-line-height:24px;
-color:#444;
+.card-title {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #1e1e1e;
 }
 
-.card-user{
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:12px;
+.card-desc {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+  color: #444444;
 }
 
-.card-user img{
-width:28px;
-height:28px;
-border-radius:50%;
-object-fit:cover;
+.card-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
 }
 
-.card-user span{
-font-family:'Poppins',sans-serif;
-font-weight:500;
-font-size:18px;
-color:#262626;
+.card-user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
-/* MOBILE */
+.card-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-@media (max-width:640px){
-.testimonial-container{
+.card-user-name {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: #262626;
+}
+
+.card-user-meta {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  color: #5e5e5e;
+}
+
+@media (max-width: 640px) {
+  .testimonial-container {
     gap: 24px;
+  }
+
+  .testimonial-section {
+    padding: 32px 0;
+  }
+
+  .testimonial-heading {
+    font-size: 34px;
+  }
+
+  .testimonial-kicker {
+    font-size: 11px;
+  }
+
+  .star {
+    font-size: 20px;
+  }
+
+  .card-title {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .card-user img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .card-user-name {
+    font-size: 13px;
+  }
+
+  .card-user-meta {
+    font-size: 11px;
+    line-height: 16px;
+  }
 }
 
-.testimonial-section{
-padding:32px 0px;
+.testimonial-swiper {
+  width: 100%;
 }
 
-.testimonial-heading{
-font-size:34px;
+.swiper {
+  width: 100%;
 }
 
-.star{
-font-size:20px;
+.swiper-wrapper {
+  align-items: stretch;
 }
 
-.card-title{
-font-size:12px;
-line-height:16px;
+.swiper-slide {
+  height: auto;
+  display: flex;
 }
 
-.card-desc{
-font-size:12px;
-}
-
-.card-user span{
-font-size:13px;
-}
-
-}
-/* SWIPER FIX */
-/* SWIPER FIX */
-
-.testimonial-swiper{
-width:100%;
-}
-
-.swiper{
-width:100%;
-}
-
-.swiper-wrapper{
-align-items:stretch;
-}
-
-.swiper-slide{
-height:auto;
-display:flex;
-}
-
-.swiper-slide > div{
-width:100%;
+.swiper-slide > div {
+  width: 100%;
 }

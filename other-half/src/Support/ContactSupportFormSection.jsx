@@ -16,6 +16,8 @@ import { apiRequest } from "../lib/api.js";
 
 const MAX_FILE_COUNT = 5;
 const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024;
+const emailPattern = /\S+@\S+\.\S+/;
+const phonePattern = /^[+]?[\d\s\-()]{7,}$/;
 
 const buildInitialFormState = (user = null) => ({
   team: "support",
@@ -94,6 +96,49 @@ const formatFileSize = (size) => {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+const getFieldErrors = (formState) => {
+  const errors = {};
+  const trimmedName = formState.name.trim();
+  const trimmedEmail = formState.email.trim();
+  const trimmedPhone = formState.phone.trim();
+  const trimmedSubject = formState.subject.trim();
+  const trimmedMessage = formState.message.trim();
+
+  if (!trimmedName) {
+    errors.name = "Full name is required so our team knows who needs help.";
+  }
+
+  if (!trimmedEmail) {
+    errors.email = "Email address is required so we can reply to you.";
+  } else if (!emailPattern.test(trimmedEmail)) {
+    errors.email = "Enter a valid email address, for example name@example.com.";
+  }
+
+  if (trimmedPhone && !phonePattern.test(trimmedPhone)) {
+    errors.phone = "Phone number should include at least 7 digits if you want a callback.";
+  } else if (formState.preferredContact === "phone" && !trimmedPhone) {
+    errors.phone = "Add a phone number if you want the team to contact you by phone.";
+  }
+
+  if (!trimmedSubject) {
+    errors.subject = "Subject is required so the admin team can spot the issue quickly.";
+  } else if (trimmedSubject.length < 6) {
+    errors.subject = "Subject should be at least 6 characters long.";
+  }
+
+  if (!trimmedMessage) {
+    errors.message = "Please explain what happened and what help you need.";
+  } else if (trimmedMessage.length < 20) {
+    errors.message = "Message should be at least 20 characters with enough detail for review.";
+  }
+
+  if (!formState.consent) {
+    errors.consent = "Please allow the selected team to contact you about this request.";
+  }
+
+  return errors;
+};
+
 const createMailtoUrl = ({ recipient, subject, formState, files }) => {
   const attachmentSummary =
     files.length > 0
@@ -134,6 +179,9 @@ const ContactSupportFormSection = () => {
   const [attachments, setAttachments] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [touchedFields, setTouchedFields] = useState({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const selectedTeam = useMemo(() => {
     return teamOptions.find((team) => team.id === formState.team) || teamOptions[0];
@@ -170,6 +218,20 @@ const ContactSupportFormSection = () => {
     };
   }, [imagePreviews]);
 
+  useEffect(() => {
+    if (!submitAttempted && Object.keys(touchedFields).length === 0) {
+      return;
+    }
+
+    setFieldErrors(getFieldErrors(formState));
+  }, [formState, submitAttempted, touchedFields]);
+
+  const visibleErrors = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(fieldErrors).filter(([field]) => submitAttempted || touchedFields[field])
+    );
+  }, [fieldErrors, submitAttempted, touchedFields]);
+
   const updateField = (key, value) => {
     setFormState((currentState) => ({
       ...currentState,
@@ -177,9 +239,19 @@ const ContactSupportFormSection = () => {
     }));
   };
 
+  const markTouched = (key) => {
+    setTouchedFields((currentState) => ({
+      ...currentState,
+      [key]: true,
+    }));
+  };
+
   const resetForm = ({ keepStatus = false } = {}) => {
     setFormState(buildInitialFormState(user));
     setAttachments([]);
+    setFieldErrors({});
+    setTouchedFields({});
+    setSubmitAttempted(false);
     if (!keepStatus) {
       setStatus(null);
     }
@@ -217,44 +289,17 @@ const ContactSupportFormSection = () => {
     setStatus(null);
   };
 
-  const validateForm = () => {
-    if (!formState.name.trim()) {
-      return "Please enter your name.";
-    }
-
-    if (!formState.email.trim()) {
-      return "Please enter your email address.";
-    }
-
-    if (!/\S+@\S+\.\S+/.test(formState.email)) {
-      return "Please enter a valid email address.";
-    }
-
-    if (!formState.subject.trim()) {
-      return "Please add a subject so the team can understand the issue quickly.";
-    }
-
-    if (!formState.message.trim() || formState.message.trim().length < 20) {
-      return "Please describe what happened and how it is affecting your dog, order, or plan.";
-    }
-
-    if (!formState.consent) {
-      return "Please confirm that the team can contact you about this request.";
-    }
-
-    return null;
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const nextErrors = getFieldErrors(formState);
+    setFieldErrors(nextErrors);
+    setSubmitAttempted(true);
 
-    const validationError = validateForm();
-
-    if (validationError) {
+    if (Object.keys(nextErrors).length > 0) {
       setStatus({
         type: "error",
         title: "Please review the form",
-        message: validationError,
+        message: "Fill the highlighted fields so the admin team can receive a complete request.",
       });
       return;
     }
@@ -287,12 +332,19 @@ const ContactSupportFormSection = () => {
         token,
       });
 
+      const emailDelivery = response.emailDelivery || null;
+      const emailDelivered = Boolean(emailDelivery?.delivered);
+
       setStatus({
-        type: "success",
-        title: "Request sent successfully",
-        message:
-          response.message ||
-          "Your message was sent to the support dashboard with the details your team needs.",
+        type: emailDelivered ? "success" : "warning",
+        title: emailDelivered ? "Request sent successfully" : "Request saved, email pending",
+        message: emailDelivered
+          ? response.message ||
+            "Your message was sent to the support dashboard and emailed to the admin inbox."
+          : emailDelivery?.reason
+            ? `${response.message} ${emailDelivery.reason}`
+            : response.message ||
+              "Your request was saved, but admin email delivery still needs mail configuration.",
       });
       resetForm({ keepStatus: true });
     } catch (error) {
@@ -375,37 +427,58 @@ const ContactSupportFormSection = () => {
 
         <form className="support-contact-form" onSubmit={handleSubmit}>
           <div className="grid support-contact-form__grid">
-            <label className="support-field">
+            <label className={`support-field ${visibleErrors.name ? "support-field--error" : ""}`}>
               <span className="support-field__label">Full name</span>
               <input
                 type="text"
                 value={formState.name}
                 onChange={(event) => updateField("name", event.target.value)}
+                onBlur={() => markTouched("name")}
                 className="support-field__control"
                 placeholder="Your name"
+                aria-invalid={Boolean(visibleErrors.name)}
               />
+              {visibleErrors.name ? (
+                <span className="support-field__hint support-field__hint--error">
+                  {visibleErrors.name}
+                </span>
+              ) : null}
             </label>
 
-            <label className="support-field">
+            <label className={`support-field ${visibleErrors.email ? "support-field--error" : ""}`}>
               <span className="support-field__label">Email address</span>
               <input
                 type="email"
                 value={formState.email}
                 onChange={(event) => updateField("email", event.target.value)}
+                onBlur={() => markTouched("email")}
                 className="support-field__control"
                 placeholder="name@example.com"
+                aria-invalid={Boolean(visibleErrors.email)}
               />
+              {visibleErrors.email ? (
+                <span className="support-field__hint support-field__hint--error">
+                  {visibleErrors.email}
+                </span>
+              ) : null}
             </label>
 
-            <label className="support-field">
+            <label className={`support-field ${visibleErrors.phone ? "support-field--error" : ""}`}>
               <span className="support-field__label">Phone number</span>
               <input
                 type="tel"
                 value={formState.phone}
                 onChange={(event) => updateField("phone", event.target.value)}
+                onBlur={() => markTouched("phone")}
                 className="support-field__control"
                 placeholder="Optional"
+                aria-invalid={Boolean(visibleErrors.phone)}
               />
+              {visibleErrors.phone ? (
+                <span className="support-field__hint support-field__hint--error">
+                  {visibleErrors.phone}
+                </span>
+              ) : null}
             </label>
 
             <label className="support-field">
@@ -430,15 +503,22 @@ const ContactSupportFormSection = () => {
               />
             </label>
 
-            <label className="support-field">
+            <label className={`support-field ${visibleErrors.subject ? "support-field--error" : ""}`}>
               <span className="support-field__label">Subject</span>
               <input
                 type="text"
                 value={formState.subject}
                 onChange={(event) => updateField("subject", event.target.value)}
+                onBlur={() => markTouched("subject")}
                 className="support-field__control"
                 placeholder="A short summary of what went wrong"
+                aria-invalid={Boolean(visibleErrors.subject)}
               />
+              {visibleErrors.subject ? (
+                <span className="support-field__hint support-field__hint--error">
+                  {visibleErrors.subject}
+                </span>
+              ) : null}
             </label>
 
             <label className="support-field">
@@ -486,14 +566,25 @@ const ContactSupportFormSection = () => {
               </select>
             </label>
 
-            <label className="support-field support-field--full">
+            <label
+              className={`support-field support-field--full ${
+                visibleErrors.message ? "support-field--error" : ""
+              }`}
+            >
               <span className="support-field__label">What is going on?</span>
               <textarea
                 value={formState.message}
                 onChange={(event) => updateField("message", event.target.value)}
+                onBlur={() => markTouched("message")}
                 className="support-field__control support-field__control--textarea"
                 placeholder="Tell us what happened, what you noticed with your dog or order, and what kind of help you need from us."
+                aria-invalid={Boolean(visibleErrors.message)}
               />
+              {visibleErrors.message ? (
+                <span className="support-field__hint support-field__hint--error">
+                  {visibleErrors.message}
+                </span>
+              ) : null}
             </label>
           </div>
 
@@ -547,15 +638,24 @@ const ContactSupportFormSection = () => {
             ) : null}
           </div>
 
-          <label className="support-checkbox">
+          <label className={`support-checkbox ${visibleErrors.consent ? "support-checkbox--error" : ""}`}>
             <input
               type="checkbox"
               checked={formState.consent}
               onChange={(event) => updateField("consent", event.target.checked)}
+              onBlur={() => markTouched("consent")}
+              aria-invalid={Boolean(visibleErrors.consent)}
             />
-            <span>
-              I agree that the selected team can contact me using the details above so they
-              can help with this request.
+            <span className="support-checkbox__copy">
+              <span>
+                I agree that the selected team can contact me using the details above so they
+                can help with this request.
+              </span>
+              {visibleErrors.consent ? (
+                <span className="support-field__hint support-field__hint--error support-field__hint--checkbox">
+                  {visibleErrors.consent}
+                </span>
+              ) : null}
             </span>
           </label>
 
@@ -600,17 +700,17 @@ const ContactSupportFormSection = () => {
           </p>
         </div>
 
-        <div className="support-form-side-card__section">
-          <p className="support-form-side-card__eyebrow">Selected inbox</p>
-          <div className="support-form-inbox">
-            <Mail size={18} />
-            <span>{selectedTeam.email}</span>
+          <div className="support-form-side-card__section">
+            <p className="support-form-side-card__eyebrow">Selected inbox</p>
+            <div className="support-form-inbox">
+              <Mail size={18} />
+              <span>{selectedTeam.email}</span>
+            </div>
+            <p className="support-form-side-card__text">
+              Requests land in the backend dashboard first, and when SMTP is configured
+              they are also emailed to the admin inbox for faster follow-up.
+            </p>
           </div>
-          <p className="support-form-side-card__text">
-            Requests land in the backend dashboard and stay visible for follow-up, with
-            email fallback only if the server is unavailable.
-          </p>
-        </div>
 
         <div className="support-form-side-card__section">
           <p className="support-form-side-card__eyebrow">Best things to include</p>

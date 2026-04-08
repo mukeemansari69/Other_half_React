@@ -1,6 +1,6 @@
 import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
@@ -28,6 +28,7 @@ const CartPage = () => {
     cartCount,
   } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [status, setStatus] = useState({ type: "", message: "" });
   const [checkingOut, setCheckingOut] = useState(false);
   const [upiCheckoutInfo, setUpiCheckoutInfo] = useState(null);
@@ -44,30 +45,76 @@ const CartPage = () => {
 
   useEffect(() => {
     const checkoutState = searchParams.get("checkout");
+    const orderId = searchParams.get("orderId");
 
     if (!checkoutState) {
       return;
     }
 
-    if (checkoutState === "success") {
-      clearCart();
-      setStatus({
-        type: "success",
-        message:
-          "Payment received. Thank you. Your order has been placed successfully.",
-      });
-    } else if (checkoutState === "cancelled") {
-      setStatus({
-        type: "error",
-        message:
-          "Payment was cancelled. Your cart is still saved, and you can try again anytime.",
-      });
-    }
+    let isActive = true;
 
-    const nextParams = new URLSearchParams(searchParams);
-    nextParams.delete("checkout");
-    setSearchParams(nextParams, { replace: true });
-  }, [clearCart, searchParams, setSearchParams]);
+    const handleCheckoutState = async () => {
+      try {
+        if (orderId && checkoutState === "success") {
+          await apiRequest(`/orders/${orderId}/status`, {
+            method: "POST",
+            body: { status: "paid" },
+          });
+        }
+
+        if (orderId && checkoutState === "cancelled") {
+          await apiRequest(`/orders/${orderId}/status`, {
+            method: "POST",
+            body: { status: "cancelled" },
+          });
+        }
+      } catch {
+        // The cart can still proceed locally even if the local demo order update fails.
+      }
+
+      if (!isActive) {
+        return;
+      }
+
+      if (checkoutState === "success") {
+        clearCart();
+
+        if (user) {
+          navigate("/review", {
+            replace: true,
+            state: {
+              fromCheckout: true,
+              orderId,
+            },
+          });
+          return;
+        }
+
+        setStatus({
+          type: "success",
+          message:
+            "Payment received. Thank you. Your order has been placed successfully.",
+        });
+      } else if (checkoutState === "cancelled") {
+        setStatus({
+          type: "error",
+          message:
+            "Payment was cancelled. Your cart is still saved, and you can try again anytime.",
+        });
+      }
+
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete("checkout");
+      nextParams.delete("orderId");
+      setSearchParams(nextParams, { replace: true });
+    };
+
+    handleCheckoutState();
+
+    return () => {
+      isActive = false;
+    };
+  }, [clearCart, navigate, searchParams, setSearchParams, user]);
 
   const handleCheckout = async () => {
     if (items.length === 0) {
@@ -91,6 +138,7 @@ const CartPage = () => {
           cancelUrl: `${window.location.origin}/cart?checkout=cancelled`,
           items: items.map((item) => ({
             id: item.id,
+            productId: item.productId,
             name: item.name,
             description: item.description,
             image: item.image,

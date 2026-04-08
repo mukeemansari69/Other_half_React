@@ -676,9 +676,30 @@
   box-shadow: 0 0 0 4px rgba(235, 244, 102, 0.2);
 }
 
+.support-field--error .support-field__label {
+  color: var(--support-green);
+}
+
+.support-field--error .support-field__control {
+  border-color: rgba(15, 74, 18, 0.46);
+  background: #f4faea;
+  box-shadow: 0 0 0 4px rgba(15, 74, 18, 0.08);
+}
+
 .support-field__control--textarea {
   min-height: 170px;
   resize: vertical;
+}
+
+.support-field__hint {
+  display: block;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.support-field__hint--error {
+  color: var(--support-green);
+  font-weight: 600;
 }
 
 .support-upload-card {
@@ -771,9 +792,17 @@
   align-items: flex-start;
   gap: 10px;
   margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.52);
   color: var(--support-copy);
   font-size: 0.92rem;
   line-height: 1.68;
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
 }
 
 .support-checkbox input {
@@ -782,6 +811,22 @@
   margin-top: 2px;
   accent-color: var(--support-green);
   flex-shrink: 0;
+}
+
+.support-checkbox__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.support-checkbox--error {
+  border-color: rgba(15, 74, 18, 0.34);
+  background: rgba(244, 250, 234, 0.92);
+  box-shadow: 0 0 0 4px rgba(15, 74, 18, 0.06);
+}
+
+.support-field__hint--checkbox {
+  margin-top: 0;
 }
 
 .support-status {

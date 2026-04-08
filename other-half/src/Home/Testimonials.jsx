@@ -1,95 +1,141 @@
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+
 import "swiper/css";
 import "/public/Home/css/testimonials.css";
+import { apiRequest } from "../lib/api.js";
+import testimonialsData from "../testimonialsData.js";
+import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 
-const reviews = [
-  {
-    id: 1,
-    name: "Laura, Max’s Owner",
-    image: "/Home/images/d1.jpg",
-    rating: 4,
-    title: "My dog is like a puppy again!",
-    desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again. His coat is shinier, and he seems happier overall.",
-  },
-  {
-    id: 2,
-    name: "Laura, Max’s Owner",
-    image: "/Home/images/d2.jpg",
-    rating: 4,
-    title: "My dog is like a puppy again!",
-    desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again. His coat is shinier.",
-  },
-  {
-    id: 3,
-    name: "Laura, Max’s Owner",
-    image: "/Home/images/d3.jpg",
-    rating: 4,
-    title: "My dog is like a puppy again!",
-    desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
-  },
-  {
-    id: 4,
-    name: "Laura, Max’s Owner",
-    image: "/Home/images/d4.jpg",
-    rating: 4,
-    title: "My dog is like a puppy again!",
-    desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
-  },
-  {
-    id: 5,
-    name: "Laura, Max’s Owner",
-    image: "/Home/images/d4.jpg",
-    rating: 4,
-    title: "My dog is like a puppy again!",
-    desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
-  },
-  {
-    id: 6,
-    name: "Laura, Max’s Owner",
-    image: "/Home/images/d4.jpg",
-    rating: 4,
-    title: "My dog is like a puppy again!",
-    desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
-  },
-  {
-    id: 7,
-    name: "Laura, Max’s Owner",
-    image: "/Home/images/d4.jpg",
-    rating: 4,
-    title: "My dog is like a puppy again!",
-    desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
-  },
-  {
-    id: 8,
-    name: "Laura, Max’s Owner",
-    image: "/Home/images/d4.jpg",
-    rating: 4,
-    title: "My dog is like a puppy again!",
-    desc: "After just a few weeks of using Everyday One, my 8-year-old Labrador is running around like he's 2 again.",
-  },
-];
+const MAX_STARS = 5;
 
 const Stars = ({ count }) => {
+  const normalizedCount = Math.max(0, Math.min(MAX_STARS, count));
+
   return (
     <div className="stars">
-      {[...Array(5)].map((_, i) => (
-        <span key={i} className={i < count ? "star filled" : "star"}>
-          ★
+      {[...Array(MAX_STARS)].map((_, index) => (
+        <span key={index} className={index < normalizedCount ? "star filled" : "star"}>
+          {"\u2605"}
         </span>
       ))}
     </div>
   );
 };
 
-export default function Testimonials() {
-  return (
-    <section className="testimonial-section w-full">
-      
-      {/* ✅ 1920 CENTER CONTAINER */}
-      <div className="max-w-[1920px] mx-auto">
+const mapApiReviewToCard = (review) => ({
+  id: review.id,
+  productId: review.productId,
+  name: review.customerName,
+  profile: review.customerProfile,
+  image: review.customerImage,
+  rating: review.rating,
+  title: review.title,
+  description: review.description,
+});
 
+export default function Testimonials({ items = testimonialsData }) {
+  const location = useLocation();
+  const sectionRef = useRef(null);
+  const [apiReviews, setApiReviews] = useState([]);
+  const reviewProductId = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return searchParams.get("reviewsProduct") || "";
+  }, [location.search]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadReviews = async () => {
+      try {
+        const query = reviewProductId
+          ? `/reviews?productId=${encodeURIComponent(reviewProductId)}`
+          : "/reviews";
+        const response = await apiRequest(query);
+
+        if (!isActive) {
+          return;
+        }
+
+        setApiReviews((response.reviews || []).map(mapApiReviewToCard));
+      } catch {
+        if (isActive) {
+          setApiReviews([]);
+        }
+      }
+    };
+
+    loadReviews();
+
+    return () => {
+      isActive = false;
+    };
+  }, [reviewProductId]);
+
+  const fallbackItems = useMemo(() => {
+    const filteredItems = reviewProductId
+      ? items.filter((item) => item.productId === reviewProductId)
+      : items;
+
+    if (filteredItems.length > 0) {
+      return filteredItems;
+    }
+
+    return items;
+  }, [items, reviewProductId]);
+
+  const displayItems = apiReviews.length > 0 ? apiReviews : fallbackItems;
+  const reviewProduct = reviewProductId
+    ? resolveReviewProduct({ productId: reviewProductId })
+    : null;
+  const shouldScrollToReviews = location.hash === "#reviews";
+
+  useLayoutEffect(() => {
+    if (!shouldScrollToReviews) {
+      return undefined;
+    }
+
+    let animationFrameId = null;
+    let timeoutId = null;
+
+    const scrollToReviews = () => {
+      const section = sectionRef.current;
+
+      if (!section) {
+        return;
+      }
+
+      section.scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+    };
+
+    animationFrameId = window.requestAnimationFrame(scrollToReviews);
+    timeoutId = window.setTimeout(scrollToReviews, 120);
+
+    return () => {
+      if (animationFrameId) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [displayItems.length, reviewProductId, shouldScrollToReviews]);
+
+  return (
+    <section ref={sectionRef} id="reviews" className="testimonial-section w-full">
+      <div className="max-w-[1920px] mx-auto">
         <div className="testimonial-container">
+          {reviewProduct ? (
+            <p className="testimonial-kicker">
+              Showing pack reviews for {reviewProduct.productName}
+            </p>
+          ) : null}
 
           <h2 className="testimonial-heading">
             LOVED BY PET PARENTS,
@@ -104,8 +150,8 @@ export default function Testimonials() {
               delay: 2500,
               disableOnInteraction: false,
             }}
-            loop={true}
-            loopAdditionalSlides={8}
+            loop={displayItems.length > 1}
+            loopAdditionalSlides={displayItems.length}
             loopFillGroupWithBlank={true}
             spaceBetween={24}
             slidesPerView={1.5}
@@ -118,28 +164,26 @@ export default function Testimonials() {
               1280: { slidesPerView: 4.5 },
             }}
           >
-            {reviews.map((review) => (
+            {displayItems.map((review) => (
               <SwiperSlide key={review.id}>
                 <div className="testimonial-card">
-
                   <div className="card-content">
                     <Stars count={review.rating} />
-
                     <h3 className="card-title">{review.title}</h3>
-
-                    <p className="card-desc">{review.desc}</p>
+                    <p className="card-desc">{review.description}</p>
                   </div>
 
                   <div className="card-user">
-                    <img src={review.image} alt="user" />
-                    <span>{review.name}</span>
+                    <img src={review.image} alt={review.name} />
+                    <div className="card-user-details">
+                      <span className="card-user-name">{review.name}</span>
+                      <p className="card-user-meta">{review.profile}</p>
+                    </div>
                   </div>
-
                 </div>
               </SwiperSlide>
             ))}
           </Swiper>
-
         </div>
       </div>
     </section>

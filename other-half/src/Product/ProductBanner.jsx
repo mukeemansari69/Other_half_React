@@ -11,10 +11,11 @@ import {
   Stethoscope,
   Truck,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import "/public/Product/css/ProductBanner.css";
 import { useCart } from "../context/CartContext.jsx";
+import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 
 const highlightIconMap = {
   clinicallyTested: FlaskConical,
@@ -437,6 +438,8 @@ const ProductBanner = ({
     bundleSuggestions.length > 0
       ? bundleSuggestions[activeSuggestionIndex % bundleSuggestions.length]
       : null;
+  const reviewProduct = resolveReviewProduct({ productId: product.id, productName: product.name });
+  const reviewSectionHref = reviewProduct?.reviewSectionHref || product.review.href;
   const visibleTags = showAllTags
     ? product.tags
     : product.tags.slice(0, product.initialVisibleTags);
@@ -601,12 +604,12 @@ const ProductBanner = ({
                     {product.review.count} reviews
                   </span>
                 </div>
-                <a
-                  href={product.review.href}
+                <Link
+                  to={reviewSectionHref}
                   className="text-sm font-medium text-[#1A1A1A] underline underline-offset-2 sm:text-base p-review"
                 >
                   See All Reviews
-                </a>
+                </Link>
               </div>
 
               <div className="flex flex-wrap gap-2">

@@ -6,8 +6,10 @@ This project now includes a React + Vite frontend and a Node.js + Express backen
 - Protected customer account dashboard
 - Protected admin dashboard
 - API-backed support requests
+- SMTP-backed admin email delivery for Contact Us requests when mail env vars are configured
 - API-backed newsletter signups
 - API-backed quiz result saving
+- API-backed purchased-product reviews
 - Persistent local JSON storage for demo data
 
 ## Run the app
@@ -64,6 +66,13 @@ npm run dev:server
 
 If you use a non-default frontend origin, set `CLIENT_ORIGIN` as a comma-separated list.
 
+Contact Us email delivery:
+
+- Support requests are always saved in the backend dashboard.
+- To also send them to the admin inbox, set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and `MAIL_FROM`.
+- Optional notification inbox vars: `SUPPORT_NOTIFICATION_EMAIL` or `ADMIN_NOTIFICATION_EMAIL`.
+- If SMTP is missing, the UI now shows that the request was saved but admin email is still pending configuration.
+
 ## Demo credentials
 
 Admin:
@@ -94,6 +103,7 @@ Frontend:
 - `/register`
 - `/account`
 - `/admin`
+- `/review`
 - `/contact`
 - `/quiz`
 
@@ -106,6 +116,9 @@ Backend:
 - `GET /api/account/summary`
 - `PATCH /api/account/profile`
 - `POST /api/support/requests`
+- `GET /api/reviews`
+- `GET /api/reviews/eligible`
+- `POST /api/reviews`
 - `POST /api/newsletter/subscribe`
 - `POST /api/quiz/submissions`
 - `GET /api/admin/dashboard`

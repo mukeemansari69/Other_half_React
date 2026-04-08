@@ -21,6 +21,7 @@ const products = [
     oldPrice: "$54.00",
     discount: "15% OFF",
     cartId: "collection-everyday",
+    productId: "everyday-one",
     cartImage: "/Default/images/col1.png",
     unitPrice: 54,
     cartDescription: "Everyday routine | Standard plan",
@@ -41,6 +42,7 @@ const products = [
     oldPrice: "$42.00",
     discount: "15% OFF",
     cartId: "collection-dental",
+    productId: "doggie-dental",
     cartImage: "/Default/images/col2.png",
     unitPrice: 39.99,
     cartDescription: "Dental support | Standard plan",
@@ -61,6 +63,7 @@ const products = [
     oldPrice: "$77.00",
     discount: "15% OFF",
     cartId: "collection-daily-duo",
+    productId: "daily-duo",
     cartImage: "/Default/images/col3.png",
     unitPrice: 71.98,
     cartDescription: "Daily Duo bundle | Standard plan",
@@ -82,7 +85,7 @@ const OurCollection = () => {
 
     addItem({
       id: item.cartId,
-      productId: item.cartId,
+      productId: item.productId,
       name: item.title,
       description: item.cartDescription,
       image: item.cartImage,

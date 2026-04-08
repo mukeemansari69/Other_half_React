@@ -16,6 +16,8 @@ import {
   UPLOADS_DIR,
   writeDatabase,
 } from "./lib/database.js";
+import { sendSupportRequestEmail } from "./lib/mailer.js";
+import { resolveReviewProduct } from "../shared/reviewProductCatalog.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,6 +58,22 @@ const emailPattern = /\S+@\S+\.\S+/;
 
 const normalizeEmail = (value = "") => value.trim().toLowerCase();
 
+const normalizeTextValue = (value = "") =>
+  String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+
+const addQueryParam = (urlValue, key, value) => {
+  try {
+    const nextUrl = new URL(urlValue);
+    nextUrl.searchParams.set(key, value);
+    return nextUrl.toString();
+  } catch {
+    return urlValue;
+  }
+};
+
 const sortByDateDescending = (collection, field = "createdAt") => {
   return [...collection].sort((firstItem, secondItem) => {
     return new Date(secondItem[field]).getTime() - new Date(firstItem[field]).getTime();
@@ -69,7 +87,100 @@ const summarizeSupportRequest = (supportRequest) => ({
     size: attachment.size,
     mimetype: attachment.mimetype,
   })),
+  emailNotification: supportRequest.emailNotification || null,
 });
+
+const summarizeReview = (review) => ({
+  id: review.id,
+  productId: review.productId,
+  productName: review.productName,
+  productRoute: review.productRoute,
+  title: review.title,
+  description: review.description,
+  rating: review.rating,
+  customerName: review.customerName,
+  customerProfile: review.customerProfile,
+  customerImage: review.customerImage,
+  createdAt: review.createdAt,
+});
+
+const getReviewSummary = (reviews) => {
+  if (!Array.isArray(reviews) || reviews.length === 0) {
+    return {
+      count: 0,
+      averageRating: 0,
+    };
+  }
+
+  const totalRating = reviews.reduce(
+    (runningTotal, review) => runningTotal + (Number(review.rating) || 0),
+    0
+  );
+
+  return {
+    count: reviews.length,
+    averageRating: Number((totalRating / reviews.length).toFixed(1)),
+  };
+};
+
+const resolveCatalogProductFromOrderItem = (item) => {
+  return resolveReviewProduct({
+    productId: item?.productId || "",
+    productName: item?.name || "",
+  });
+};
+
+const getReviewableProductsForUser = (orders, reviews, userId) => {
+  const reviewLookup = new Set(
+    reviews
+      .filter((review) => review.userId === userId)
+      .map((review) => `${review.userId}::${review.productId}`)
+  );
+  const productsById = new Map();
+
+  orders
+    .filter(
+      (order) =>
+        order.userId === userId &&
+        order.orderStatus !== "cancelled" &&
+        (String(order.paymentStatus || "").toLowerCase() === "paid" ||
+          String(order.orderStatus || "").toLowerCase() === "processing" ||
+          String(order.orderStatus || "").toLowerCase() === "shipped" ||
+          String(order.orderStatus || "").toLowerCase() === "delivered" ||
+          String(order.orderStatus || "").toLowerCase() === "placed")
+    )
+    .forEach((order) => {
+      (order.items || []).forEach((item) => {
+        const catalogProduct = resolveCatalogProductFromOrderItem(item);
+
+        if (!catalogProduct) {
+          return;
+        }
+
+        const reviewKey = `${userId}::${catalogProduct.productId}`;
+
+        if (reviewLookup.has(reviewKey) || productsById.has(catalogProduct.productId)) {
+          return;
+        }
+
+        productsById.set(catalogProduct.productId, {
+          productId: catalogProduct.productId,
+          productName: catalogProduct.productName,
+          productRoute: catalogProduct.route,
+          reviewSectionHref: catalogProduct.reviewSectionHref,
+          image: catalogProduct.image,
+          testimonialImage: catalogProduct.testimonialImage,
+          sourceOrderId: order.id,
+          sourceOrderNumber: order.orderNumber,
+          purchasedAt: order.createdAt,
+        });
+      });
+    });
+
+  return Array.from(productsById.values()).sort((firstProduct, secondProduct) => {
+    return new Date(secondProduct.purchasedAt).getTime() - new Date(firstProduct.purchasedAt).getTime();
+  });
+};
 
 const validatePassword = (password = "") => {
   return password.trim().length >= 8;
@@ -252,6 +363,7 @@ app.post(
     const items = rawItems
       .slice(0, 20)
       .map((item) => ({
+        productId: String(item?.productId || "").trim(),
         name: String(item?.name || "").trim(),
         description: String(item?.description || "").trim().slice(0, 240),
         image: String(item?.image || "").trim(),
@@ -282,14 +394,18 @@ app.post(
       typeof req.body.successUrl === "string" ? req.body.successUrl.trim() : "";
     const preferredCancelUrl =
       typeof req.body.cancelUrl === "string" ? req.body.cancelUrl.trim() : "";
-    const successUrl =
+    const localOrderId = randomUUID();
+    const localOrderNumber = createOrderNumber();
+    const successUrlBase =
       /^https?:\/\//i.test(preferredSuccessUrl)
         ? preferredSuccessUrl
         : `${fallbackOrigin}/cart?checkout=success`;
-    const cancelUrl =
+    const cancelUrlBase =
       /^https?:\/\//i.test(preferredCancelUrl)
         ? preferredCancelUrl
         : `${fallbackOrigin}/cart?checkout=cancelled`;
+    const successUrl = addQueryParam(successUrlBase, "orderId", localOrderId);
+    const cancelUrl = addQueryParam(cancelUrlBase, "orderId", localOrderId);
     const email = normalizeEmail(req.body.email || "");
     const normalizedItems = items.map((item) => ({
       ...item,
@@ -311,6 +427,8 @@ app.post(
       : "one-time";
     const deliveryDueAt = subscriptionType === "subscription" ? req.user?.subscription?.nextDelivery || null : null;
     const normalizedOrderItems = items.map((item) => ({
+      productId:
+        resolveCatalogProductFromOrderItem(item)?.productId || item.productId || "",
       name: item.name,
       quantity: item.quantity,
       unitPrice: Number(item.unitPrice.toFixed(2)),
@@ -328,8 +446,8 @@ app.post(
     }) => {
       const database = await readDatabase();
       database.orders.unshift({
-        id: randomUUID(),
-        orderNumber: createOrderNumber(),
+        id: localOrderId,
+        orderNumber: localOrderNumber,
         userId: req.user?.id || null,
         customerName,
         customerEmail,
@@ -371,6 +489,8 @@ app.post(
         mode: "stripe",
         url: session.url,
         sessionId: session.sessionId,
+        orderId: localOrderId,
+        orderNumber: localOrderNumber,
       });
     }
 
@@ -400,6 +520,8 @@ app.post(
         amount: Number(totalAmount.toFixed(2)),
         currency: "INR",
         transactionRef,
+        orderId: localOrderId,
+        orderNumber: localOrderNumber,
         message: "UPI payment link generated.",
       });
     }
@@ -583,6 +705,53 @@ app.patch(
 );
 
 app.post(
+  "/api/orders/:orderId/status",
+  optionalAuth,
+  asyncHandler(async (req, res) => {
+    const database = await readDatabase();
+    const order = database.orders.find((candidate) => candidate.id === req.params.orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order was not found." });
+    }
+
+    if (order.userId && req.user?.id && order.userId !== req.user.id) {
+      return res.status(403).json({ message: "You do not have access to update this order." });
+    }
+
+    const nextStatus = normalizeTextValue(req.body.status || "");
+
+    if (nextStatus !== "paid" && nextStatus !== "cancelled") {
+      return res.status(400).json({ message: "A valid order status is required." });
+    }
+
+    order.updatedAt = new Date().toISOString();
+
+    if (nextStatus === "paid") {
+      order.paymentStatus = "paid";
+      order.orderStatus =
+        order.orderStatus === "delivered" || order.orderStatus === "shipped"
+          ? order.orderStatus
+          : "processing";
+    }
+
+    if (nextStatus === "cancelled") {
+      order.orderStatus = "cancelled";
+      if (String(order.paymentStatus || "").toLowerCase() !== "paid") {
+        order.paymentStatus = "cancelled";
+      }
+    }
+
+    await writeDatabase(database);
+
+    return res.json({
+      message: "Order status updated.",
+      order: summarizeOrder(order),
+    });
+  })
+);
+
+app.post(
   "/api/support/requests",
   optionalAuth,
   upload.array("attachments", 5),
@@ -622,6 +791,14 @@ app.post(
         mimetype: file.mimetype,
         size: file.size,
       })),
+      emailNotification: {
+        delivered: false,
+        skipped: false,
+        reason: "",
+        recipients: [],
+        messageId: null,
+        lastAttemptAt: null,
+      },
       handledBy: null,
       createdAt,
       updatedAt: createdAt,
@@ -630,9 +807,43 @@ app.post(
     database.supportRequests.unshift(supportRequest);
     await writeDatabase(database);
 
+    let emailDelivery = {
+      delivered: false,
+      skipped: true,
+      reason: "Email delivery was not attempted.",
+      recipients: [],
+      messageId: null,
+    };
+
+    try {
+      emailDelivery = await sendSupportRequestEmail(supportRequest);
+    } catch (error) {
+      emailDelivery = {
+        delivered: false,
+        skipped: false,
+        reason: error.message || "Email delivery failed.",
+        recipients: [],
+        messageId: null,
+      };
+    }
+
+    supportRequest.emailNotification = {
+      delivered: emailDelivery.delivered,
+      skipped: emailDelivery.skipped,
+      reason: emailDelivery.reason,
+      recipients: emailDelivery.recipients,
+      messageId: emailDelivery.messageId,
+      lastAttemptAt: new Date().toISOString(),
+    };
+    supportRequest.updatedAt = supportRequest.emailNotification.lastAttemptAt;
+    await writeDatabase(database);
+
     return res.status(201).json({
-      message: "Support request submitted successfully.",
+      message: emailDelivery.delivered
+        ? "Support request submitted successfully and emailed to the admin inbox."
+        : "Support request submitted successfully. Email delivery is waiting for mail configuration or retry.",
       supportRequest: summarizeSupportRequest(supportRequest),
+      emailDelivery: supportRequest.emailNotification,
     });
   })
 );
@@ -721,6 +932,114 @@ app.post(
         ? "Quiz result saved to your account."
         : "Quiz result saved for reporting.",
       submission,
+    });
+  })
+);
+
+app.get(
+  "/api/reviews",
+  asyncHandler(async (req, res) => {
+    const database = await readDatabase();
+    const requestedProductId = String(req.query.productId || "").trim();
+    const productFilter = requestedProductId
+      ? resolveReviewProduct({ productId: requestedProductId })?.productId || requestedProductId
+      : "";
+    const reviews = sortByDateDescending(database.reviews)
+      .filter((review) => review.status === "approved")
+      .filter((review) => (productFilter ? review.productId === productFilter : true));
+
+    return res.json({
+      reviews: reviews.map(summarizeReview),
+      summary: getReviewSummary(reviews),
+    });
+  })
+);
+
+app.get(
+  "/api/reviews/eligible",
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const database = await readDatabase();
+    const products = getReviewableProductsForUser(database.orders, database.reviews, req.user.id);
+
+    return res.json({ products });
+  })
+);
+
+app.post(
+  "/api/reviews",
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const database = await readDatabase();
+    const product = resolveReviewProduct({
+      productId: req.body.productId,
+      productName: req.body.productName,
+    });
+    const title = String(req.body.title || "").trim();
+    const description = String(req.body.description || "").trim();
+    const rating = Math.round(Number(req.body.rating || 0));
+
+    if (!product) {
+      return res.status(400).json({ message: "Please choose a valid purchased product." });
+    }
+
+    if (!title || title.length < 4) {
+      return res.status(400).json({ message: "Review title should be at least 4 characters long." });
+    }
+
+    if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Please choose a rating between 1 and 5 stars." });
+    }
+
+    if (!description || description.length < 20) {
+      return res.status(400).json({ message: "Review description should be at least 20 characters long." });
+    }
+
+    const eligibleProducts = getReviewableProductsForUser(database.orders, database.reviews, req.user.id);
+    const eligibleProduct = eligibleProducts.find(
+      (candidate) => candidate.productId === product.productId
+    );
+
+    if (!eligibleProduct) {
+      return res.status(403).json({
+        message: "You can only review a product after purchasing it from your account.",
+      });
+    }
+
+    const createdAt = new Date().toISOString();
+    const review = {
+      id: randomUUID(),
+      userId: req.user.id,
+      productId: product.productId,
+      productName: product.productName,
+      productRoute: product.route,
+      title,
+      description,
+      rating,
+      customerName: req.user.name,
+      customerEmail: req.user.email,
+      customerProfile:
+        req.body.customerProfile?.trim() ||
+        `${req.user.subscription?.dogProfile?.breed || "Dog parent"} | ${product.productName}`,
+      customerImage: product.testimonialImage,
+      sourceOrderId: eligibleProduct.sourceOrderId,
+      sourceOrderNumber: eligibleProduct.sourceOrderNumber,
+      status: "approved",
+      createdAt,
+      updatedAt: createdAt,
+    };
+
+    database.reviews.unshift(review);
+    await writeDatabase(database);
+
+    const productReviews = database.reviews.filter(
+      (candidate) => candidate.status === "approved" && candidate.productId === product.productId
+    );
+
+    return res.status(201).json({
+      message: "Review submitted successfully.",
+      review: summarizeReview(review),
+      summary: getReviewSummary(productReviews),
     });
   })
 );
