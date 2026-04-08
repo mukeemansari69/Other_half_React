@@ -18,7 +18,7 @@ const formatCurrency = (value) =>
   }).format(Number(value) || 0);
 
 const CartPage = () => {
-  const { user } = useAuth();
+  const { token, user, refreshUser } = useAuth();
   const {
     items,
     subtotal,
@@ -46,6 +46,7 @@ const CartPage = () => {
   useEffect(() => {
     const checkoutState = searchParams.get("checkout");
     const orderId = searchParams.get("orderId");
+    const sessionId = searchParams.get("session_id");
 
     if (!checkoutState) {
       return;
@@ -54,25 +55,42 @@ const CartPage = () => {
     let isActive = true;
 
     const handleCheckoutState = async () => {
-      try {
-        if (orderId && checkoutState === "success") {
-          await apiRequest(`/orders/${orderId}/status`, {
-            method: "POST",
-            body: { status: "paid" },
-          });
-        }
+      let confirmationMessage = "";
+      let confirmationFailed = false;
 
-        if (orderId && checkoutState === "cancelled") {
-          await apiRequest(`/orders/${orderId}/status`, {
+      try {
+        if (orderId && sessionId && checkoutState === "success") {
+          const confirmation = await apiRequest("/payments/stripe/confirm-session", {
             method: "POST",
-            body: { status: "cancelled" },
+            token,
+            body: { orderId, sessionId },
+          });
+          confirmationMessage = confirmation.message || "";
+          await refreshUser();
+        }
+      } catch (error) {
+        confirmationFailed = true;
+        if (checkoutState === "success") {
+          setStatus({
+            type: "error",
+            message:
+              error.message ||
+              "Payment returned successfully, but order confirmation is still pending.",
           });
         }
-      } catch {
-        // The cart can still proceed locally even if the local demo order update fails.
       }
 
       if (!isActive) {
+        return;
+      }
+
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete("checkout");
+      nextParams.delete("orderId");
+      nextParams.delete("session_id");
+      setSearchParams(nextParams, { replace: true });
+
+      if (checkoutState === "success" && confirmationFailed) {
         return;
       }
 
@@ -85,6 +103,9 @@ const CartPage = () => {
             state: {
               fromCheckout: true,
               orderId,
+              message:
+                confirmationMessage ||
+                "Payment received. Your order has been confirmed successfully.",
             },
           });
           return;
@@ -93,6 +114,7 @@ const CartPage = () => {
         setStatus({
           type: "success",
           message:
+            confirmationMessage ||
             "Payment received. Thank you. Your order has been placed successfully.",
         });
       } else if (checkoutState === "cancelled") {
@@ -102,11 +124,6 @@ const CartPage = () => {
             "Payment was cancelled. Your cart is still saved, and you can try again anytime.",
         });
       }
-
-      const nextParams = new URLSearchParams(searchParams);
-      nextParams.delete("checkout");
-      nextParams.delete("orderId");
-      setSearchParams(nextParams, { replace: true });
     };
 
     handleCheckoutState();
@@ -114,7 +131,7 @@ const CartPage = () => {
     return () => {
       isActive = false;
     };
-  }, [clearCart, navigate, searchParams, setSearchParams, user]);
+  }, [clearCart, navigate, refreshUser, searchParams, setSearchParams, token, user]);
 
   const handleCheckout = async () => {
     if (items.length === 0) {
@@ -144,6 +161,16 @@ const CartPage = () => {
             image: item.image,
             unitPrice: item.unitPrice,
             quantity: item.quantity,
+            purchaseType: item.purchaseType,
+            planId: item.planId,
+            planLabel: item.planLabel,
+            deliveryLabel: item.deliveryLabel,
+            deliveryCadence: item.deliveryCadence,
+            billingIntervalUnit: item.billingIntervalUnit,
+            billingIntervalCount: item.billingIntervalCount,
+            sizeId: item.sizeId,
+            sizeLabel: item.sizeLabel,
+            sizeWeight: item.sizeWeight,
           })),
         },
       });

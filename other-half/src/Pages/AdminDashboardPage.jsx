@@ -364,6 +364,11 @@ const AdminDashboardPage = () => {
                     <p className="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-[#6A6458]">
                       Amount: {formatCurrency(order.totalAmount, order.currency || "USD")} | Payment: {order.paymentStatus || "pending"} | Type: {order.subscriptionType || "one-time"}
                     </p>
+                    {order.subscription ? (
+                      <p className="mt-2 text-sm text-[#5F5B4F]">
+                        {order.subscription.planName} | Cadence: {order.subscription.deliveryCadence} | Status: {order.subscription.status}
+                      </p>
+                    ) : null}
                   </article>
                 )) : <p className="rounded-[24px] bg-[#FBF8EF] px-4 py-5 text-sm text-[#5F5B4F]">No orders yet.</p>}
               </>
@@ -382,6 +387,9 @@ const AdminDashboardPage = () => {
                     <p className="text-sm text-[#5F5B4F]">{account.email}</p>
                     <p className="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-[#6A6458]">
                       {account.subscription?.planName || "Plan not set"} | Next delivery: {formatDate(account.subscription?.nextDelivery)}
+                    </p>
+                    <p className="mt-2 text-sm text-[#5F5B4F]">
+                      Cadence: {account.subscription?.deliveryCadence || "Not set"} | Status: {account.subscription?.status || "none"}
                     </p>
                   </article>
                 ))}

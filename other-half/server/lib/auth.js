@@ -1,9 +1,20 @@
+import "../loadEnv.js";
 import jwt from "jsonwebtoken";
 
 import { readDatabase, sanitizeUser } from "./database.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "other-half-dev-secret";
+const DEFAULT_JWT_SECRET = "other-half-dev-secret";
+const JWT_SECRET = process.env.JWT_SECRET || DEFAULT_JWT_SECRET;
 const TOKEN_EXPIRY = "7d";
+
+if (
+  process.env.NODE_ENV === "production" &&
+  JWT_SECRET === DEFAULT_JWT_SECRET
+) {
+  throw new Error(
+    "JWT_SECRET must be set to a strong value before starting the server in production."
+  );
+}
 
 const getBearerToken = (authorizationHeader = "") => {
   if (!authorizationHeader.startsWith("Bearer ")) {

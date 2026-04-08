@@ -1,22 +1,21 @@
 
 /* ScoopOne.css */
 .scoopone-container {
-  width: 100%;
-  padding-right: 240px;
   gap: 84px;
 }
-
 .scoopone-video-wrapper {
   width: 100%;
   max-width: 960px;
+  aspect-ratio: 1 / 1;   /* Perfect square */
   position: relative;
-  height: 960px;
   overflow: hidden;
 }
 
 .scoopone-video {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;     /* full fill karega without distortion */
+  object-position: center; /* center se crop karega */
   border-radius: 12px;
 }
 

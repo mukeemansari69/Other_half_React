@@ -1,3 +1,4 @@
+import "../loadEnv.js";
 import path from "node:path";
 
 import nodemailer from "nodemailer";

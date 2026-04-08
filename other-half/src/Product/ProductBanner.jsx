@@ -16,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "/public/Product/css/ProductBanner.css";
 import { useCart } from "../context/CartContext.jsx";
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
+import { getCadenceDetails } from "../../shared/subscriptionUtils.js";
 
 const highlightIconMap = {
   clinicallyTested: FlaskConical,
@@ -434,6 +435,12 @@ const ProductBanner = ({
     selectedSize.plans[0];
   const selectedImage =
     product.gallery[selectedImageIndex] ?? product.gallery[0];
+  const selectedCadence = useMemo(() => {
+    return getCadenceDetails({
+      planId: selectedPlan?.id,
+      deliveryLabel: selectedPlan?.deliveryLabel,
+    });
+  }, [selectedPlan?.deliveryLabel, selectedPlan?.id]);
   const activeSuggestion =
     bundleSuggestions.length > 0
       ? bundleSuggestions[activeSuggestionIndex % bundleSuggestions.length]
@@ -509,6 +516,16 @@ const ProductBanner = ({
       image: product.gallery[0]?.src || selectedImage?.src || "",
       unitPrice: Number(totalPrice.toFixed(2)),
       quantity: 1,
+      purchaseType: isSubscribed ? "subscription" : "one-time",
+      planId: selectedPlan.id,
+      planLabel: selectedPlan.label,
+      deliveryLabel: selectedPlan.deliveryLabel,
+      deliveryCadence: selectedCadence.cadenceLabel,
+      billingIntervalUnit: selectedCadence.intervalUnit,
+      billingIntervalCount: selectedCadence.intervalCount,
+      sizeId: selectedSize.id,
+      sizeLabel: selectedSize.name,
+      sizeWeight: selectedSize.weight,
     });
 
     if (typeof onAddToCart === "function") {

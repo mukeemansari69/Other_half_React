@@ -33,6 +33,19 @@ const normalizeItem = (item) => {
     image: String(item.image || "").trim(),
     unitPrice,
     quantity,
+    purchaseType:
+      String(item.purchaseType || "").trim().toLowerCase() === "subscription"
+        ? "subscription"
+        : "one-time",
+    planId: String(item.planId || "").trim(),
+    planLabel: String(item.planLabel || "").trim(),
+    deliveryLabel: String(item.deliveryLabel || "").trim(),
+    deliveryCadence: String(item.deliveryCadence || "").trim(),
+    billingIntervalUnit: String(item.billingIntervalUnit || "").trim() || "month",
+    billingIntervalCount: Math.max(1, Math.round(toSafeNumber(item.billingIntervalCount, 1))),
+    sizeId: String(item.sizeId || "").trim(),
+    sizeLabel: String(item.sizeLabel || "").trim(),
+    sizeWeight: String(item.sizeWeight || "").trim(),
   };
 };
 

@@ -230,8 +230,8 @@ const ReviewPage = () => {
           </p>
           {location.state?.fromCheckout ? (
             <div className="mt-6 rounded-[24px] border border-white/15 bg-white/10 px-5 py-4 text-sm leading-7 text-white/86">
-              Thanks for your order. If you have already started using the product, you
-              can leave a quick review here now, or come back later from your account.
+              {location.state?.message ||
+                "Thanks for your order. If you have already started using the product, you can leave a quick review here now, or come back later from your account."}
             </div>
           ) : null}
         </section>

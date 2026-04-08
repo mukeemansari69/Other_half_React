@@ -1,3 +1,4 @@
+import "./loadEnv.js";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
@@ -17,7 +18,21 @@ import {
   writeDatabase,
 } from "./lib/database.js";
 import { sendSupportRequestEmail } from "./lib/mailer.js";
+import {
+  createInactiveSubscription,
+  getPrimarySubscriptionItem,
+  normalizeSubscriptionStatus,
+  syncUserSubscriptionState,
+} from "./lib/subscriptions.js";
+import {
+  createStripeCheckoutSession,
+  getStripeConfig,
+  retrieveStripeCheckoutSession,
+  retrieveStripeSubscription,
+  verifyStripeWebhookSignature,
+} from "./lib/stripe.js";
 import { resolveReviewProduct } from "../shared/reviewProductCatalog.js";
+import { addIntervalToDate, getCadenceDetails } from "../shared/subscriptionUtils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -186,75 +201,6 @@ const validatePassword = (password = "") => {
   return password.trim().length >= 8;
 };
 
-const createStripeCheckoutSession = async ({
-  secretKey,
-  items,
-  email,
-  successUrl,
-  cancelUrl,
-}) => {
-  const requestBody = new URLSearchParams();
-  requestBody.set("mode", "payment");
-  requestBody.set("success_url", successUrl);
-  requestBody.set("cancel_url", cancelUrl);
-  requestBody.set("payment_method_types[0]", "card");
-
-  if (emailPattern.test(email)) {
-    requestBody.set("customer_email", email);
-  }
-
-  items.forEach((item, index) => {
-    requestBody.set(`line_items[${index}][quantity]`, String(item.quantity));
-    requestBody.set(`line_items[${index}][price_data][currency]`, "usd");
-    requestBody.set(
-      `line_items[${index}][price_data][unit_amount]`,
-      String(Math.round(item.unitPrice * 100))
-    );
-    requestBody.set(
-      `line_items[${index}][price_data][product_data][name]`,
-      item.name
-    );
-
-    if (item.description) {
-      requestBody.set(
-        `line_items[${index}][price_data][product_data][description]`,
-        item.description
-      );
-    }
-
-    if (item.image) {
-      requestBody.set(
-        `line_items[${index}][price_data][product_data][images][0]`,
-        item.image
-      );
-    }
-  });
-
-  const stripeResponse = await fetch("https://api.stripe.com/v1/checkout/sessions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${secretKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: requestBody,
-  });
-  const stripePayload = await stripeResponse.json();
-
-  if (!stripeResponse.ok) {
-    const upstreamMessage =
-      stripePayload?.error?.message ||
-      "Stripe checkout session could not be created.";
-    const error = new Error(upstreamMessage);
-    error.statusCode = 502;
-    throw error;
-  }
-
-  return {
-    sessionId: stripePayload.id,
-    url: stripePayload.url,
-  };
-};
-
 const createUpiPaymentLink = ({ vpa, payeeName, amount, note, transactionRef }) => {
   const upiQuery = new URLSearchParams({
     pa: vpa,
@@ -280,17 +226,229 @@ const getTimeValue = (value) => {
   return Number.isFinite(timestamp) ? timestamp : null;
 };
 
+const appendRawQueryParam = (urlValue, key, value) => {
+  const separator = urlValue.includes("?") ? "&" : "?";
+  return `${urlValue}${separator}${encodeURIComponent(key)}=${value}`;
+};
+
+const toIsoFromUnixSeconds = (value) => {
+  const parsed = Number(value);
+
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return null;
+  }
+
+  return new Date(parsed * 1000).toISOString();
+};
+
+const toCurrencyAmountFromMinorUnits = (value) => {
+  const parsed = Number(value || 0);
+  return Number.isFinite(parsed) ? Number((parsed / 100).toFixed(2)) : 0;
+};
+
+const buildSubscriptionSnapshotFromItems = (items, overrides = {}, referenceDate = new Date().toISOString()) => {
+  const primaryItem = getPrimarySubscriptionItem({ items });
+
+  if (!primaryItem || primaryItem.purchaseType !== "subscription") {
+    return null;
+  }
+
+  const cadence = getCadenceDetails({
+    planId: primaryItem.planId,
+    deliveryLabel:
+      primaryItem.deliveryLabel ||
+      primaryItem.deliveryCadence ||
+      overrides.deliveryCadence,
+    intervalCount: primaryItem.billingIntervalCount || overrides.intervalCount,
+    intervalUnit: primaryItem.billingIntervalUnit || overrides.intervalUnit || "month",
+  });
+  const nextDelivery =
+    overrides.nextDelivery ||
+    overrides.currentPeriodEnd ||
+    addIntervalToDate(referenceDate, cadence.intervalCount, cadence.intervalUnit);
+
+  return {
+    status: normalizeSubscriptionStatus(overrides.status) || "pending",
+    planName:
+      overrides.planName ||
+      `${primaryItem.name}${primaryItem.planLabel ? ` - ${primaryItem.planLabel}` : ""}`,
+    deliveryCadence:
+      overrides.deliveryCadence ||
+      primaryItem.deliveryCadence ||
+      cadence.cadenceLabel,
+    nextDelivery: nextDelivery || null,
+    productId: primaryItem.productId || null,
+    productName: primaryItem.name || "",
+    planId: primaryItem.planId || null,
+    planLabel: primaryItem.planLabel || "",
+    intervalUnit: cadence.intervalUnit,
+    intervalCount: cadence.intervalCount,
+    stripeCustomerId: overrides.stripeCustomerId || null,
+    stripeSubscriptionId: overrides.stripeSubscriptionId || null,
+    currentPeriodEnd: overrides.currentPeriodEnd || nextDelivery || null,
+    cancelAtPeriodEnd: Boolean(overrides.cancelAtPeriodEnd),
+    sourceOrderId: overrides.sourceOrderId || null,
+    sourceOrderNumber: overrides.sourceOrderNumber || null,
+    lastInvoiceId: overrides.lastInvoiceId || null,
+  };
+};
+
+const applySubscriptionSnapshotToOrder = (order, overrides = {}) => {
+  if (String(order.subscriptionType || "").toLowerCase() !== "subscription") {
+    order.subscription = null;
+    return null;
+  }
+
+  order.subscription = buildSubscriptionSnapshotFromItems(
+    order.items,
+    {
+      ...(order.subscription || {}),
+      ...overrides,
+      sourceOrderId: order.id,
+      sourceOrderNumber: order.orderNumber,
+    },
+    order.createdAt || new Date().toISOString()
+  );
+
+  if (order.subscription?.nextDelivery) {
+    order.deliveryDueAt = order.subscription.nextDelivery;
+  }
+
+  return order.subscription;
+};
+
+const markOrderAsPaid = (order, paymentReference = "") => {
+  order.paymentStatus = "paid";
+
+  if (paymentReference) {
+    order.paymentReference = paymentReference;
+  }
+
+  if (order.orderStatus !== "delivered" && order.orderStatus !== "shipped") {
+    order.orderStatus = "processing";
+  }
+
+  if (!order.deliveryStatus || order.deliveryStatus === "queued") {
+    order.deliveryStatus =
+      order.subscriptionType === "subscription" ? "scheduled" : "queued";
+  }
+
+  order.updatedAt = new Date().toISOString();
+};
+
+const syncDatabaseUserSubscription = (database, userId) => {
+  if (!userId) {
+    return null;
+  }
+
+  syncUserSubscriptionState(database, userId);
+  const user = database.users.find((candidate) => candidate.id === userId);
+  return user ? sanitizeUser(user) : null;
+};
+
+const findLatestOrderBySubscriptionId = (orders, subscriptionId) => {
+  return [...orders]
+    .filter(
+      (order) => order.subscription?.stripeSubscriptionId === subscriptionId
+    )
+    .sort((firstOrder, secondOrder) => {
+      return (
+        (getTimeValue(secondOrder.updatedAt) || 0) -
+        (getTimeValue(firstOrder.updatedAt) || 0)
+      );
+    })[0];
+};
+
+const createRenewalOrderFromInvoice = ({
+  sourceOrder,
+  invoice,
+  subscription,
+}) => {
+  const createdAt =
+    toIsoFromUnixSeconds(invoice.status_transitions?.paid_at) ||
+    toIsoFromUnixSeconds(invoice.created) ||
+    new Date().toISOString();
+  const totalAmount =
+    toCurrencyAmountFromMinorUnits(invoice.amount_paid || invoice.amount_due) ||
+    toSafeNumber(sourceOrder.totalAmount);
+  const items = Array.isArray(sourceOrder.items)
+    ? sourceOrder.items.map((item) => ({
+        ...item,
+        lineTotal: Number((toSafeNumber(item.unitPrice) * Number(item.quantity || 1)).toFixed(2)),
+      }))
+    : [];
+  const order = {
+    id: randomUUID(),
+    orderNumber: createOrderNumber(),
+    userId: sourceOrder.userId || null,
+    customerName: sourceOrder.customerName,
+    customerEmail: sourceOrder.customerEmail,
+    currency: String(invoice.currency || sourceOrder.currency || "USD").toUpperCase(),
+    totalAmount,
+    paymentMode: "card",
+    paymentStatus: "paid",
+    paymentReference: invoice.payment_intent || invoice.id,
+    orderStatus: "processing",
+    subscriptionType: "subscription",
+    deliveryStatus: "scheduled",
+    deliveryDueAt: null,
+    items,
+    subscription: null,
+    metadata: {
+      renewalOfOrderId: sourceOrder.id,
+      renewalOfOrderNumber: sourceOrder.orderNumber,
+      sourceInvoiceId: invoice.id,
+    },
+    createdAt,
+    updatedAt: createdAt,
+  };
+
+  applySubscriptionSnapshotToOrder(order, {
+    status: subscription.status,
+    stripeCustomerId: subscription.customer || sourceOrder.subscription?.stripeCustomerId || null,
+    stripeSubscriptionId: subscription.id,
+    currentPeriodEnd:
+      toIsoFromUnixSeconds(subscription.current_period_end) ||
+      sourceOrder.subscription?.currentPeriodEnd ||
+      null,
+    nextDelivery:
+      toIsoFromUnixSeconds(subscription.current_period_end) ||
+      sourceOrder.subscription?.nextDelivery ||
+      null,
+    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+    lastInvoiceId: invoice.id,
+  });
+
+  return order;
+};
+
 const summarizeOrder = (order) => ({
   ...order,
   items: Array.isArray(order.items)
     ? order.items.map((item) => ({
+        productId: item.productId || "",
         name: item.name,
         quantity: item.quantity,
         unitPrice: toSafeNumber(item.unitPrice),
         lineTotal: toSafeNumber(item.lineTotal),
         purchaseType: item.purchaseType || "one-time",
+        planId: item.planId || "",
+        planLabel: item.planLabel || "",
+        deliveryLabel: item.deliveryLabel || "",
+        deliveryCadence: item.deliveryCadence || "",
+        billingIntervalUnit: item.billingIntervalUnit || "",
+        billingIntervalCount: Number(item.billingIntervalCount || 0),
+        sizeId: item.sizeId || "",
+        sizeLabel: item.sizeLabel || "",
+        sizeWeight: item.sizeWeight || "",
       }))
     : [],
+  subscription: order.subscription
+    ? {
+        ...order.subscription,
+        intervalCount: Number(order.subscription.intervalCount || 0),
+      }
+    : null,
 });
 
 const getSupportStatusCounts = (supportRequests) => {
@@ -313,6 +471,187 @@ const getSupportStatusCounts = (supportRequests) => {
       other: 0,
     }
   );
+};
+
+const applyStripeCheckoutSessionToOrder = async ({
+  database,
+  order,
+  session,
+  stripeSecretKey,
+}) => {
+  const subscription =
+    typeof session.subscription === "string"
+      ? await retrieveStripeSubscription({
+          secretKey: stripeSecretKey,
+          subscriptionId: session.subscription,
+        })
+      : session.subscription || null;
+  const sessionPaymentReference =
+    session.payment_intent?.id || session.payment_intent || session.id;
+
+  order.paymentMode = "card";
+  order.paymentReference = sessionPaymentReference;
+  order.updatedAt = new Date().toISOString();
+
+  if (String(order.subscriptionType || "").toLowerCase() === "subscription") {
+    applySubscriptionSnapshotToOrder(order, {
+      status:
+        subscription?.status ||
+        (String(session.payment_status || "").toLowerCase() === "paid"
+          ? "active"
+          : "pending"),
+      stripeCustomerId: session.customer || subscription?.customer || null,
+      stripeSubscriptionId:
+        subscription?.id ||
+        (typeof session.subscription === "string" ? session.subscription : null),
+      currentPeriodEnd: toIsoFromUnixSeconds(subscription?.current_period_end),
+      nextDelivery: toIsoFromUnixSeconds(subscription?.current_period_end),
+      cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
+      lastInvoiceId: subscription?.latest_invoice?.id || null,
+    });
+
+    if (
+      ACTIVE_SUBSCRIPTION_STATUSES.includes(
+        normalizeSubscriptionStatus(order.subscription?.status)
+      )
+    ) {
+      markOrderAsPaid(order, sessionPaymentReference);
+    }
+  } else if (String(session.payment_status || "").toLowerCase() === "paid") {
+    markOrderAsPaid(order, sessionPaymentReference);
+  }
+
+  const user = syncDatabaseUserSubscription(database, order.userId);
+
+  return {
+    order,
+    user,
+    subscription,
+  };
+};
+
+const applyStripeSubscriptionToMatchingOrders = ({
+  database,
+  subscription,
+}) => {
+  const matchingOrders = database.orders.filter(
+    (order) => order.subscription?.stripeSubscriptionId === subscription.id
+  );
+
+  matchingOrders.forEach((order) => {
+    applySubscriptionSnapshotToOrder(order, {
+      status: subscription.status,
+      stripeCustomerId: subscription.customer || null,
+      stripeSubscriptionId: subscription.id,
+      currentPeriodEnd: toIsoFromUnixSeconds(subscription.current_period_end),
+      nextDelivery: toIsoFromUnixSeconds(subscription.current_period_end),
+      cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+      lastInvoiceId:
+        subscription.latest_invoice?.id || order.subscription?.lastInvoiceId || null,
+    });
+    order.updatedAt = new Date().toISOString();
+  });
+
+  const latestOrder = matchingOrders[0] || null;
+  const user = latestOrder
+    ? syncDatabaseUserSubscription(database, latestOrder.userId)
+    : null;
+
+  return {
+    matchingOrders,
+    user,
+  };
+};
+
+const handleStripeInvoicePaid = async ({
+  database,
+  invoice,
+  stripeSecretKey,
+}) => {
+  const subscriptionId = String(invoice.subscription || "").trim();
+
+  if (!subscriptionId) {
+    return null;
+  }
+
+  const subscription = await retrieveStripeSubscription({
+    secretKey: stripeSecretKey,
+    subscriptionId,
+  });
+  let sourceOrder =
+    findLatestOrderBySubscriptionId(database.orders, subscription.id) || null;
+
+  if (!sourceOrder) {
+    const metadataOrderId =
+      invoice.parent?.subscription_details?.metadata?.localOrderId ||
+      invoice.subscription_details?.metadata?.localOrderId ||
+      "";
+
+    if (metadataOrderId) {
+      sourceOrder =
+        database.orders.find((order) => order.id === metadataOrderId) || null;
+    }
+  }
+
+  if (!sourceOrder) {
+    return null;
+  }
+
+  const existingInvoiceOrder = database.orders.find(
+    (order) =>
+      order.subscription?.lastInvoiceId === invoice.id ||
+      order.metadata?.sourceInvoiceId === invoice.id
+  );
+  const billingReason = String(invoice.billing_reason || "").toLowerCase();
+  let affectedOrder = sourceOrder;
+
+  if (
+    billingReason === "subscription_cycle" &&
+    !existingInvoiceOrder
+  ) {
+    affectedOrder = createRenewalOrderFromInvoice({
+      sourceOrder,
+      invoice,
+      subscription,
+    });
+    database.orders.unshift(affectedOrder);
+  } else if (existingInvoiceOrder) {
+    affectedOrder = existingInvoiceOrder;
+    applySubscriptionSnapshotToOrder(affectedOrder, {
+      status: subscription.status,
+      stripeCustomerId: subscription.customer || null,
+      stripeSubscriptionId: subscription.id,
+      currentPeriodEnd: toIsoFromUnixSeconds(subscription.current_period_end),
+      nextDelivery: toIsoFromUnixSeconds(subscription.current_period_end),
+      cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+      lastInvoiceId: invoice.id,
+    });
+    markOrderAsPaid(
+      affectedOrder,
+      invoice.payment_intent || invoice.id || affectedOrder.paymentReference
+    );
+  } else {
+    applySubscriptionSnapshotToOrder(sourceOrder, {
+      status: subscription.status,
+      stripeCustomerId: subscription.customer || null,
+      stripeSubscriptionId: subscription.id,
+      currentPeriodEnd: toIsoFromUnixSeconds(subscription.current_period_end),
+      nextDelivery: toIsoFromUnixSeconds(subscription.current_period_end),
+      cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+      lastInvoiceId: invoice.id,
+    });
+    markOrderAsPaid(
+      sourceOrder,
+      invoice.payment_intent || invoice.id || sourceOrder.paymentReference
+    );
+  }
+
+  const user = syncDatabaseUserSubscription(database, affectedOrder.userId);
+
+  return {
+    order: affectedOrder,
+    user,
+  };
 };
 
 const isAllowedOrigin = (origin) => {
@@ -343,6 +682,77 @@ app.use(
     },
   })
 );
+app.post(
+  "/api/payments/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  asyncHandler(async (req, res) => {
+    const { secretKey, webhookSecret } = getStripeConfig();
+
+    if (!secretKey || !webhookSecret) {
+      return res.status(503).json({
+        message:
+          "Stripe webhook handling is not configured yet. Add STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET.",
+      });
+    }
+
+    const payload = Buffer.isBuffer(req.body) ? req.body.toString("utf8") : "";
+    const signatureHeader = req.headers["stripe-signature"];
+
+    if (
+      !verifyStripeWebhookSignature({
+        payload,
+        signatureHeader,
+        webhookSecret,
+      })
+    ) {
+      return res.status(400).json({ message: "Stripe webhook signature is invalid." });
+    }
+
+    const event = JSON.parse(payload || "{}");
+    const database = await readDatabase();
+
+    if (
+      event.type === "checkout.session.completed" ||
+      event.type === "checkout.session.async_payment_succeeded"
+    ) {
+      const session = event.data?.object || {};
+      const localOrderId =
+        session.metadata?.localOrderId || session.client_reference_id || "";
+      const order = database.orders.find((candidate) => candidate.id === localOrderId);
+
+      if (order) {
+        await applyStripeCheckoutSessionToOrder({
+          database,
+          order,
+          session,
+          stripeSecretKey: secretKey,
+        });
+      }
+    }
+
+    if (event.type === "invoice.paid") {
+      await handleStripeInvoicePaid({
+        database,
+        invoice: event.data?.object || {},
+        stripeSecretKey: secretKey,
+      });
+    }
+
+    if (
+      event.type === "customer.subscription.updated" ||
+      event.type === "customer.subscription.deleted"
+    ) {
+      applyStripeSubscriptionToMatchingOrders({
+        database,
+        subscription: event.data?.object || {},
+      });
+    }
+
+    await writeDatabase(database);
+
+    return res.json({ received: true });
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(UPLOADS_DIR));
@@ -370,6 +780,15 @@ app.post(
         unitPrice: Number(item?.unitPrice),
         quantity: Math.round(Number(item?.quantity || 1)),
         purchaseType: item?.purchaseType === "subscription" ? "subscription" : "one-time",
+        planId: String(item?.planId || "").trim(),
+        planLabel: String(item?.planLabel || "").trim(),
+        deliveryLabel: String(item?.deliveryLabel || "").trim(),
+        deliveryCadence: String(item?.deliveryCadence || "").trim(),
+        billingIntervalUnit: String(item?.billingIntervalUnit || "").trim() || "month",
+        billingIntervalCount: Math.max(1, Math.round(Number(item?.billingIntervalCount || 1))),
+        sizeId: String(item?.sizeId || "").trim(),
+        sizeLabel: String(item?.sizeLabel || "").trim(),
+        sizeWeight: String(item?.sizeWeight || "").trim(),
       }))
       .filter(
         (item) =>
@@ -384,7 +803,7 @@ app.post(
       return res.status(400).json({ message: "Your cart is empty." });
     }
 
-    const stripeSecretKey = process.env.STRIPE_SECRET_KEY?.trim();
+    const { secretKey: stripeSecretKey } = getStripeConfig();
     const upiVpa = (process.env.UPI_VPA || "9690296846@ptsbi").trim();
     const upiPayeeName = (process.env.UPI_PAYEE_NAME || "Other Half Pets").trim();
     const fallbackOrigin = req.headers.origin
@@ -404,7 +823,6 @@ app.post(
       /^https?:\/\//i.test(preferredCancelUrl)
         ? preferredCancelUrl
         : `${fallbackOrigin}/cart?checkout=cancelled`;
-    const successUrl = addQueryParam(successUrlBase, "orderId", localOrderId);
     const cancelUrl = addQueryParam(cancelUrlBase, "orderId", localOrderId);
     const email = normalizeEmail(req.body.email || "");
     const normalizedItems = items.map((item) => ({
@@ -425,7 +843,6 @@ app.post(
     const subscriptionType = items.some((item) => item.purchaseType === "subscription")
       ? "subscription"
       : "one-time";
-    const deliveryDueAt = subscriptionType === "subscription" ? req.user?.subscription?.nextDelivery || null : null;
     const normalizedOrderItems = items.map((item) => ({
       productId:
         resolveCatalogProductFromOrderItem(item)?.productId || item.productId || "",
@@ -434,7 +851,37 @@ app.post(
       unitPrice: Number(item.unitPrice.toFixed(2)),
       lineTotal: Number((item.unitPrice * item.quantity).toFixed(2)),
       purchaseType: item.purchaseType,
+      planId: item.planId,
+      planLabel: item.planLabel,
+      deliveryLabel: item.deliveryLabel,
+      deliveryCadence:
+        item.deliveryCadence ||
+        getCadenceDetails({
+          planId: item.planId,
+          deliveryLabel: item.deliveryLabel,
+          intervalCount: item.billingIntervalCount,
+          intervalUnit: item.billingIntervalUnit,
+        }).cadenceLabel,
+      billingIntervalUnit: item.billingIntervalUnit,
+      billingIntervalCount: item.billingIntervalCount,
+      sizeId: item.sizeId,
+      sizeLabel: item.sizeLabel,
+      sizeWeight: item.sizeWeight,
     }));
+    const pendingSubscriptionSnapshot =
+      subscriptionType === "subscription"
+        ? buildSubscriptionSnapshotFromItems(
+            normalizedOrderItems,
+            {
+              status: "pending",
+              sourceOrderId: localOrderId,
+              sourceOrderNumber: localOrderNumber,
+            },
+            now
+          )
+        : null;
+    const deliveryDueAt =
+      pendingSubscriptionSnapshot?.nextDelivery || null;
 
     const persistOrder = async ({
       paymentMode,
@@ -463,19 +910,35 @@ app.post(
           (subscriptionType === "subscription" ? "scheduled" : "queued"),
         deliveryDueAt,
         items: normalizedOrderItems,
+        subscription: pendingSubscriptionSnapshot,
         createdAt: now,
         updatedAt: now,
       });
       await writeDatabase(database);
     };
 
+    if (subscriptionType === "subscription" && !stripeSecretKey) {
+      return res.status(503).json({
+        message:
+          "Recurring subscriptions need Stripe billing. Add STRIPE_SECRET_KEY on the server to enable auto-renewal.",
+      });
+    }
+
     if (stripeSecretKey) {
+      const successUrl = appendRawQueryParam(
+        addQueryParam(successUrlBase, "orderId", localOrderId),
+        "session_id",
+        "{CHECKOUT_SESSION_ID}"
+      );
       const session = await createStripeCheckoutSession({
         secretKey: stripeSecretKey,
         items: normalizedItems,
         email,
         successUrl,
         cancelUrl,
+        orderId: localOrderId,
+        orderNumber: localOrderNumber,
+        userId: req.user?.id || "",
       });
 
       await persistOrder({
@@ -491,6 +954,7 @@ app.post(
         sessionId: session.sessionId,
         orderId: localOrderId,
         orderNumber: localOrderNumber,
+        subscriptionType,
       });
     }
 
@@ -522,6 +986,7 @@ app.post(
         transactionRef,
         orderId: localOrderId,
         orderNumber: localOrderNumber,
+        subscriptionType,
         message: "UPI payment link generated.",
       });
     }
@@ -529,6 +994,75 @@ app.post(
     return res.status(503).json({
       message:
         "Payment gateway is not configured yet. Add STRIPE_SECRET_KEY or UPI_VPA on the server.",
+    });
+  })
+);
+
+app.post(
+  "/api/payments/stripe/confirm-session",
+  optionalAuth,
+  asyncHandler(async (req, res) => {
+    const { secretKey: stripeSecretKey } = getStripeConfig();
+
+    if (!stripeSecretKey) {
+      return res.status(503).json({
+        message: "Stripe checkout confirmation is not configured yet.",
+      });
+    }
+
+    const orderId = String(req.body.orderId || "").trim();
+    const sessionId = String(req.body.sessionId || "").trim();
+
+    if (!orderId || !sessionId) {
+      return res.status(400).json({
+        message: "Order ID and session ID are required to confirm payment.",
+      });
+    }
+
+    const database = await readDatabase();
+    const order = database.orders.find((candidate) => candidate.id === orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order was not found." });
+    }
+
+    if (order.userId && req.user?.id && order.userId !== req.user.id) {
+      return res.status(403).json({
+        message: "You do not have access to confirm this order.",
+      });
+    }
+
+    const session = await retrieveStripeCheckoutSession({
+      secretKey: stripeSecretKey,
+      sessionId,
+    });
+    const localOrderId =
+      session.metadata?.localOrderId || session.client_reference_id || "";
+
+    if (localOrderId !== order.id) {
+      return res.status(400).json({
+        message: "This Stripe session does not belong to the requested order.",
+      });
+    }
+
+    const result = await applyStripeCheckoutSessionToOrder({
+      database,
+      order,
+      session,
+      stripeSecretKey,
+    });
+
+    await writeDatabase(database);
+
+    return res.json({
+      message:
+        order.paymentStatus === "paid"
+          ? order.subscriptionType === "subscription"
+            ? "Subscription checkout confirmed and recurring billing is active."
+            : "Payment confirmed and order is now processing."
+          : "Checkout completed and Stripe confirmation is still syncing.",
+      order: summarizeOrder(result.order),
+      user: result.user,
     });
   })
 );
@@ -571,18 +1105,7 @@ app.post(
       phone,
       role: "user",
       passwordHash: await bcrypt.hash(password, 10),
-      subscription: {
-        status: "active",
-        planName: "Everyday Wellness Plan",
-        deliveryCadence: "Every 30 days",
-        nextDelivery: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
-        dogProfile: {
-          name: dogName,
-          breed: "Not set yet",
-          age: "Not set yet",
-          focus: "Getting started",
-        },
-      },
+      subscription: createInactiveSubscription(dogName),
       createdAt,
       lastLoginAt: createdAt,
     };
@@ -677,6 +1200,9 @@ app.patch(
     const nextPhone = req.body.phone?.trim();
     const nextDogName = req.body.dogName?.trim();
     const nextCadence = req.body.deliveryCadence?.trim();
+    const isManagedSubscription =
+      Boolean(user.subscription?.sourceOrderId) ||
+      Boolean(user.subscription?.stripeSubscriptionId);
 
     if (nextName) {
       user.name = nextName;
@@ -691,6 +1217,16 @@ app.patch(
     }
 
     if (nextCadence) {
+      if (
+        isManagedSubscription &&
+        nextCadence !== user.subscription.deliveryCadence
+      ) {
+        return res.status(400).json({
+          message:
+            "Delivery cadence for an active subscription is managed from billing and cannot be edited from the profile form yet.",
+        });
+      }
+
       user.subscription.deliveryCadence = nextCadence;
     }
 
@@ -706,7 +1242,7 @@ app.patch(
 
 app.post(
   "/api/orders/:orderId/status",
-  optionalAuth,
+  requireAuth,
   asyncHandler(async (req, res) => {
     const database = await readDatabase();
     const order = database.orders.find((candidate) => candidate.id === req.params.orderId);
@@ -725,6 +1261,12 @@ app.post(
       return res.status(400).json({ message: "A valid order status is required." });
     }
 
+    if (nextStatus === "paid" && String(order.paymentMode || "").toLowerCase() === "card") {
+      return res.status(400).json({
+        message: "Card orders are confirmed from Stripe, not from the browser.",
+      });
+    }
+
     order.updatedAt = new Date().toISOString();
 
     if (nextStatus === "paid") {
@@ -741,6 +1283,8 @@ app.post(
         order.paymentStatus = "cancelled";
       }
     }
+
+    syncDatabaseUserSubscription(database, order.userId);
 
     await writeDatabase(database);
 
@@ -1235,7 +1779,15 @@ app.patch(
       return res.status(404).json({ message: "Support request not found." });
     }
 
-    supportRequest.status = req.body.status?.trim() || supportRequest.status;
+    const nextStatus = String(req.body.status || "").trim().toLowerCase();
+
+    if (!["new", "in-review", "resolved"].includes(nextStatus)) {
+      return res.status(400).json({
+        message: "Support request status must be new, in-review, or resolved.",
+      });
+    }
+
+    supportRequest.status = nextStatus;
     supportRequest.handledBy = req.user.name;
     supportRequest.updatedAt = new Date().toISOString();
     await writeDatabase(database);
@@ -1311,10 +1863,30 @@ if (fs.existsSync(DIST_INDEX)) {
 }
 
 seedDatabase()
-  .then(() => {
+  .then((database) => {
+    const adminCount = database.users.filter((user) => user.role === "admin").length;
+
+    if (process.env.NODE_ENV === "production" && adminCount === 0) {
+      throw new Error(
+        "No admin account is configured. Set BOOTSTRAP_ADMIN_EMAIL and BOOTSTRAP_ADMIN_PASSWORD before deploying."
+      );
+    }
+
+    if (process.env.NODE_ENV === "production" && configuredOrigins.length === 0 && !fs.existsSync(DIST_INDEX)) {
+      console.warn(
+        "CLIENT_ORIGIN is not set in production. If the frontend is hosted separately, configure CLIENT_ORIGIN to avoid open CORS."
+      );
+    }
+
     app.listen(PORT, () => {
       console.log(`Other Half API listening on http://localhost:${PORT}`);
       console.log(`Local database file: ${DATABASE_FILE}`);
+
+      if (process.env.NODE_ENV === "production") {
+        console.warn(
+          "Production note: runtime data is still stored in local JSON files. Use persistent storage or replace this layer with a real database before scaling beyond a single instance."
+        );
+      }
     });
   })
   .catch((error) => {

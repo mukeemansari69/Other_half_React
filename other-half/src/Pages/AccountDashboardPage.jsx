@@ -187,6 +187,11 @@ const AccountDashboardPage = () => {
 
   const dogName = summary.subscription?.dogProfile?.name || "your dog";
   const supportStatusCounts = getSupportStatusCounts(summary.supportRequests);
+  const isManagedSubscription =
+    Boolean(summary.subscription?.sourceOrderId) ||
+    Boolean(summary.subscription?.stripeSubscriptionId);
+  const deliveryCadenceOptions = ["Every 30 days", "Every 45 days", "Every 60 days"];
+  const deliveryCadenceValue = formState.deliveryCadence || "Not set";
 
   return (
     <main className="bg-[#FBF8EF] px-6 py-8 md:px-10 lg:px-16">
@@ -392,14 +397,27 @@ const AccountDashboardPage = () => {
               <label className="block">
                 <span className="mb-2 block text-sm font-medium text-[#353126]">Delivery cadence</span>
                 <select
-                  value={formState.deliveryCadence}
+                  value={
+                    deliveryCadenceOptions.includes(deliveryCadenceValue)
+                      ? deliveryCadenceValue
+                      : "custom"
+                  }
                   onChange={(event) => handleFieldChange("deliveryCadence", event.target.value)}
                   className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
+                  disabled={isManagedSubscription}
                 >
                   <option value="Every 30 days">Every 30 days</option>
                   <option value="Every 45 days">Every 45 days</option>
                   <option value="Every 60 days">Every 60 days</option>
+                  {!deliveryCadenceOptions.includes(deliveryCadenceValue) ? (
+                    <option value="custom">{deliveryCadenceValue}</option>
+                  ) : null}
                 </select>
+                <p className="mt-2 text-sm text-[#6A6458]">
+                  {isManagedSubscription
+                    ? "This cadence is controlled by your active subscription billing setup."
+                    : "This field is only a saved preference until a recurring plan is active."}
+                </p>
               </label>
 
               {status.message ? (

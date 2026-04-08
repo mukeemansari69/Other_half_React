@@ -1,3 +1,4 @@
+import "../loadEnv.js";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "node:crypto";
 import fsSync from "node:fs";
@@ -6,6 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
+import { syncAllUserSubscriptions } from "./subscriptions.js";
 
 const ROOT_DIR = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const LEGACY_DATA_DIR = path.join(ROOT_DIR, "server", "data");
@@ -14,6 +16,22 @@ const LEGACY_UPLOADS_DIR = path.join(ROOT_DIR, "server", "uploads");
 const DEFAULT_APP_DATA_DIR = path.join(ROOT_DIR, "app-data");
 const configuredDataDir = process.env.APP_DATA_DIR?.trim();
 const configuredUploadsDir = process.env.APP_UPLOADS_DIR?.trim();
+const isProduction = process.env.NODE_ENV === "production";
+const enableDemoSeeding = (() => {
+  if (process.env.ENABLE_DEMO_SEEDING === undefined) {
+    return !isProduction;
+  }
+
+  return ["1", "true", "yes", "on"].includes(
+    String(process.env.ENABLE_DEMO_SEEDING).trim().toLowerCase()
+  );
+})();
+const bootstrapAdminEmail = String(process.env.BOOTSTRAP_ADMIN_EMAIL || "")
+  .trim()
+  .toLowerCase();
+const bootstrapAdminPassword = String(process.env.BOOTSTRAP_ADMIN_PASSWORD || "");
+const bootstrapAdminName =
+  String(process.env.BOOTSTRAP_ADMIN_NAME || "").trim() || "Other Half Admin";
 
 export const DATA_DIR = configuredDataDir
   ? path.resolve(ROOT_DIR, configuredDataDir)
@@ -82,6 +100,29 @@ const createSeedAdminUser = async () => ({
   },
   createdAt: createIsoDate(-14),
   lastLoginAt: createIsoDate(-1),
+});
+
+const createBootstrapAdminUser = async () => ({
+  id: randomUUID(),
+  name: bootstrapAdminName,
+  email: bootstrapAdminEmail,
+  phone: "",
+  role: "admin",
+  passwordHash: await bcrypt.hash(bootstrapAdminPassword, 10),
+  subscription: {
+    status: "staff",
+    planName: "Admin dashboard access",
+    deliveryCadence: "N/A",
+    nextDelivery: createIsoDate(0),
+    dogProfile: {
+      name: "Operations",
+      breed: "Office Pack",
+      age: "N/A",
+      focus: "Operations",
+    },
+  },
+  createdAt: new Date().toISOString(),
+  lastLoginAt: null,
 });
 
 const createSeedMemberUser = async () => ({
@@ -182,8 +223,22 @@ const createSeedOrders = (user) => [
         unitPrice: 89,
         lineTotal: 89,
         purchaseType: "subscription",
+        planId: "1m",
+        planLabel: "1 Month Supply",
+        deliveryLabel: "Delivered every month",
+        billingIntervalUnit: "month",
+        billingIntervalCount: 1,
       },
     ],
+    subscription: {
+      status: "active",
+      planName: "Daily Duo Bundle - 1 Month Supply",
+      deliveryCadence: "Every month",
+      nextDelivery: createIsoDate(22),
+      intervalUnit: "month",
+      intervalCount: 1,
+      cancelAtPeriodEnd: false,
+    },
     createdAt: createIsoDate(-15),
     updatedAt: createIsoDate(-8),
   },
@@ -209,6 +264,11 @@ const createSeedOrders = (user) => [
         unitPrice: 49,
         lineTotal: 49,
         purchaseType: "one-time",
+        planId: "1m",
+        planLabel: "1 Month Supply",
+        deliveryLabel: "Delivered every month",
+        billingIntervalUnit: "month",
+        billingIntervalCount: 1,
       },
     ],
     createdAt: createIsoDate(-2),
@@ -236,6 +296,11 @@ const createSeedOrders = (user) => [
         unitPrice: 199,
         lineTotal: 199,
         purchaseType: "one-time",
+        planId: "6m",
+        planLabel: "6 Month Supply",
+        deliveryLabel: "Delivered every 6 months",
+        billingIntervalUnit: "month",
+        billingIntervalCount: 6,
       },
     ],
     createdAt: createIsoDate(-1),
@@ -404,18 +469,58 @@ export const seedDatabase = async () => {
   const usersByEmail = new Map(
     database.users.map((user) => [String(user.email || "").toLowerCase(), user])
   );
-  const seededUsers = [];
+  const bootstrapUsers = [];
+
+  if (
+    bootstrapAdminEmail &&
+    bootstrapAdminPassword &&
+    !usersByEmail.has(bootstrapAdminEmail)
+  ) {
+    bootstrapUsers.push(await createBootstrapAdminUser());
+  }
+
+  if (bootstrapUsers.length > 0) {
+    database.users = [...bootstrapUsers, ...database.users];
+    didChange = true;
+    bootstrapUsers.forEach((user) => {
+      usersByEmail.set(String(user.email || "").toLowerCase(), user);
+    });
+  }
+
+  if (!enableDemoSeeding) {
+    if (!database.meta?.seededAt) {
+      database.meta = {
+        ...(database.meta || {}),
+        version: 1,
+        seededAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      didChange = true;
+    }
+
+    if (syncAllUserSubscriptions(database)) {
+      didChange = true;
+    }
+
+    if (didChange) {
+      await writeDatabase(database);
+    }
+
+    return database;
+  }
+
+  const demoSeedUsers = [];
 
   if (!usersByEmail.has(DEFAULT_ADMIN_EMAIL)) {
-    seededUsers.push(await createSeedAdminUser());
+    demoSeedUsers.push(await createSeedAdminUser());
   }
 
   if (!usersByEmail.has(DEFAULT_MEMBER_EMAIL)) {
-    seededUsers.push(await createSeedMemberUser());
+    demoSeedUsers.push(await createSeedMemberUser());
   }
 
-  if (seededUsers.length > 0) {
-    database.users = [...seededUsers, ...database.users];
+  if (demoSeedUsers.length > 0) {
+    database.users = [...demoSeedUsers, ...database.users];
     didChange = true;
   }
 
@@ -445,6 +550,10 @@ export const seedDatabase = async () => {
 
   if (demoUser && database.reviews.length === 0) {
     database.reviews = createSeedReviews(demoUser);
+    didChange = true;
+  }
+
+  if (syncAllUserSubscriptions(database)) {
     didChange = true;
   }
 
