@@ -75,6 +75,88 @@ const validatePassword = (password = "") => {
   return password.trim().length >= 8;
 };
 
+const createStripeCheckoutSession = async ({
+  secretKey,
+  items,
+  email,
+  successUrl,
+  cancelUrl,
+}) => {
+  const requestBody = new URLSearchParams();
+  requestBody.set("mode", "payment");
+  requestBody.set("success_url", successUrl);
+  requestBody.set("cancel_url", cancelUrl);
+  requestBody.set("payment_method_types[0]", "card");
+
+  if (emailPattern.test(email)) {
+    requestBody.set("customer_email", email);
+  }
+
+  items.forEach((item, index) => {
+    requestBody.set(`line_items[${index}][quantity]`, String(item.quantity));
+    requestBody.set(`line_items[${index}][price_data][currency]`, "usd");
+    requestBody.set(
+      `line_items[${index}][price_data][unit_amount]`,
+      String(Math.round(item.unitPrice * 100))
+    );
+    requestBody.set(
+      `line_items[${index}][price_data][product_data][name]`,
+      item.name
+    );
+
+    if (item.description) {
+      requestBody.set(
+        `line_items[${index}][price_data][product_data][description]`,
+        item.description
+      );
+    }
+
+    if (item.image) {
+      requestBody.set(
+        `line_items[${index}][price_data][product_data][images][0]`,
+        item.image
+      );
+    }
+  });
+
+  const stripeResponse = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${secretKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: requestBody,
+  });
+  const stripePayload = await stripeResponse.json();
+
+  if (!stripeResponse.ok) {
+    const upstreamMessage =
+      stripePayload?.error?.message ||
+      "Stripe checkout session could not be created.";
+    const error = new Error(upstreamMessage);
+    error.statusCode = 502;
+    throw error;
+  }
+
+  return {
+    sessionId: stripePayload.id,
+    url: stripePayload.url,
+  };
+};
+
+const createUpiPaymentLink = ({ vpa, payeeName, amount, note, transactionRef }) => {
+  const upiQuery = new URLSearchParams({
+    pa: vpa,
+    pn: payeeName,
+    am: amount.toFixed(2),
+    cu: "INR",
+    tn: note,
+    tr: transactionRef,
+  });
+
+  return `upi://pay?${upiQuery.toString()}`;
+};
+
 const isAllowedOrigin = (origin) => {
   if (!origin) {
     return true;
@@ -114,6 +196,108 @@ app.get("/api/health", (_req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.post(
+  "/api/payments/create-checkout-session",
+  asyncHandler(async (req, res) => {
+    const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
+    const items = rawItems
+      .slice(0, 20)
+      .map((item) => ({
+        name: String(item?.name || "").trim(),
+        description: String(item?.description || "").trim().slice(0, 240),
+        image: String(item?.image || "").trim(),
+        unitPrice: Number(item?.unitPrice),
+        quantity: Math.round(Number(item?.quantity || 1)),
+      }))
+      .filter(
+        (item) =>
+          item.name &&
+          Number.isFinite(item.unitPrice) &&
+          item.unitPrice > 0 &&
+          Number.isFinite(item.quantity) &&
+          item.quantity > 0
+      );
+
+    if (items.length === 0) {
+      return res.status(400).json({ message: "Your cart is empty." });
+    }
+
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY?.trim();
+    const upiVpa = (process.env.UPI_VPA || "9690296846@ptsbi").trim();
+    const upiPayeeName = (process.env.UPI_PAYEE_NAME || "Other Half Pets").trim();
+    const fallbackOrigin = req.headers.origin
+      ? req.headers.origin
+      : `http://localhost:${PORT}`;
+    const preferredSuccessUrl =
+      typeof req.body.successUrl === "string" ? req.body.successUrl.trim() : "";
+    const preferredCancelUrl =
+      typeof req.body.cancelUrl === "string" ? req.body.cancelUrl.trim() : "";
+    const successUrl =
+      /^https?:\/\//i.test(preferredSuccessUrl)
+        ? preferredSuccessUrl
+        : `${fallbackOrigin}/cart?checkout=success`;
+    const cancelUrl =
+      /^https?:\/\//i.test(preferredCancelUrl)
+        ? preferredCancelUrl
+        : `${fallbackOrigin}/cart?checkout=cancelled`;
+    const email = normalizeEmail(req.body.email || "");
+    const normalizedItems = items.map((item) => ({
+      ...item,
+      image:
+        item.image && item.image.startsWith("/")
+          ? `${fallbackOrigin}${item.image}`
+          : item.image,
+    }));
+    if (stripeSecretKey) {
+      const session = await createStripeCheckoutSession({
+        secretKey: stripeSecretKey,
+        items: normalizedItems,
+        email,
+        successUrl,
+        cancelUrl,
+      });
+
+      return res.status(201).json({
+        mode: "stripe",
+        url: session.url,
+        sessionId: session.sessionId,
+      });
+    }
+
+    if (upiVpa) {
+      const totalAmount = items.reduce(
+        (runningTotal, item) => runningTotal + item.unitPrice * item.quantity,
+        0
+      );
+      const transactionRef = `OH-${Date.now()}`;
+      const topItemNames = items.slice(0, 2).map((item) => item.name);
+      const note = `Order ${transactionRef} - ${topItemNames.join(", ")}`.slice(0, 80);
+      const upiUrl = createUpiPaymentLink({
+        vpa: upiVpa,
+        payeeName: upiPayeeName,
+        amount: totalAmount,
+        note,
+        transactionRef,
+      });
+
+      return res.status(201).json({
+        mode: "upi",
+        upiUrl,
+        vpa: upiVpa,
+        amount: Number(totalAmount.toFixed(2)),
+        currency: "INR",
+        transactionRef,
+        message: "UPI payment link generated.",
+      });
+    }
+
+    return res.status(503).json({
+      message:
+        "Payment gateway is not configured yet. Add STRIPE_SECRET_KEY or UPI_VPA on the server.",
+    });
+  })
+);
 
 app.post(
   "/api/auth/register",

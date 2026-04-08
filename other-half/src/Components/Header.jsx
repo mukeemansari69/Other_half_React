@@ -4,6 +4,7 @@ import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 
 import "/public/Home/css/header.css";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useCart } from "../context/CartContext.jsx";
 
 const desktopLinks = [
   { label: "HOME", to: "/" },
@@ -46,6 +47,11 @@ const mobileSections = [
         label: "Take the Quiz",
         to: "/quiz",
         description: "Find the best routine for your dog.",
+      },
+      {
+        label: "Cart",
+        to: "/cart",
+        description: "Review added products and continue to secure checkout.",
       },
     ],
   },
@@ -139,6 +145,7 @@ const quickSearchResults = [
   "/dailyduo",
   "/science",
   "/faqPage",
+  "/cart",
   "/manage-subscription",
   "/contact",
 ].map((path) => searchCatalog.find((item) => item.to === path));
@@ -149,6 +156,7 @@ const desktopNavClass = ({ isActive }) =>
 export default function Header() {
   const location = useLocation();
   const { isAdmin, isAuthenticated, logout, user } = useAuth();
+  const { cartCount } = useCart();
   const searchInputRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -297,12 +305,18 @@ export default function Header() {
               {searchOpen ? <X size={20} /> : <Search size={20} />}
             </button>
 
-            <button type="button" className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded relative header-icon-button" aria-label="Open cart">
+            <NavLink
+              to="/cart"
+              className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded relative header-icon-button"
+              aria-label="Open cart"
+            >
               <ShoppingCart size={20} />
-              <span className="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white w-4 h-4 flex items-center justify-center rounded-full">
-                2
-              </span>
-            </button>
+              {cartCount > 0 ? (
+                <span className="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white w-4 h-4 flex items-center justify-center rounded-full">
+                  {cartCount > 9 ? "9+" : cartCount}
+                </span>
+              ) : null}
+            </NavLink>
 
             <Link
               to={accountPath}
@@ -455,6 +469,13 @@ export default function Header() {
               Take the Quiz
             </NavLink>
             <div className="mt-3 grid gap-2">
+              <NavLink
+                to="/cart"
+                className="header-mobile-drawer__quiz bg-white text-[#1A1A1A] border border-[#D9D4C8]"
+                onClick={closeMenu}
+              >
+                Cart {cartCount > 0 ? `(${cartCount})` : ""}
+              </NavLink>
               <NavLink
                 to={accountPath}
                 className="header-mobile-drawer__quiz bg-white text-[#1A1A1A] border border-[#D9D4C8]"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   BadgeCheck,
   Factory,
@@ -11,7 +11,10 @@ import {
   Stethoscope,
   Truck,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import "/public/Product/css/ProductBanner.css";
+import { useCart } from "../context/CartContext.jsx";
 
 const highlightIconMap = {
   clinicallyTested: FlaskConical,
@@ -387,6 +390,8 @@ const ProductBanner = ({
   productData = defaultProductBannerData,
   onAddToCart,
 }) => {
+  const navigate = useNavigate();
+  const { addItem, hasItem } = useCart();
   const product = productData;
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSizeId, setSelectedSizeId] = useState(
@@ -403,8 +408,9 @@ const ProductBanner = ({
   const [selectedBundleIds, setSelectedBundleIds] = useState([]);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [openAccordionId, setOpenAccordionId] = useState(null);
-  const [isInCart, setIsInCart] = useState(false);
-  const bundleSuggestions = product.bundleSuggestions ?? [];
+  const bundleSuggestions = useMemo(() => {
+    return product.bundleSuggestions ?? [];
+  }, [product.bundleSuggestions]);
 
   useEffect(() => {
     if (bundleSuggestions.length <= 1) {
@@ -441,6 +447,30 @@ const ProductBanner = ({
   const isActiveSuggestionAdded = activeSuggestion
     ? selectedBundleIds.includes(activeSuggestion.id)
     : false;
+  const sortedBundleIds = useMemo(() => {
+    return [...selectedBundleIds].sort();
+  }, [selectedBundleIds]);
+  const selectedBundleTitles = useMemo(() => {
+    return bundleSuggestions
+      .filter((item) => sortedBundleIds.includes(item.id))
+      .map((item) => item.title);
+  }, [bundleSuggestions, sortedBundleIds]);
+  const cartVariantId = useMemo(() => {
+    return [
+      product.id,
+      selectedSize.id,
+      selectedPlan.id,
+      isSubscribed ? "subscription" : "one-time",
+      sortedBundleIds.length > 0 ? sortedBundleIds.join("+") : "no-bundle",
+    ].join("::");
+  }, [
+    isSubscribed,
+    product.id,
+    selectedPlan.id,
+    selectedSize.id,
+    sortedBundleIds,
+  ]);
+  const isInCart = hasItem(cartVariantId);
 
   const handleSizeChange = (sizeId) => {
     const nextSize = product.sizes.find((size) => size.id === sizeId);
@@ -457,11 +487,31 @@ const ProductBanner = ({
     );
   };
   const handleAddToCart = (source = "cart") => {
-    setIsInCart(true);
+    const lineDescription = [
+      `${selectedSize.name} (${selectedSize.weight})`,
+      selectedPlan.label,
+      isSubscribed ? "Subscribe & Save" : "One-time purchase",
+      selectedBundleTitles.length > 0
+        ? `Bundles: ${selectedBundleTitles.join(", ")}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    addItem({
+      id: cartVariantId,
+      productId: product.id,
+      name: product.name,
+      description: lineDescription,
+      image: product.gallery[0]?.src || selectedImage?.src || "",
+      unitPrice: Number(totalPrice.toFixed(2)),
+      quantity: 1,
+    });
+
     if (typeof onAddToCart === "function") {
       onAddToCart({
         source,
-        productId: product.id,
+        productId: cartVariantId,
         size: selectedSize,
         plan: selectedPlan,
         bundleIds: selectedBundleIds,
@@ -754,10 +804,11 @@ const ProductBanner = ({
                     type="button"
                     onClick={() => {
                       if (isInCart) {
-                        window.location.href = product.cta.cartHref;
-                      } else {
-                        handleAddToCart("cart");
+                        navigate(product.cta.cartHref || "/cart");
+                        return;
                       }
+
+                      handleAddToCart("cart");
                     }}
                     className={`product-banner-cta flex w-full items-center justify-center rounded-full px-5 py-4 text-center text-lg font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)] sm:text-2xl 
     ${isInCart ? "bg-[#0F4A12]" : "bg-[#E8754C]"}`}
@@ -768,7 +819,12 @@ const ProductBanner = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleAddToCart("shop-pay")}
+                    onClick={() => {
+                      if (!isInCart) {
+                        handleAddToCart("shop-pay");
+                      }
+                      navigate(product.cta.cartHref || "/cart");
+                    }}
                     className="product-banner-cta flex w-full items-center justify-center rounded-full bg-[#4E3CE2] px-5 py-4 text-center text-base font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)]"
                   >
                     {product.cta.shopPayLabel}
