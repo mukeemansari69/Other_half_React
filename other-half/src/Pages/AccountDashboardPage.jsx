@@ -25,21 +25,46 @@ const requestTone = {
 
 const metricCards = (summary) => [
   {
+    key: "support",
     label: "Open support requests",
     value: summary.metrics.openSupportRequests,
     icon: MessagesSquare,
   },
   {
+    key: "quiz",
     label: "Saved recommendations",
     value: summary.metrics.savedRecommendations,
     icon: Sparkles,
   },
   {
+    key: "delivery",
     label: "Next delivery",
     value: formatDate(summary.subscription.nextDelivery),
     icon: CalendarClock,
   },
 ];
+
+const getSupportStatusCounts = (supportRequests) => {
+  return supportRequests.reduce(
+    (counts, request) => {
+      const normalizedStatus = String(request.status || "").toLowerCase();
+
+      if (normalizedStatus === "new" || normalizedStatus === "in-review" || normalizedStatus === "resolved") {
+        counts[normalizedStatus] += 1;
+      } else {
+        counts.other += 1;
+      }
+
+      return counts;
+    },
+    {
+      new: 0,
+      "in-review": 0,
+      resolved: 0,
+      other: 0,
+    }
+  );
+};
 
 const AccountDashboardPage = () => {
   const { logout, token, updateLocalUser, user } = useAuth();
@@ -53,6 +78,7 @@ const AccountDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
+  const [activeMetric, setActiveMetric] = useState("support");
 
   useEffect(() => {
     let isActive = true;
@@ -160,6 +186,7 @@ const AccountDashboardPage = () => {
   }
 
   const dogName = summary.subscription?.dogProfile?.name || "your dog";
+  const supportStatusCounts = getSupportStatusCounts(summary.supportRequests);
 
   return (
     <main className="bg-[#FBF8EF] px-6 py-8 md:px-10 lg:px-16">
@@ -180,17 +207,75 @@ const AccountDashboardPage = () => {
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               {metricCards(summary).map((card) => {
                 const Icon = card.icon;
+                const isActive = activeMetric === card.key;
 
                 return (
-                  <article key={card.label} className="rounded-[28px] border border-white/10 bg-white/8 p-5">
+                  <button
+                    type="button"
+                    key={card.key}
+                    onClick={() => setActiveMetric(card.key)}
+                    className={`rounded-[28px] border p-5 text-left transition ${
+                      isActive
+                        ? "border-[#EBF466] bg-white/16"
+                        : "border-white/10 bg-white/8 hover:bg-white/12"
+                    }`}
+                  >
                     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#EBF466] text-[#163B1D]">
                       <Icon size={20} />
                     </div>
                     <p className="mt-4 text-sm text-white/70">{card.label}</p>
                     <h2 className="mt-1 text-xl font-semibold">{card.value}</h2>
-                  </article>
+                  </button>
                 );
               })}
+            </div>
+
+            <div className="mt-6 rounded-[24px] border border-white/16 bg-white/8 p-5">
+              {activeMetric === "support" ? (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#EBF466]">
+                    Support status
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-4 text-sm text-white/88">
+                    <span>New: {supportStatusCounts.new}</span>
+                    <span>In review: {supportStatusCounts["in-review"]}</span>
+                    <span>Resolved: {supportStatusCounts.resolved}</span>
+                  </div>
+                </div>
+              ) : null}
+
+              {activeMetric === "quiz" ? (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#EBF466]">
+                    Latest saved quiz
+                  </p>
+                  {summary.quizSubmissions.length > 0 ? (
+                    <div className="mt-3 text-sm text-white/88">
+                      <p>{summary.quizSubmissions[0].recommendationTitle}</p>
+                      <p className="mt-1 text-white/70">
+                        Saved on {formatDate(summary.quizSubmissions[0].createdAt)}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm text-white/78">
+                      No saved quiz result yet. Retake the quiz and it will appear here.
+                    </p>
+                  )}
+                </div>
+              ) : null}
+
+              {activeMetric === "delivery" ? (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#EBF466]">
+                    Delivery details
+                  </p>
+                  <div className="mt-3 text-sm text-white/88">
+                    <p>Plan: {summary.subscription.planName}</p>
+                    <p className="mt-1">Cadence: {summary.subscription.deliveryCadence}</p>
+                    <p className="mt-1">Next box: {formatDate(summary.subscription.nextDelivery)}</p>
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">

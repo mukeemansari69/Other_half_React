@@ -31,6 +31,7 @@ const baseDatabase = () => ({
   supportRequests: [],
   newsletterSubscribers: [],
   quizSubmissions: [],
+  orders: [],
 });
 
 let writeQueue = Promise.resolve();
@@ -155,6 +156,87 @@ const createSeedSubscriber = () => ({
   createdAt: createIsoDate(-1),
 });
 
+const createSeedOrders = (user) => [
+  {
+    id: randomUUID(),
+    orderNumber: "OH-3201",
+    userId: user?.id || null,
+    customerName: user?.name || "Guest customer",
+    customerEmail: user?.email || "guest@example.com",
+    currency: "USD",
+    totalAmount: 89,
+    paymentMode: "card",
+    paymentStatus: "paid",
+    orderStatus: "delivered",
+    subscriptionType: "subscription",
+    deliveryStatus: "delivered",
+    deliveryDueAt: createIsoDate(-8),
+    items: [
+      {
+        name: "Daily Duo Bundle",
+        quantity: 1,
+        unitPrice: 89,
+        lineTotal: 89,
+        purchaseType: "subscription",
+      },
+    ],
+    createdAt: createIsoDate(-15),
+    updatedAt: createIsoDate(-8),
+  },
+  {
+    id: randomUUID(),
+    orderNumber: "OH-3202",
+    userId: user?.id || null,
+    customerName: user?.name || "Guest customer",
+    customerEmail: user?.email || "guest@example.com",
+    currency: "USD",
+    totalAmount: 49,
+    paymentMode: "card",
+    paymentStatus: "paid",
+    orderStatus: "processing",
+    subscriptionType: "one-time",
+    deliveryStatus: "in-transit",
+    deliveryDueAt: createIsoDate(2),
+    items: [
+      {
+        name: "Doggie Dental Powder",
+        quantity: 1,
+        unitPrice: 49,
+        lineTotal: 49,
+        purchaseType: "one-time",
+      },
+    ],
+    createdAt: createIsoDate(-2),
+    updatedAt: createIsoDate(-1),
+  },
+  {
+    id: randomUUID(),
+    orderNumber: "OH-3203",
+    userId: null,
+    customerName: "Guest customer",
+    customerEmail: "guest+checkout@example.com",
+    currency: "INR",
+    totalAmount: 199,
+    paymentMode: "upi",
+    paymentStatus: "pending",
+    orderStatus: "placed",
+    subscriptionType: "one-time",
+    deliveryStatus: "queued",
+    deliveryDueAt: createIsoDate(4),
+    items: [
+      {
+        name: "Everyday Wellness Plan",
+        quantity: 1,
+        unitPrice: 199,
+        lineTotal: 199,
+        purchaseType: "one-time",
+      },
+    ],
+    createdAt: createIsoDate(-1),
+    updatedAt: createIsoDate(-1),
+  },
+];
+
 const ensureDirectories = async () => {
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.mkdir(UPLOADS_DIR, { recursive: true });
@@ -184,11 +266,33 @@ const migrateLegacyStorageIfNeeded = async () => {
   }
 };
 
-const writeRawDatabase = async (database) => {
-  const nextDatabase = {
-    ...database,
+const ensureArray = (value) => (Array.isArray(value) ? value : []);
+
+const normalizeDatabaseShape = (database) => {
+  const initialDatabase = baseDatabase();
+  const safeDatabase = database && typeof database === "object" ? database : {};
+
+  return {
+    ...initialDatabase,
+    ...safeDatabase,
     meta: {
-      ...(database.meta || {}),
+      ...initialDatabase.meta,
+      ...(safeDatabase.meta || {}),
+    },
+    users: ensureArray(safeDatabase.users),
+    supportRequests: ensureArray(safeDatabase.supportRequests),
+    newsletterSubscribers: ensureArray(safeDatabase.newsletterSubscribers),
+    quizSubmissions: ensureArray(safeDatabase.quizSubmissions),
+    orders: ensureArray(safeDatabase.orders),
+  };
+};
+
+const writeRawDatabase = async (database) => {
+  const normalizedDatabase = normalizeDatabaseShape(database);
+  const nextDatabase = {
+    ...normalizedDatabase,
+    meta: {
+      ...(normalizedDatabase.meta || {}),
       version: 1,
       updatedAt: new Date().toISOString(),
     },
@@ -204,7 +308,7 @@ export const readDatabase = async () => {
 
   try {
     const fileContents = await fs.readFile(DATABASE_FILE, "utf8");
-    return JSON.parse(fileContents);
+    return normalizeDatabaseShape(JSON.parse(fileContents));
   } catch (error) {
     if (error.code !== "ENOENT") {
       throw error;
@@ -263,6 +367,11 @@ export const seedDatabase = async () => {
 
   if (demoUser && database.quizSubmissions.length === 0) {
     database.quizSubmissions = [createSeedQuizSubmission(demoUser)];
+    didChange = true;
+  }
+
+  if (database.orders.length === 0) {
+    database.orders = createSeedOrders(demoUser);
     didChange = true;
   }
 

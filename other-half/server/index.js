@@ -157,6 +157,53 @@ const createUpiPaymentLink = ({ vpa, payeeName, amount, note, transactionRef }) 
   return `upi://pay?${upiQuery.toString()}`;
 };
 
+const createOrderNumber = () => `OH-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`;
+
+const toSafeNumber = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const getTimeValue = (value) => {
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : null;
+};
+
+const summarizeOrder = (order) => ({
+  ...order,
+  items: Array.isArray(order.items)
+    ? order.items.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: toSafeNumber(item.unitPrice),
+        lineTotal: toSafeNumber(item.lineTotal),
+        purchaseType: item.purchaseType || "one-time",
+      }))
+    : [],
+});
+
+const getSupportStatusCounts = (supportRequests) => {
+  return supportRequests.reduce(
+    (counts, supportRequest) => {
+      const normalizedStatus = String(supportRequest.status || "").trim().toLowerCase();
+
+      if (normalizedStatus === "new" || normalizedStatus === "in-review" || normalizedStatus === "resolved") {
+        counts[normalizedStatus] += 1;
+      } else {
+        counts.other += 1;
+      }
+
+      return counts;
+    },
+    {
+      new: 0,
+      "in-review": 0,
+      resolved: 0,
+      other: 0,
+    }
+  );
+};
+
 const isAllowedOrigin = (origin) => {
   if (!origin) {
     return true;
@@ -199,6 +246,7 @@ app.get("/api/health", (_req, res) => {
 
 app.post(
   "/api/payments/create-checkout-session",
+  optionalAuth,
   asyncHandler(async (req, res) => {
     const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
     const items = rawItems
@@ -209,6 +257,7 @@ app.post(
         image: String(item?.image || "").trim(),
         unitPrice: Number(item?.unitPrice),
         quantity: Math.round(Number(item?.quantity || 1)),
+        purchaseType: item?.purchaseType === "subscription" ? "subscription" : "one-time",
       }))
       .filter(
         (item) =>
@@ -249,6 +298,59 @@ app.post(
           ? `${fallbackOrigin}${item.image}`
           : item.image,
     }));
+    const totalAmount = items.reduce(
+      (runningTotal, item) => runningTotal + item.unitPrice * item.quantity,
+      0
+    );
+    const now = new Date().toISOString();
+    const customerName =
+      req.user?.name || (typeof req.body.customerName === "string" ? req.body.customerName.trim() : "") || "Guest customer";
+    const customerEmail = email || req.user?.email || "";
+    const subscriptionType = items.some((item) => item.purchaseType === "subscription")
+      ? "subscription"
+      : "one-time";
+    const deliveryDueAt = subscriptionType === "subscription" ? req.user?.subscription?.nextDelivery || null : null;
+    const normalizedOrderItems = items.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: Number(item.unitPrice.toFixed(2)),
+      lineTotal: Number((item.unitPrice * item.quantity).toFixed(2)),
+      purchaseType: item.purchaseType,
+    }));
+
+    const persistOrder = async ({
+      paymentMode,
+      paymentStatus,
+      currency,
+      paymentReference,
+      orderStatus = "placed",
+      deliveryStatus,
+    }) => {
+      const database = await readDatabase();
+      database.orders.unshift({
+        id: randomUUID(),
+        orderNumber: createOrderNumber(),
+        userId: req.user?.id || null,
+        customerName,
+        customerEmail,
+        currency,
+        totalAmount: Number(totalAmount.toFixed(2)),
+        paymentMode,
+        paymentStatus,
+        paymentReference,
+        orderStatus,
+        subscriptionType,
+        deliveryStatus:
+          deliveryStatus ||
+          (subscriptionType === "subscription" ? "scheduled" : "queued"),
+        deliveryDueAt,
+        items: normalizedOrderItems,
+        createdAt: now,
+        updatedAt: now,
+      });
+      await writeDatabase(database);
+    };
+
     if (stripeSecretKey) {
       const session = await createStripeCheckoutSession({
         secretKey: stripeSecretKey,
@@ -256,6 +358,13 @@ app.post(
         email,
         successUrl,
         cancelUrl,
+      });
+
+      await persistOrder({
+        paymentMode: "card",
+        paymentStatus: "pending",
+        currency: "USD",
+        paymentReference: session.sessionId,
       });
 
       return res.status(201).json({
@@ -266,10 +375,6 @@ app.post(
     }
 
     if (upiVpa) {
-      const totalAmount = items.reduce(
-        (runningTotal, item) => runningTotal + item.unitPrice * item.quantity,
-        0
-      );
       const transactionRef = `OH-${Date.now()}`;
       const topItemNames = items.slice(0, 2).map((item) => item.name);
       const note = `Order ${transactionRef} - ${topItemNames.join(", ")}`.slice(0, 80);
@@ -279,6 +384,13 @@ app.post(
         amount: totalAmount,
         note,
         transactionRef,
+      });
+
+      await persistOrder({
+        paymentMode: "upi",
+        paymentStatus: "pending",
+        currency: "INR",
+        paymentReference: transactionRef,
       });
 
       return res.status(201).json({
@@ -622,6 +734,114 @@ app.get(
     const supportRequests = sortByDateDescending(database.supportRequests);
     const quizSubmissions = sortByDateDescending(database.quizSubmissions);
     const newsletterSubscribers = sortByDateDescending(database.newsletterSubscribers);
+    const orders = sortByDateDescending(database.orders);
+    const dogParents = database.users.filter((user) => user.role !== "admin");
+    const activeSubscriptions = dogParents.filter(
+      (user) => String(user.subscription?.status || "").toLowerCase() === "active"
+    );
+    const usersWithSubscription = dogParents.filter((user) => {
+      const subscriptionStatus = String(user.subscription?.status || "").toLowerCase();
+      return Boolean(user.subscription) && subscriptionStatus !== "cancelled" && subscriptionStatus !== "none";
+    });
+    const usersWithoutSubscription = dogParents.length - usersWithSubscription.length;
+    const supportStatusCounts = getSupportStatusCounts(supportRequests);
+    const now = Date.now();
+    const sevenDaysAhead = now + 1000 * 60 * 60 * 24 * 7;
+
+    const deliveryQueue = activeSubscriptions
+      .map((user) => ({
+        ...sanitizeUser(user),
+        nextDelivery: user.subscription?.nextDelivery || null,
+      }))
+      .filter((user) => user.nextDelivery)
+      .sort((firstUser, secondUser) => {
+        const firstTime = getTimeValue(firstUser.nextDelivery) ?? Number.MAX_SAFE_INTEGER;
+        const secondTime = getTimeValue(secondUser.nextDelivery) ?? Number.MAX_SAFE_INTEGER;
+        return firstTime - secondTime;
+      });
+
+    const deliveriesDueNow = deliveryQueue.filter((user) => {
+      const deliveryTime = getTimeValue(user.nextDelivery);
+      return deliveryTime !== null && deliveryTime <= now;
+    }).length;
+
+    const deliveriesDueSoon = deliveryQueue.filter((user) => {
+      const deliveryTime = getTimeValue(user.nextDelivery);
+      return deliveryTime !== null && deliveryTime > now && deliveryTime <= sevenDaysAhead;
+    }).length;
+
+    const orderMetrics = orders.reduce(
+      (metrics, order) => {
+        const totalAmount = toSafeNumber(order.totalAmount);
+        const paymentStatus = String(order.paymentStatus || "").toLowerCase();
+        const orderStatus = String(order.orderStatus || "").toLowerCase();
+        const subscriptionType = String(order.subscriptionType || "").toLowerCase();
+
+        metrics.totalOrders += 1;
+        metrics.totalRevenue += totalAmount;
+
+        if (paymentStatus === "paid") {
+          metrics.paidOrders += 1;
+          metrics.paidRevenue += totalAmount;
+        } else if (paymentStatus === "pending") {
+          metrics.pendingPayments += 1;
+        }
+
+        if (subscriptionType === "subscription") {
+          metrics.subscriptionOrders += 1;
+        } else {
+          metrics.oneTimeOrders += 1;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(metrics.statusCounts, orderStatus)) {
+          metrics.statusCounts[orderStatus] += 1;
+        } else {
+          metrics.statusCounts.other += 1;
+        }
+
+        return metrics;
+      },
+      {
+        totalOrders: 0,
+        totalRevenue: 0,
+        paidOrders: 0,
+        paidRevenue: 0,
+        pendingPayments: 0,
+        subscriptionOrders: 0,
+        oneTimeOrders: 0,
+        statusCounts: {
+          placed: 0,
+          processing: 0,
+          shipped: 0,
+          delivered: 0,
+          cancelled: 0,
+          other: 0,
+        },
+      }
+    );
+
+    const analytics = {
+      supportStatusCounts,
+      orders: {
+        ...orderMetrics,
+        totalRevenue: Number(orderMetrics.totalRevenue.toFixed(2)),
+        paidRevenue: Number(orderMetrics.paidRevenue.toFixed(2)),
+        averageOrderValue:
+          orderMetrics.totalOrders > 0
+            ? Number((orderMetrics.totalRevenue / orderMetrics.totalOrders).toFixed(2))
+            : 0,
+      },
+      subscriptions: {
+        active: activeSubscriptions.length,
+        withSubscription: usersWithSubscription.length,
+        withoutSubscription: usersWithoutSubscription,
+      },
+      deliveries: {
+        dueNow: deliveriesDueNow,
+        dueSoon: deliveriesDueSoon,
+        queued: deliveryQueue.length,
+      },
+    };
 
     return res.json({
       overview: {
@@ -633,10 +853,16 @@ app.get(
         ).length,
         newsletterSubscribers: newsletterSubscribers.length,
         quizSubmissions: quizSubmissions.length,
+        orders: orders.length,
+        activeSubscriptions: activeSubscriptions.length,
+        deliveriesDue: deliveriesDueNow + deliveriesDueSoon,
       },
+      analytics,
       latestSupportRequests: supportRequests.slice(0, 5).map(summarizeSupportRequest),
       latestQuizSubmissions: quizSubmissions.slice(0, 5),
       latestSubscribers: newsletterSubscribers.slice(0, 5),
+      latestOrders: orders.slice(0, 5).map(summarizeOrder),
+      deliveryQueue: deliveryQueue.slice(0, 15),
     });
   })
 );
@@ -649,6 +875,17 @@ app.get(
     const database = await readDatabase();
     const users = sortByDateDescending(database.users, "createdAt").map(sanitizeUser);
     return res.json({ users });
+  })
+);
+
+app.get(
+  "/api/admin/orders",
+  requireAuth,
+  requireAdmin,
+  asyncHandler(async (_req, res) => {
+    const database = await readDatabase();
+    const orders = sortByDateDescending(database.orders).map(summarizeOrder);
+    return res.json({ orders });
   })
 );
 
