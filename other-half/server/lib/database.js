@@ -5,6 +5,7 @@ import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import mongoose from "mongoose";
 
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 import { syncAllUserSubscriptions } from "./subscriptions.js";
@@ -12,10 +13,14 @@ import { syncAllUserSubscriptions } from "./subscriptions.js";
 const ROOT_DIR = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const LEGACY_DATA_DIR = path.join(ROOT_DIR, "server", "data");
 const LEGACY_DATABASE_FILE = path.join(LEGACY_DATA_DIR, "db.json");
-const LEGACY_UPLOADS_DIR = path.join(ROOT_DIR, "server", "uploads");
 const DEFAULT_APP_DATA_DIR = path.join(ROOT_DIR, "app-data");
 const configuredDataDir = process.env.APP_DATA_DIR?.trim();
 const configuredUploadsDir = process.env.APP_UPLOADS_DIR?.trim();
+const configuredMongoUri = String(process.env.MONGODB_URI || "").trim();
+const configuredMongoDbName =
+  String(process.env.MONGODB_DB_NAME || "").trim() || "other-half";
+const configuredMongoCollection =
+  String(process.env.MONGODB_COLLECTION || "").trim() || "appstates";
 const isProduction = process.env.NODE_ENV === "production";
 const enableDemoSeeding = (() => {
   if (process.env.ENABLE_DEMO_SEEDING === undefined) {
@@ -32,18 +37,21 @@ const bootstrapAdminEmail = String(process.env.BOOTSTRAP_ADMIN_EMAIL || "")
 const bootstrapAdminPassword = String(process.env.BOOTSTRAP_ADMIN_PASSWORD || "");
 const bootstrapAdminName =
   String(process.env.BOOTSTRAP_ADMIN_NAME || "").trim() || "Other Half Admin";
+const APP_STATE_KEY = "primary";
+const DEFAULT_DATABASE_VERSION = 1;
 
 export const DATA_DIR = configuredDataDir
   ? path.resolve(ROOT_DIR, configuredDataDir)
   : DEFAULT_APP_DATA_DIR;
-export const DATABASE_FILE = path.join(DATA_DIR, "db.json");
+export const LOCAL_DATABASE_FILE = path.join(DATA_DIR, "db.json");
+export const DATABASE_TARGET = `${configuredMongoDbName}/${configuredMongoCollection}`;
 export const UPLOADS_DIR = configuredUploadsDir
   ? path.resolve(ROOT_DIR, configuredUploadsDir)
   : path.join(DATA_DIR, "uploads");
 
 const baseDatabase = () => ({
   meta: {
-    version: 1,
+    version: DEFAULT_DATABASE_VERSION,
     seededAt: null,
     updatedAt: null,
   },
@@ -55,6 +63,57 @@ const baseDatabase = () => ({
   reviews: [],
 });
 
+const appStateSchema = new mongoose.Schema(
+  {
+    key: {
+      type: String,
+      required: true,
+      unique: true,
+      default: APP_STATE_KEY,
+    },
+    meta: {
+      type: mongoose.Schema.Types.Mixed,
+      default: () => baseDatabase().meta,
+    },
+    users: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+    supportRequests: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+    newsletterSubscribers: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+    quizSubmissions: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+    orders: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+    reviews: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+  },
+  {
+    collection: configuredMongoCollection,
+    minimize: false,
+    strict: false,
+    versionKey: false,
+  }
+);
+
+const AppState =
+  mongoose.models.OtherHalfAppState ||
+  mongoose.model("OtherHalfAppState", appStateSchema);
+
+let connectionPromise = null;
+let initializationPromise = null;
 let writeQueue = Promise.resolve();
 
 const createIsoDate = (offsetDays = 0) => {
@@ -370,32 +429,7 @@ const createSeedReviews = (user) => {
 };
 
 const ensureDirectories = async () => {
-  await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.mkdir(UPLOADS_DIR, { recursive: true });
-};
-
-const migrateLegacyStorageIfNeeded = async () => {
-  if (configuredDataDir || configuredUploadsDir) {
-    return;
-  }
-
-  if (!fsSync.existsSync(DATABASE_FILE) && fsSync.existsSync(LEGACY_DATABASE_FILE)) {
-    await fs.copyFile(LEGACY_DATABASE_FILE, DATABASE_FILE);
-  }
-
-  if (
-    fsSync.existsSync(LEGACY_UPLOADS_DIR) &&
-    LEGACY_UPLOADS_DIR !== UPLOADS_DIR
-  ) {
-    const currentUploads = await fs.readdir(UPLOADS_DIR);
-
-    if (currentUploads.length === 0) {
-      await fs.cp(LEGACY_UPLOADS_DIR, UPLOADS_DIR, {
-        recursive: true,
-        force: false,
-      });
-    }
-  }
 };
 
 const ensureArray = (value) => (Array.isArray(value) ? value : []);
@@ -420,40 +454,211 @@ const normalizeDatabaseShape = (database) => {
   };
 };
 
-const writeRawDatabase = async (database) => {
+const stripModelFields = (document) => {
+  if (!document) {
+    return null;
+  }
+
+  const plainDocument =
+    typeof document.toObject === "function" ? document.toObject() : document;
+  const database = { ...plainDocument };
+  delete database._id;
+  delete database.key;
+  return normalizeDatabaseShape(database);
+};
+
+const getLocalDatabaseCandidates = () =>
+  [...new Set([LOCAL_DATABASE_FILE, LEGACY_DATABASE_FILE])];
+
+const hasMeaningfulDatabaseContent = (database) => {
   const normalizedDatabase = normalizeDatabaseShape(database);
-  const nextDatabase = {
+
+  if (normalizedDatabase.meta?.seededAt) {
+    return true;
+  }
+
+  return (
+    normalizedDatabase.users.length > 0 ||
+    normalizedDatabase.supportRequests.length > 0 ||
+    normalizedDatabase.newsletterSubscribers.length > 0 ||
+    normalizedDatabase.quizSubmissions.length > 0 ||
+    normalizedDatabase.orders.length > 0 ||
+    normalizedDatabase.reviews.length > 0
+  );
+};
+
+const ensureMongoConfiguration = () => {
+  if (!configuredMongoUri) {
+    throw new Error(
+      "MONGODB_URI is not set. Add your MongoDB Atlas connection string to other-half/.env."
+    );
+  }
+
+  if (/<db_password>/i.test(configuredMongoUri)) {
+    throw new Error(
+      "MONGODB_URI still contains <db_password>. Replace it with your actual MongoDB Atlas password in other-half/.env."
+    );
+  }
+};
+
+const connectToDatabase = async () => {
+  ensureMongoConfiguration();
+
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(configuredMongoUri, {
+        dbName: configuredMongoDbName,
+        serverSelectionTimeoutMS: 10000,
+      })
+      .catch((error) => {
+        connectionPromise = null;
+        throw error;
+      });
+  }
+
+  await connectionPromise;
+  return mongoose.connection;
+};
+
+const readLocalDatabaseFile = async (filePath) => {
+  try {
+    const fileContents = await fs.readFile(filePath, "utf8");
+    return normalizeDatabaseShape(JSON.parse(fileContents));
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return null;
+    }
+
+    throw error;
+  }
+};
+
+const cleanupLocalDatabaseFiles = async (filePaths) => {
+  await Promise.all(
+    filePaths.map(async (filePath) => {
+      try {
+        await fs.rm(filePath, { force: true });
+      } catch (error) {
+        if (error.code !== "ENOENT") {
+          console.warn(`Unable to remove local database file ${filePath}:`, error.message);
+        }
+      }
+    })
+  );
+};
+
+const buildStoredDatabase = (database) => {
+  const normalizedDatabase = normalizeDatabaseShape(database);
+
+  return {
     ...normalizedDatabase,
     meta: {
       ...(normalizedDatabase.meta || {}),
-      version: 1,
+      version: DEFAULT_DATABASE_VERSION,
       updatedAt: new Date().toISOString(),
     },
   };
+};
 
-  await fs.writeFile(DATABASE_FILE, JSON.stringify(nextDatabase, null, 2));
-  return nextDatabase;
+const persistDatabase = async (database) => {
+  await connectToDatabase();
+  const nextDatabase = buildStoredDatabase(database);
+
+  await AppState.updateOne(
+    { key: APP_STATE_KEY },
+    {
+      $set: {
+        key: APP_STATE_KEY,
+        ...nextDatabase,
+      },
+    },
+    {
+      upsert: true,
+      setDefaultsOnInsert: true,
+    }
+  );
+
+  const storedDocument = await AppState.findOne({ key: APP_STATE_KEY }).lean();
+  return stripModelFields(storedDocument);
+};
+
+const initializeDatabaseState = async () => {
+  await connectToDatabase();
+
+  const existingDocument = await AppState.findOne({ key: APP_STATE_KEY }).lean();
+  const existingDatabase = stripModelFields(existingDocument);
+
+  if (existingDocument && hasMeaningfulDatabaseContent(existingDatabase)) {
+    return existingDatabase;
+  }
+
+  const localDatabaseCandidates = getLocalDatabaseCandidates();
+
+  for (const filePath of localDatabaseCandidates) {
+    const localDatabase = await readLocalDatabaseFile(filePath);
+
+    if (!localDatabase || !hasMeaningfulDatabaseContent(localDatabase)) {
+      continue;
+    }
+
+    const migratedDatabase = await persistDatabase({
+      ...localDatabase,
+      meta: {
+        ...(localDatabase.meta || {}),
+        version: DEFAULT_DATABASE_VERSION,
+        migratedAt: new Date().toISOString(),
+        migratedFrom:
+          path.relative(ROOT_DIR, filePath) || filePath,
+      },
+    });
+
+    await cleanupLocalDatabaseFiles(localDatabaseCandidates);
+    return migratedDatabase;
+  }
+
+  if (existingDocument) {
+    return existingDatabase;
+  }
+
+  return persistDatabase(baseDatabase());
+};
+
+const ensureInitializedDatabase = async () => {
+  if (!initializationPromise) {
+    initializationPromise = initializeDatabaseState().catch((error) => {
+      initializationPromise = null;
+      throw error;
+    });
+  }
+
+  return initializationPromise;
 };
 
 export const readDatabase = async () => {
   await ensureDirectories();
-  await migrateLegacyStorageIfNeeded();
+  await ensureInitializedDatabase();
+  const storedDocument = await AppState.findOne({ key: APP_STATE_KEY }).lean();
 
-  try {
-    const fileContents = await fs.readFile(DATABASE_FILE, "utf8");
-    return normalizeDatabaseShape(JSON.parse(fileContents));
-  } catch (error) {
-    if (error.code !== "ENOENT") {
-      throw error;
-    }
-
-    const initialDatabase = await writeRawDatabase(baseDatabase());
-    return initialDatabase;
+  if (!storedDocument) {
+    return persistDatabase(baseDatabase());
   }
+
+  return stripModelFields(storedDocument);
 };
 
 export const writeDatabase = async (database) => {
-  writeQueue = writeQueue.then(() => writeRawDatabase(database));
+  writeQueue = writeQueue
+    .catch(() => undefined)
+    .then(async () => {
+      await ensureDirectories();
+      await ensureInitializedDatabase();
+      return persistDatabase(database);
+    });
+
   return writeQueue;
 };
 
@@ -491,7 +696,7 @@ export const seedDatabase = async () => {
     if (!database.meta?.seededAt) {
       database.meta = {
         ...(database.meta || {}),
-        version: 1,
+        version: DEFAULT_DATABASE_VERSION,
         seededAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -560,7 +765,7 @@ export const seedDatabase = async () => {
   if (!database.meta?.seededAt) {
     database.meta = {
       ...(database.meta || {}),
-      version: 1,
+      version: DEFAULT_DATABASE_VERSION,
       seededAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -572,4 +777,8 @@ export const seedDatabase = async () => {
   }
 
   return database;
+};
+
+export const hasLocalDatabaseFiles = () => {
+  return getLocalDatabaseCandidates().some((filePath) => fsSync.existsSync(filePath));
 };

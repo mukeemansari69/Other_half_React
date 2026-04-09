@@ -10,7 +10,7 @@ This project now includes a React + Vite frontend and a Node.js + Express backen
 - API-backed newsletter signups
 - API-backed quiz result saving
 - API-backed purchased-product reviews
-- Persistent local JSON storage for demo data
+- MongoDB Atlas-backed app storage
 
 ## Run the app
 
@@ -59,13 +59,19 @@ Default backend port: `4000`
 
 Default frontend API base: `http://localhost:4000/api`
 
+MongoDB:
+
+- Set `MONGODB_URI` to your Atlas connection string.
+- Set `MONGODB_DB_NAME` to the database name you want the app to use.
+- On the first successful Atlas connection, the server will import existing local `app-data/db.json` or `server/data/db.json` data if present, then remove those local JSON database files.
+
 Production safety:
 
 - Set a strong `JWT_SECRET` before deploying.
+- Set `MONGODB_URI` and `MONGODB_DB_NAME` before starting the backend.
 - Demo seeding is disabled automatically in production unless `ENABLE_DEMO_SEEDING=true`.
 - Create the first live admin with `BOOTSTRAP_ADMIN_EMAIL` and `BOOTSTRAP_ADMIN_PASSWORD`.
 - If the frontend is hosted on a different origin, set `CLIENT_ORIGIN` explicitly.
-- Runtime data is currently stored in local JSON files under `APP_DATA_DIR`, so production hosting needs a persistent volume or a proper database replacement before horizontal scaling.
 
 If login/register shows "Unable to reach the server right now", start the backend with:
 
@@ -103,13 +109,11 @@ Member:
 
 ## Data storage
 
-The backend stores runtime data in local app files by default:
+Application data is stored in MongoDB Atlas through `MONGODB_URI`.
 
-- `app-data/db.json`
-- `app-data/uploads/`
-
-If an older `server/data/db.json` already exists, the server will continue using that legacy path until you move it.
-These local files are ignored in git so demo/runtime changes stay local.
+- Main app data lives in the Atlas database configured by `MONGODB_DB_NAME`.
+- File uploads still live locally in `app-data/uploads/` unless you override `APP_UPLOADS_DIR`.
+- If older local JSON database files exist, the backend migrates them into Atlas on first successful startup and removes the old local JSON files afterward.
 
 ## Main routes
 

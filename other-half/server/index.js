@@ -10,7 +10,7 @@ import multer from "multer";
 
 import { optionalAuth, requireAdmin, requireAuth, signAuthToken } from "./lib/auth.js";
 import {
-  DATABASE_FILE,
+  DATABASE_TARGET,
   readDatabase,
   sanitizeUser,
   seedDatabase,
@@ -19,6 +19,7 @@ import {
 } from "./lib/database.js";
 import { sendSupportRequestEmail } from "./lib/mailer.js";
 import {
+  ACTIVE_SUBSCRIPTION_STATUSES,
   createInactiveSubscription,
   getPrimarySubscriptionItem,
   normalizeSubscriptionStatus,
@@ -1880,13 +1881,8 @@ seedDatabase()
 
     app.listen(PORT, () => {
       console.log(`Other Half API listening on http://localhost:${PORT}`);
-      console.log(`Local database file: ${DATABASE_FILE}`);
-
-      if (process.env.NODE_ENV === "production") {
-        console.warn(
-          "Production note: runtime data is still stored in local JSON files. Use persistent storage or replace this layer with a real database before scaling beyond a single instance."
-        );
-      }
+      console.log(`MongoDB target: ${DATABASE_TARGET}`);
+      console.log(`Uploads directory: ${UPLOADS_DIR}`);
     });
   })
   .catch((error) => {
