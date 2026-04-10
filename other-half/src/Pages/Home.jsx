@@ -13,6 +13,7 @@ import QualitySection from '../Home/QualitySection'
 import Testimonials from '../Home/Testimonials'
 import FAQ from '../Home/FAQ'
 import { homeFaq } from '../faqData'
+import HomeAuthPromptModal from '../Home/HomeAuthPromptModal.jsx'
 
 
 
@@ -34,6 +35,7 @@ const Home = () => {
     <QualitySection></QualitySection>
     <FAQ heading={"BARKED QUESTIONS ANSWERED"} data={homeFaq}></FAQ>
     <Testimonials></Testimonials>
+    <HomeAuthPromptModal />
    
    
     </>

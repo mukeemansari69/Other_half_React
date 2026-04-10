@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import AuthConnectionNotice from "../Components/AuthConnectionNotice.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useApiConnectionStatus } from "../hooks/useApiConnectionStatus.js";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { status: connectionStatus, retry: retryConnectionCheck } = useApiConnectionStatus();
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -59,6 +62,13 @@ const RegisterPage = () => {
             If signup cannot reach the API, run <code>npm run dev:server</code> in a second terminal.
           </p>
 
+          <div className="mt-4">
+            <AuthConnectionNotice
+              status={connectionStatus}
+              onRetry={retryConnectionCheck}
+            />
+          </div>
+
           <div className="mt-8 rounded-[28px] bg-[#FBF8EF] p-5">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0F4A12]">
               What you get
@@ -77,10 +87,12 @@ const RegisterPage = () => {
               <span className="mb-2 block text-sm font-medium text-white/80">Full name</span>
               <input
                 type="text"
+                autoComplete="name"
                 value={formState.name}
                 onChange={(event) => handleFieldChange("name", event.target.value)}
                 className="w-full rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/45 focus:border-[#EBF466]"
                 placeholder="Your full name"
+                required
               />
             </label>
 
@@ -88,10 +100,12 @@ const RegisterPage = () => {
               <span className="mb-2 block text-sm font-medium text-white/80">Email address</span>
               <input
                 type="email"
+                autoComplete="email"
                 value={formState.email}
                 onChange={(event) => handleFieldChange("email", event.target.value)}
                 className="w-full rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/45 focus:border-[#EBF466]"
                 placeholder="name@example.com"
+                required
               />
             </label>
 
@@ -99,6 +113,7 @@ const RegisterPage = () => {
               <span className="mb-2 block text-sm font-medium text-white/80">Phone number</span>
               <input
                 type="tel"
+                autoComplete="tel"
                 value={formState.phone}
                 onChange={(event) => handleFieldChange("phone", event.target.value)}
                 className="w-full rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/45 focus:border-[#EBF466]"
@@ -114,6 +129,7 @@ const RegisterPage = () => {
                 onChange={(event) => handleFieldChange("dogName", event.target.value)}
                 className="w-full rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/45 focus:border-[#EBF466]"
                 placeholder="Your dog's name"
+                required
               />
             </label>
 
@@ -121,10 +137,13 @@ const RegisterPage = () => {
               <span className="mb-2 block text-sm font-medium text-white/80">Password</span>
               <input
                 type="password"
+                autoComplete="new-password"
                 value={formState.password}
                 onChange={(event) => handleFieldChange("password", event.target.value)}
                 className="w-full rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/45 focus:border-[#EBF466]"
                 placeholder="At least 8 characters"
+                minLength={8}
+                required
               />
             </label>
 

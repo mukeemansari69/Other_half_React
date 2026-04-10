@@ -2,7 +2,9 @@ import { LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
+import AuthConnectionNotice from "../Components/AuthConnectionNotice.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useApiConnectionStatus } from "../hooks/useApiConnectionStatus.js";
 
 const featurePoints = [
   {
@@ -26,6 +28,7 @@ const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { status: connectionStatus, retry: retryConnectionCheck } = useApiConnectionStatus();
   const [formState, setFormState] = useState({
     email: "",
     password: "",
@@ -124,15 +127,24 @@ const LoginPage = () => {
             If you see a server connection error, start the backend with <code>npm run dev:server</code>.
           </p>
 
+          <div className="mt-4">
+            <AuthConnectionNotice
+              status={connectionStatus}
+              onRetry={retryConnectionCheck}
+            />
+          </div>
+
           <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-[#353126]">Email address</span>
               <input
                 type="email"
+                autoComplete="email"
                 value={formState.email}
                 onChange={(event) => handleFieldChange("email", event.target.value)}
                 className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
                 placeholder="name@example.com"
+                required
               />
             </label>
 
@@ -140,10 +152,12 @@ const LoginPage = () => {
               <span className="mb-2 block text-sm font-medium text-[#353126]">Password</span>
               <input
                 type="password"
+                autoComplete="current-password"
                 value={formState.password}
                 onChange={(event) => handleFieldChange("password", event.target.value)}
                 className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
                 placeholder="Enter your password"
+                required
               />
             </label>
 

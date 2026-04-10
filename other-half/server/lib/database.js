@@ -21,7 +21,11 @@ const configuredMongoDbName =
   String(process.env.MONGODB_DB_NAME || "").trim() || "other-half";
 const configuredMongoCollection =
   String(process.env.MONGODB_COLLECTION || "").trim() || "appstates";
+const configuredDatabaseMode = String(process.env.DATABASE_MODE || "")
+  .trim()
+  .toLowerCase();
 const isProduction = process.env.NODE_ENV === "production";
+const preferLocalDatabase = configuredDatabaseMode === "local";
 const enableDemoSeeding = (() => {
   if (process.env.ENABLE_DEMO_SEEDING === undefined) {
     return !isProduction;
@@ -44,7 +48,12 @@ export const DATA_DIR = configuredDataDir
   ? path.resolve(ROOT_DIR, configuredDataDir)
   : DEFAULT_APP_DATA_DIR;
 export const LOCAL_DATABASE_FILE = path.join(DATA_DIR, "db.json");
-export const DATABASE_TARGET = `${configuredMongoDbName}/${configuredMongoCollection}`;
+const LOCAL_DATABASE_TARGET = path.relative(ROOT_DIR, LOCAL_DATABASE_FILE) || LOCAL_DATABASE_FILE;
+const MONGO_DATABASE_TARGET = `${configuredMongoDbName}/${configuredMongoCollection}`;
+export let DATABASE_TARGET =
+  preferLocalDatabase || !configuredMongoUri
+    ? LOCAL_DATABASE_TARGET
+    : MONGO_DATABASE_TARGET;
 export const UPLOADS_DIR = configuredUploadsDir
   ? path.resolve(ROOT_DIR, configuredUploadsDir)
   : path.join(DATA_DIR, "uploads");
@@ -115,6 +124,8 @@ const AppState =
 let connectionPromise = null;
 let initializationPromise = null;
 let writeQueue = Promise.resolve();
+let useLocalDatabase = preferLocalDatabase;
+let didWarnAboutLocalFallback = false;
 
 const createIsoDate = (offsetDays = 0) => {
   const nextDate = new Date();
@@ -487,22 +498,56 @@ const hasMeaningfulDatabaseContent = (database) => {
   );
 };
 
+const activateLocalDatabaseFallback = (reason = "") => {
+  useLocalDatabase = true;
+  DATABASE_TARGET = LOCAL_DATABASE_TARGET;
+
+  if (didWarnAboutLocalFallback) {
+    return;
+  }
+
+  didWarnAboutLocalFallback = true;
+  console.warn(
+    `Using local database file at ${LOCAL_DATABASE_TARGET}${
+      reason ? ` because ${reason}` : "."
+    }`
+  );
+};
+
 const ensureMongoConfiguration = () => {
   if (!configuredMongoUri) {
+    if (!isProduction) {
+      activateLocalDatabaseFallback("MONGODB_URI is not set in the environment");
+      return false;
+    }
+
     throw new Error(
       "MONGODB_URI is not set. Add your MongoDB Atlas connection string to other-half/.env."
     );
   }
 
   if (/<db_password>/i.test(configuredMongoUri)) {
+    if (!isProduction) {
+      activateLocalDatabaseFallback("MONGODB_URI still contains <db_password>");
+      return false;
+    }
+
     throw new Error(
       "MONGODB_URI still contains <db_password>. Replace it with your actual MongoDB Atlas password in other-half/.env."
     );
   }
+
+  return true;
 };
 
 const connectToDatabase = async () => {
-  ensureMongoConfiguration();
+  if (useLocalDatabase) {
+    return null;
+  }
+
+  if (!ensureMongoConfiguration()) {
+    return null;
+  }
 
   if (mongoose.connection.readyState === 1) {
     return mongoose.connection;
@@ -516,12 +561,18 @@ const connectToDatabase = async () => {
       })
       .catch((error) => {
         connectionPromise = null;
+
+        if (!isProduction) {
+          activateLocalDatabaseFallback(error.message || "MongoDB could not be reached");
+          return null;
+        }
+
         throw error;
       });
   }
 
-  await connectionPromise;
-  return mongoose.connection;
+  const connection = await connectionPromise;
+  return useLocalDatabase ? null : connection || mongoose.connection;
 };
 
 const readLocalDatabaseFile = async (filePath) => {
@@ -564,6 +615,13 @@ const buildStoredDatabase = (database) => {
   };
 };
 
+const persistLocalDatabase = async (database) => {
+  const nextDatabase = buildStoredDatabase(database);
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(LOCAL_DATABASE_FILE, JSON.stringify(nextDatabase, null, 2), "utf8");
+  return nextDatabase;
+};
+
 const persistDatabase = async (database) => {
   await connectToDatabase();
   const nextDatabase = buildStoredDatabase(database);
@@ -586,8 +644,60 @@ const persistDatabase = async (database) => {
   return stripModelFields(storedDocument);
 };
 
+const initializeLocalDatabaseState = async () => {
+  const localDatabaseCandidates = getLocalDatabaseCandidates();
+  let localFileDatabase = null;
+
+  for (const filePath of localDatabaseCandidates) {
+    const localDatabase = await readLocalDatabaseFile(filePath);
+
+    if (!localDatabase) {
+      continue;
+    }
+
+    if (filePath === LOCAL_DATABASE_FILE) {
+      localFileDatabase = localDatabase;
+
+      if (hasMeaningfulDatabaseContent(localDatabase)) {
+        return localDatabase;
+      }
+
+      continue;
+    }
+
+    if (!hasMeaningfulDatabaseContent(localDatabase)) {
+      continue;
+    }
+
+    const migratedDatabase = await persistLocalDatabase({
+      ...localDatabase,
+      meta: {
+        ...(localDatabase.meta || {}),
+        version: DEFAULT_DATABASE_VERSION,
+        migratedAt: new Date().toISOString(),
+        migratedFrom: path.relative(ROOT_DIR, filePath) || filePath,
+      },
+    });
+
+    await cleanupLocalDatabaseFiles(
+      localDatabaseCandidates.filter((candidate) => candidate !== LOCAL_DATABASE_FILE)
+    );
+    return migratedDatabase;
+  }
+
+  if (localFileDatabase) {
+    return localFileDatabase;
+  }
+
+  return persistLocalDatabase(baseDatabase());
+};
+
 const initializeDatabaseState = async () => {
-  await connectToDatabase();
+  const connection = await connectToDatabase();
+
+  if (useLocalDatabase || !connection) {
+    return initializeLocalDatabaseState();
+  }
 
   const existingDocument = await AppState.findOne({ key: APP_STATE_KEY }).lean();
   const existingDatabase = stripModelFields(existingDocument);
@@ -641,6 +751,12 @@ const ensureInitializedDatabase = async () => {
 export const readDatabase = async () => {
   await ensureDirectories();
   await ensureInitializedDatabase();
+
+  if (useLocalDatabase) {
+    const localDatabase = await readLocalDatabaseFile(LOCAL_DATABASE_FILE);
+    return localDatabase || persistLocalDatabase(baseDatabase());
+  }
+
   const storedDocument = await AppState.findOne({ key: APP_STATE_KEY }).lean();
 
   if (!storedDocument) {
@@ -656,6 +772,11 @@ export const writeDatabase = async (database) => {
     .then(async () => {
       await ensureDirectories();
       await ensureInitializedDatabase();
+
+      if (useLocalDatabase) {
+        return persistLocalDatabase(database);
+      }
+
       return persistDatabase(database);
     });
 

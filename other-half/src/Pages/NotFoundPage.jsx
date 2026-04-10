@@ -161,15 +161,19 @@ const NotFoundPage = () => {
             </article>
 
             <div className="not-found-reassurance-grid">
-              {reassuranceCards.map(({ title, text, icon: Icon }) => (
-                <article key={title} className="not-found-reassurance-card">
-                  <div className="not-found-reassurance-card__icon">
-                    <Icon size={18} />
-                  </div>
-                  <h3 className="not-found-reassurance-card__title">{title}</h3>
-                  <p className="not-found-reassurance-card__text">{text}</p>
-                </article>
-              ))}
+              {reassuranceCards.map((card) => {
+                const IconComponent = card.icon;
+
+                return (
+                  <article key={card.title} className="not-found-reassurance-card">
+                    <div className="not-found-reassurance-card__icon">
+                      <IconComponent size={18} />
+                    </div>
+                    <h3 className="not-found-reassurance-card__title">{card.title}</h3>
+                    <p className="not-found-reassurance-card__text">{card.text}</p>
+                  </article>
+                );
+              })}
             </div>
           </div>
 
@@ -269,30 +273,38 @@ const NotFoundPage = () => {
           </div>
 
           <div className="not-found-guide-grid">
-            {recoveryCards.map(({ title, text, to, image, imageAlt, kicker, icon: Icon }) => (
-              <article key={title} className="not-found-guide-card">
-                <div className="not-found-guide-card__media">
-                  <img src={image} alt={imageAlt} className="not-found-guide-card__image" />
-                </div>
+            {recoveryCards.map((card) => {
+              const IconComponent = card.icon;
 
-                <div className="not-found-guide-card__body">
-                  <div className="not-found-guide-card__top">
-                    <span className="not-found-guide-card__kicker">{kicker}</span>
-                    <div className="not-found-guide-card__icon">
-                      <Icon size={18} />
-                    </div>
+              return (
+                <article key={card.title} className="not-found-guide-card">
+                  <div className="not-found-guide-card__media">
+                    <img
+                      src={card.image}
+                      alt={card.imageAlt}
+                      className="not-found-guide-card__image"
+                    />
                   </div>
 
-                  <h3 className="not-found-guide-card__title">{title}</h3>
-                  <p className="not-found-guide-card__text">{text}</p>
+                  <div className="not-found-guide-card__body">
+                    <div className="not-found-guide-card__top">
+                      <span className="not-found-guide-card__kicker">{card.kicker}</span>
+                      <div className="not-found-guide-card__icon">
+                        <IconComponent size={18} />
+                      </div>
+                    </div>
 
-                  <Link to={to} className="not-found-guide-card__link">
-                    <span>Open page</span>
-                    <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </article>
-            ))}
+                    <h3 className="not-found-guide-card__title">{card.title}</h3>
+                    <p className="not-found-guide-card__text">{card.text}</p>
+
+                    <Link to={card.to} className="not-found-guide-card__link">
+                      <span>Open page</span>
+                      <ArrowRight size={16} />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

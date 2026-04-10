@@ -214,26 +214,16 @@ const AdminDashboardPage = () => {
     );
   }
 
-  const supportCounts = dashboard.analytics?.supportStatusCounts || getSupportStatusCounts(supportRequests);
-  const orderSummary = dashboard.analytics?.orders || getOrderSummary(orders);
-  const subscriptionFromUsers = getSubscriptionSummary(users);
-  const subscriptionSummary = dashboard.analytics?.subscriptions || {};
-  const dogParents = subscriptionFromUsers.dogParents;
-  const withSubscription = subscriptionFromUsers.withSubscription;
-  const withSubscriptionCount =
-    typeof subscriptionSummary.withSubscription === "number"
-      ? subscriptionSummary.withSubscription
-      : subscriptionFromUsers.withCount;
-  const withoutSubscriptionCount =
-    typeof subscriptionSummary.withoutSubscription === "number"
-      ? subscriptionSummary.withoutSubscription
-      : subscriptionFromUsers.withoutCount;
-  const activeSubscriptionCount =
-    typeof subscriptionSummary.active === "number"
-      ? subscriptionSummary.active
-      : subscriptionFromUsers.activeCount;
+  const supportCounts = getSupportStatusCounts(supportRequests);
+  const orderSummary = getOrderSummary(orders);
+  const subscriptionSummary = getSubscriptionSummary(users);
+  const dogParents = subscriptionSummary.dogParents;
+  const withSubscription = subscriptionSummary.withSubscription;
+  const withSubscriptionCount = subscriptionSummary.withCount;
+  const withoutSubscriptionCount = subscriptionSummary.withoutCount;
+  const activeSubscriptionCount = subscriptionSummary.activeCount;
   const deliveryQueue = Array.isArray(dashboard.deliveryQueue) ? dashboard.deliveryQueue : [];
-  const deliverySummary = dashboard.analytics?.deliveries || getDeliverySummary(deliveryQueue);
+  const deliverySummary = getDeliverySummary(deliveryQueue);
   const visibleSupport =
     activePanel === "open"
       ? supportRequests.filter((request) => request.status !== "resolved")
@@ -245,7 +235,7 @@ const AdminDashboardPage = () => {
     { key: "open", label: "Open tickets", value: supportRequests.filter((request) => request.status !== "resolved").length, helper: `${supportCounts["in-review"]} in review`, icon: CircleCheckBig },
     { key: "newsletter", label: "Newsletter tickets", value: subscribers.length, helper: "Latest signups", icon: Mail },
     { key: "orders", label: "Orders", value: orders.length, helper: formatCurrency(orderSummary.totalRevenue), icon: BadgeDollarSign },
-    { key: "subscriptions", label: "Subscriptions", value: withSubscriptionCount, helper: `${withoutSubscriptionCount} without`, icon: ShieldCheck },
+    { key: "subscriptions", label: "Subscriptions", value: withSubscriptionCount, helper: `${activeSubscriptionCount} active`, icon: ShieldCheck },
     { key: "deliveries", label: "Deliveries due", value: deliverySummary.dueNow + deliverySummary.dueSoon, helper: `${deliverySummary.dueSoon} in 7 days`, icon: Truck },
   ];
 
@@ -377,9 +367,9 @@ const AdminDashboardPage = () => {
             {activePanel === "subscriptions" && (
               <>
                 <div className="grid gap-3 md:grid-cols-3">
-                  <div className="rounded-[20px] bg-[#EEF6E7] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#1E6B2D]">Active</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{subscriptionSummary.activeCount || 0}</p></div>
-                  <div className="rounded-[20px] bg-[#E8F1FF] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#265A9A]">With subscription</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{subscriptionSummary.withCount || withSubscription.length}</p></div>
-                  <div className="rounded-[20px] bg-[#FFF4D6] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8A5A09]">Without subscription</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{subscriptionSummary.withoutCount || 0}</p></div>
+                  <div className="rounded-[20px] bg-[#EEF6E7] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#1E6B2D]">Active</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{activeSubscriptionCount}</p></div>
+                  <div className="rounded-[20px] bg-[#E8F1FF] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#265A9A]">With subscription</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{withSubscriptionCount}</p></div>
+                  <div className="rounded-[20px] bg-[#FFF4D6] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8A5A09]">Without subscription</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{withoutSubscriptionCount}</p></div>
                 </div>
                 {withSubscription.map((account) => (
                   <article key={account.id} className="rounded-[24px] bg-[#FBF8EF] p-4">

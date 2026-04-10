@@ -23,8 +23,8 @@ const getApiBaseCandidates = () => {
     candidates.push(normalizedValue);
   };
 
-  addCandidate(import.meta.env.VITE_API_BASE_URL || "");
   addCandidate("/api");
+  addCandidate(import.meta.env.VITE_API_BASE_URL || "");
 
   if (typeof window !== "undefined") {
     const { hostname, protocol } = window.location;
@@ -154,4 +154,8 @@ export const apiRequest = async (
   }
 
   throw lastError || new ApiError(UNREACHABLE_SERVER_MESSAGE, null, null);
+};
+
+export const checkApiConnection = async ({ signal } = {}) => {
+  return apiRequest("/health", { signal });
 };
