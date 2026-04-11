@@ -9,7 +9,7 @@ import { CartProvider } from "./context/CartContext.jsx";
 import { GuestOnlyRoute, ProtectedRoute } from "./Routes/RouteGuard.jsx";
 
 const Home = lazy(() => import("./Pages/Home.jsx"));
-const Product = lazy(() => import("./Pages/Product.jsx"));
+const ProductPage = lazy(() => import("./Pages/ProductPage.jsx"));
 const Integrity = lazy(() => import("./Pages/IntegrityPage.jsx"));
 const Story = lazy(() => import("./Pages/OurStoryPage.jsx"));
 const Quiz = lazy(() => import("./Pages/Quiz.jsx"));
@@ -45,7 +45,7 @@ const RouteLoadingState = () => {
             Loading
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-[#1A1A1A]">
-            Preparing the next page...
+            Preparing the Page....
           </h1>
         </div>
       </div>
@@ -82,7 +82,7 @@ const App = () => {
               <Route path="/contact" element={<ContactUsPage />} />
               <Route path="/dailyduo" element={<DailyDuoProduct />} />
               <Route path="/doggie-dental" element={<DentalProduct />} />
-              <Route path="/product" element={<Product />} />
+              <Route path="/product" element={<ProductPage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route
                 path="/login"

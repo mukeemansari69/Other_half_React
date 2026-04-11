@@ -7,7 +7,7 @@ import NotAll from '../Product/NotAll'
 import TrustedSection from '../Home/TrustedSection'
 import QualitySection from '../Home/QualitySection'
 
-const Product = () => {
+const ProductPage = () => {
   return (
     <>
    
@@ -24,4 +24,4 @@ const Product = () => {
   )
 }
 
-export default Product
+export default ProductPage
