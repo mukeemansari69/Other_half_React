@@ -17,7 +17,7 @@ const GlossaryPage = lazy(() => import("./Pages/GlossaryPage.jsx"));
 const QuizDestopPage = lazy(() => import("./Pages/QuizDestopPage.jsx"));
 const OurCollection = lazy(() => import("./Pages/OurCollection.jsx"));
 const FaqPage = lazy(() => import("./Pages/FaqPage.jsx"));
-const DailyDuoProduct = lazy(() => import("./Product/DailyDuoProduct.jsx"));
+const DailyDuoPage = lazy(() => import("./Pages/DailyDuoPage.jsx"));
 const DentalProduct = lazy(() => import("./Product/DentalProduct.jsx"));
 const Science = lazy(() => import("./Pages/Science.jsx"));
 const ClinicalStudies = lazy(() => import("./Pages/ClinicalStudies.jsx"));
@@ -80,7 +80,7 @@ const App = () => {
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/subscription-policy" element={<SubscriptionPolicyPage />} />
               <Route path="/contact" element={<ContactUsPage />} />
-              <Route path="/dailyduo" element={<DailyDuoProduct />} />
+              <Route path="/dailyduo" element={<DailyDuoPage />} />
               <Route path="/doggie-dental" element={<DentalProduct />} />
               <Route path="/product" element={<ProductPage />} />
               <Route path="/cart" element={<CartPage />} />
