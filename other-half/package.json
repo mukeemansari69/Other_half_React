@@ -9,16 +9,21 @@
     "dev:server:watch": "node --watch server/index.js",
     "build": "vite build",
     "lint": "eslint .",
+    "migrate:atlas": "node scripts/migrate-to-atlas.mjs --archive-local",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "test": "node --test --test-concurrency=1 --experimental-test-isolation=none"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.9.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
     "gsap": "^3.14.2",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.577.0",
     "mongoose": "^9.4.1",

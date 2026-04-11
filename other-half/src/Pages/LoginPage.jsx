@@ -100,16 +100,12 @@ const LoginPage = () => {
 
           <div className="mt-10 rounded-[28px] border border-white/10 bg-white/10 p-5">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#EBF466]">
-              Demo pack credentials
+              Secure access note
             </p>
             <p className="mt-3 text-sm leading-7 text-white/78">
-              Admin: <span className="font-semibold text-white">admin@otherhalfpets.com</span> /
-              {" "}
-              <span className="font-semibold text-white">Admin@123</span>
-            </p>
-            <p className="text-sm leading-7 text-white/78">
-              Member: <span className="font-semibold text-white">member@example.com</span> /{" "}
-              <span className="font-semibold text-white">Member@123</span>
+              Demo credentials have been removed from the public login screen. Use the real
+              account email and password linked to your backend data, or create a new account
+              if this is your first time.
             </p>
           </div>
         </section>

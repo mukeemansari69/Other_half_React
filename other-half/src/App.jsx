@@ -1,120 +1,137 @@
-import React from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import Header from './Components/Header.jsx'
-import Footer from './Components/Footer.jsx'
-import { AuthProvider } from './context/AuthContext.jsx'
-import { CartProvider } from './context/CartContext.jsx'
-import { GuestOnlyRoute, ProtectedRoute } from './Routes/RouteGuard.jsx'
+import Footer from "./Components/Footer.jsx";
+import Header from "./Components/Header.jsx";
+import RouteMeta from "./Components/RouteMeta.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { CartProvider } from "./context/CartContext.jsx";
+import { GuestOnlyRoute, ProtectedRoute } from "./Routes/RouteGuard.jsx";
 
-import Home from './Pages/Home.jsx';
-import Product from './Pages/Product.jsx';
-import Integrity from './Pages/IntegrityPage.jsx';
-import Story from './Pages/OurStoryPage.jsx';
-import Quiz from './Pages/Quiz.jsx';
-import GlossaryPage from './Pages/GlossaryPage.jsx';
-import QuizDestopPage from './Pages/QuizDestopPage.jsx';
-import OurCollection from './Pages/OurCollection.jsx';
-import FaqPage from './Pages/FaqPage.jsx';
-import DailyDuoProduct from './Product/DailyDuoProduct.jsx';
-import DentalProduct from './Product/DentalProduct.jsx';
-import Science from './Pages/Science.jsx';
-import ClinicalStudies from './Pages/ClinicalStudies.jsx';
-import Blog from './Pages/Blog.jsx';
-import TermsConditionsPage from './Pages/TermsConditionsPage.jsx';
-import ManageSubscriptionPage from './Pages/ManageSubscriptionPage.jsx';
-import RefundPolicyPage from './Pages/RefundPolicyPage.jsx';
-import PrivacyPolicyPage from './Pages/PrivacyPolicyPage.jsx';
-import SubscriptionPolicyPage from './Pages/SubscriptionPolicyPage.jsx';
-import ContactUsPage from './Pages/ContactUsPage.jsx';
-import LoginPage from './Pages/LoginPage.jsx';
-import RegisterPage from './Pages/RegisterPage.jsx';
-import AccountDashboardPage from './Pages/AccountDashboardPage.jsx';
-import AdminDashboardPage from './Pages/AdminDashboardPage.jsx';
-import CartPage from './Pages/CartPage.jsx';
-import NotFoundPage from './Pages/NotFoundPage.jsx';
-import ReviewPage from './Pages/ReviewPage.jsx';
+const Home = lazy(() => import("./Pages/Home.jsx"));
+const Product = lazy(() => import("./Pages/Product.jsx"));
+const Integrity = lazy(() => import("./Pages/IntegrityPage.jsx"));
+const Story = lazy(() => import("./Pages/OurStoryPage.jsx"));
+const Quiz = lazy(() => import("./Pages/Quiz.jsx"));
+const GlossaryPage = lazy(() => import("./Pages/GlossaryPage.jsx"));
+const QuizDestopPage = lazy(() => import("./Pages/QuizDestopPage.jsx"));
+const OurCollection = lazy(() => import("./Pages/OurCollection.jsx"));
+const FaqPage = lazy(() => import("./Pages/FaqPage.jsx"));
+const DailyDuoProduct = lazy(() => import("./Product/DailyDuoProduct.jsx"));
+const DentalProduct = lazy(() => import("./Product/DentalProduct.jsx"));
+const Science = lazy(() => import("./Pages/Science.jsx"));
+const ClinicalStudies = lazy(() => import("./Pages/ClinicalStudies.jsx"));
+const Blog = lazy(() => import("./Pages/Blog.jsx"));
+const TermsConditionsPage = lazy(() => import("./Pages/TermsConditionsPage.jsx"));
+const ManageSubscriptionPage = lazy(() => import("./Pages/ManageSubscriptionPage.jsx"));
+const RefundPolicyPage = lazy(() => import("./Pages/RefundPolicyPage.jsx"));
+const PrivacyPolicyPage = lazy(() => import("./Pages/PrivacyPolicyPage.jsx"));
+const SubscriptionPolicyPage = lazy(() => import("./Pages/SubscriptionPolicyPage.jsx"));
+const ContactUsPage = lazy(() => import("./Pages/ContactUsPage.jsx"));
+const LoginPage = lazy(() => import("./Pages/LoginPage.jsx"));
+const RegisterPage = lazy(() => import("./Pages/RegisterPage.jsx"));
+const AccountDashboardPage = lazy(() => import("./Pages/AccountDashboardPage.jsx"));
+const AdminDashboardPage = lazy(() => import("./Pages/AdminDashboardPage.jsx"));
+const CartPage = lazy(() => import("./Pages/CartPage.jsx"));
+const NotFoundPage = lazy(() => import("./Pages/NotFoundPage.jsx"));
+const ReviewPage = lazy(() => import("./Pages/ReviewPage.jsx"));
 
+const RouteLoadingState = () => {
+  return (
+    <main className="min-h-[70vh] bg-[#FBF8EF] px-6 py-16">
+      <div className="mx-auto flex max-w-2xl items-center justify-center rounded-[32px] border border-[#E6DFCF] bg-white px-8 py-14 text-center shadow-[0_24px_80px_rgba(34,30,18,0.08)]">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
+            Loading
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold text-[#1A1A1A]">
+            Preparing the next page...
+          </h1>
+        </div>
+      </div>
+    </main>
+  );
+};
 
 const App = () => {
   return (
     <Router>
       <AuthProvider>
         <CartProvider>
+          <RouteMeta />
           <Header />
-
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/integrity" element={<Integrity />} />
-            <Route path="/story" element={<Story />} />
-            <Route path="/science" element={<Science />} />
-            <Route path="/clinical" element={<ClinicalStudies />} />
-            <Route path="/clinical-studies" element={<ClinicalStudies />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/quiz" element={<Quiz />} />
-            <Route path="/glossary" element={<GlossaryPage />} />
-            <Route path="/quizdesktop" element={<QuizDestopPage />} />
-            <Route path="/collection" element={<OurCollection />} />
-            <Route path="/faqPage" element={<FaqPage/>} />
-            <Route path="/terms" element={<TermsConditionsPage />} />
-            <Route path="/manage-subscription" element={<ManageSubscriptionPage />} />
-            <Route path="/refund-policy" element={<RefundPolicyPage />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-            <Route path="/subscription-policy" element={<SubscriptionPolicyPage />} />
-            <Route path="/contact" element={<ContactUsPage />} />
-            <Route path="/dailyduo" element={<DailyDuoProduct />} />
-            <Route path="/doggie-dental" element={<DentalProduct />} />
-            <Route path="/product" element={<Product />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route
-              path="/login"
-              element={
-                <GuestOnlyRoute>
-                  <LoginPage />
-                </GuestOnlyRoute>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <GuestOnlyRoute>
-                  <RegisterPage />
-                </GuestOnlyRoute>
-              }
-            />
-            <Route
-              path="/account"
-              element={
-                <ProtectedRoute>
-                  <AccountDashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/review"
-              element={
-                <ProtectedRoute>
-                  <ReviewPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requireAdmin>
-                  <AdminDashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
+          <Suspense fallback={<RouteLoadingState />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/integrity" element={<Integrity />} />
+              <Route path="/story" element={<Story />} />
+              <Route path="/science" element={<Science />} />
+              <Route path="/clinical" element={<ClinicalStudies />} />
+              <Route path="/clinical-studies" element={<ClinicalStudies />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/quiz" element={<Quiz />} />
+              <Route path="/glossary" element={<GlossaryPage />} />
+              <Route path="/quizdesktop" element={<QuizDestopPage />} />
+              <Route path="/collection" element={<OurCollection />} />
+              <Route path="/faqPage" element={<FaqPage />} />
+              <Route path="/terms" element={<TermsConditionsPage />} />
+              <Route path="/manage-subscription" element={<ManageSubscriptionPage />} />
+              <Route path="/refund-policy" element={<RefundPolicyPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/subscription-policy" element={<SubscriptionPolicyPage />} />
+              <Route path="/contact" element={<ContactUsPage />} />
+              <Route path="/dailyduo" element={<DailyDuoProduct />} />
+              <Route path="/doggie-dental" element={<DentalProduct />} />
+              <Route path="/product" element={<Product />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route
+                path="/login"
+                element={
+                  <GuestOnlyRoute>
+                    <LoginPage />
+                  </GuestOnlyRoute>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <GuestOnlyRoute>
+                    <RegisterPage />
+                  </GuestOnlyRoute>
+                }
+              />
+              <Route
+                path="/account"
+                element={
+                  <ProtectedRoute>
+                    <AccountDashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/review"
+                element={
+                  <ProtectedRoute>
+                    <ReviewPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <AdminDashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
           <Footer />
         </CartProvider>
       </AuthProvider>
-      
     </Router>
-    
-  )
-}
+  );
+};
 
-export default App
+export default App;

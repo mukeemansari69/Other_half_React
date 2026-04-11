@@ -2,11 +2,12 @@ import "./loadEnv.js";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import helmet from "helmet";
 import fs from "node:fs";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import multer from "multer";
 
 import { optionalAuth, requireAdmin, requireAuth, signAuthToken } from "./lib/auth.js";
 import {
@@ -17,6 +18,7 @@ import {
   UPLOADS_DIR,
   writeDatabase,
 } from "./lib/database.js";
+import { createRequestLogger, logError, logInfo, logWarn } from "./lib/logger.js";
 import { sendSupportRequestEmail } from "./lib/mailer.js";
 import {
   ACTIVE_SUBSCRIPTION_STATUSES,
@@ -32,6 +34,11 @@ import {
   retrieveStripeSubscription,
   verifyStripeWebhookSignature,
 } from "./lib/stripe.js";
+import {
+  getUploadStorageMode,
+  mapSupportRequestAttachments,
+  supportUpload,
+} from "./lib/uploads.js";
 import { resolveReviewProduct } from "../shared/reviewProductCatalog.js";
 import { addIntervalToDate, getCadenceDetails } from "../shared/subscriptionUtils.js";
 
@@ -39,6 +46,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, "..");
 const PORT = Number(process.env.PORT) || 4000;
+const isProduction = process.env.NODE_ENV === "production";
 const configuredOrigins = (process.env.CLIENT_ORIGIN || "")
   .split(",")
   .map((value) => value.trim())
@@ -47,30 +55,37 @@ const DIST_DIR = path.join(ROOT_DIR, "dist");
 const DIST_INDEX = path.join(DIST_DIR, "index.html");
 
 const app = express();
+app.disable("x-powered-by");
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, callback) => {
-    callback(null, UPLOADS_DIR);
-  },
-  filename: (_req, file, callback) => {
-    const extension = path.extname(file.originalname);
-    callback(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`);
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 8 * 1024 * 1024,
-    files: 5,
-  },
-});
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
 
 const asyncHandler = (handler) => {
   return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 };
 
 const emailPattern = /\S+@\S+\.\S+/;
+const phonePattern = /^[0-9+()\-\s]{7,20}$/;
+const allowedSupportCategories = new Set([
+  "billing",
+  "delivery",
+  "general",
+  "order-issue",
+  "other",
+  "product-question",
+  "refund",
+  "subscription-help",
+  "website",
+]);
+const allowedSupportPriorities = new Set(["low", "standard", "priority", "urgent"]);
+const allowedSupportContactMethods = new Set(["email", "phone"]);
+
+const createHttpError = (message, statusCode = 400) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
 
 const normalizeEmail = (value = "") => value.trim().toLowerCase();
 
@@ -79,6 +94,100 @@ const normalizeTextValue = (value = "") =>
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
+
+const sanitizeTextInput = (
+  value,
+  { fieldLabel, required = false, minimumLength = 0, maximumLength = 500 } = {}
+) => {
+  const normalizedValue = String(value ?? "").trim();
+
+  if (!normalizedValue) {
+    if (required) {
+      throw createHttpError(`${fieldLabel} is required.`, 400);
+    }
+
+    return "";
+  }
+
+  if (minimumLength > 0 && normalizedValue.length < minimumLength) {
+    throw createHttpError(
+      `${fieldLabel} must be at least ${minimumLength} characters long.`,
+      400
+    );
+  }
+
+  return normalizedValue.slice(0, maximumLength);
+};
+
+const sanitizeEmailInput = (value, fieldLabel = "Email address") => {
+  const normalizedEmail = normalizeEmail(value);
+
+  if (!emailPattern.test(normalizedEmail)) {
+    throw createHttpError(`Please enter a valid ${fieldLabel.toLowerCase()}.`, 400);
+  }
+
+  return normalizedEmail;
+};
+
+const sanitizePhoneInput = (value) => {
+  const normalizedValue = String(value ?? "").trim();
+
+  if (!normalizedValue) {
+    return "";
+  }
+
+  if (!phonePattern.test(normalizedValue)) {
+    throw createHttpError("Please enter a valid phone number.", 400);
+  }
+
+  return normalizedValue.slice(0, 20);
+};
+
+const sanitizeSupportChoice = (value, allowedValues, fallback) => {
+  const normalizedValue = String(value ?? "").trim().toLowerCase();
+  return allowedValues.has(normalizedValue) ? normalizedValue : fallback;
+};
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: isProduction ? 300 : 1500,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) =>
+    req.path === "/api/health" || req.path === "/api/payments/stripe/webhook",
+  message: {
+    message: "Too many requests were sent from this connection. Please try again shortly.",
+  },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    const email = normalizeEmail(req.body?.email || "");
+    return `${ipKeyGenerator(req.ip || "")}:${email || "anonymous-auth"}`;
+  },
+  message: {
+    message:
+      "Too many sign-in or registration attempts were made. Please wait a few minutes and try again.",
+  },
+});
+
+const supportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    const email = normalizeEmail(req.body?.email || "");
+    return `${ipKeyGenerator(req.ip || "")}:${email || "anonymous-support"}`;
+  },
+  message: {
+    message: "Too many support requests were submitted. Please try again shortly.",
+  },
+});
 
 const addQueryParam = (urlValue, key, value) => {
   try {
@@ -102,6 +211,8 @@ const summarizeSupportRequest = (supportRequest) => ({
     originalName: attachment.originalName,
     size: attachment.size,
     mimetype: attachment.mimetype,
+    url: attachment.url || "",
+    storage: attachment.storage || "local",
   })),
   emailNotification: supportRequest.emailNotification || null,
 });
@@ -660,17 +771,24 @@ const isAllowedOrigin = (origin) => {
     return true;
   }
 
-  if (configuredOrigins.length === 0) {
-    return true;
-  }
-
   if (configuredOrigins.includes(origin)) {
     return true;
   }
 
-  return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+  if (!isProduction && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) {
+    return true;
+  }
+
+  return false;
 };
 
+app.use(createRequestLogger());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 app.use(
   cors({
     origin(origin, callback) {
@@ -681,6 +799,8 @@ app.use(
 
       callback(new Error(`Origin ${origin} is not allowed by CORS.`));
     },
+    credentials: true,
+    optionsSuccessStatus: 204,
   })
 );
 app.post(
@@ -756,6 +876,7 @@ app.post(
 );
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use("/api", apiLimiter);
 app.use("/uploads", express.static(UPLOADS_DIR));
 
 app.get("/api/health", (_req, res) => {
@@ -1070,20 +1191,22 @@ app.post(
 
 app.post(
   "/api/auth/register",
+  authLimiter,
   asyncHandler(async (req, res) => {
-    const name = req.body.name?.trim();
-    const email = normalizeEmail(req.body.email);
-    const phone = req.body.phone?.trim() || "";
+    const name = sanitizeTextInput(req.body.name, {
+      fieldLabel: "Full name",
+      required: true,
+      minimumLength: 2,
+      maximumLength: 120,
+    });
+    const email = sanitizeEmailInput(req.body.email);
+    const phone = sanitizePhoneInput(req.body.phone);
     const password = req.body.password || "";
-    const dogName = req.body.dogName?.trim() || "Your dog";
-
-    if (!name) {
-      return res.status(400).json({ message: "Please enter your full name." });
-    }
-
-    if (!emailPattern.test(email)) {
-      return res.status(400).json({ message: "Please enter a valid email address." });
-    }
+    const dogName = sanitizeTextInput(req.body.dogName || "Your dog", {
+      fieldLabel: "Dog name",
+      minimumLength: 2,
+      maximumLength: 80,
+    });
 
     if (!validatePassword(password)) {
       return res
@@ -1124,9 +1247,15 @@ app.post(
 
 app.post(
   "/api/auth/login",
+  authLimiter,
   asyncHandler(async (req, res) => {
-    const email = normalizeEmail(req.body.email);
-    const password = req.body.password || "";
+    const email = sanitizeEmailInput(req.body.email);
+    const password = sanitizeTextInput(req.body.password, {
+      fieldLabel: "Password",
+      required: true,
+      minimumLength: 1,
+      maximumLength: 200,
+    });
     const database = await readDatabase();
     const user = database.users.find((candidate) => candidate.email === email);
 
@@ -1198,29 +1327,43 @@ app.patch(
     }
 
     const nextName = req.body.name?.trim();
-    const nextPhone = req.body.phone?.trim();
-    const nextDogName = req.body.dogName?.trim();
-    const nextCadence = req.body.deliveryCadence?.trim();
+    const nextPhone = req.body.phone;
+    const nextDogName = req.body.dogName;
+    const nextCadence = req.body.deliveryCadence;
     const isManagedSubscription =
       Boolean(user.subscription?.sourceOrderId) ||
       Boolean(user.subscription?.stripeSubscriptionId);
 
     if (nextName) {
-      user.name = nextName;
+      user.name = sanitizeTextInput(nextName, {
+        fieldLabel: "Full name",
+        minimumLength: 2,
+        maximumLength: 120,
+      });
     }
 
     if (typeof nextPhone === "string") {
-      user.phone = nextPhone;
+      user.phone = sanitizePhoneInput(nextPhone);
     }
 
     if (nextDogName) {
-      user.subscription.dogProfile.name = nextDogName;
+      user.subscription.dogProfile.name = sanitizeTextInput(nextDogName, {
+        fieldLabel: "Dog name",
+        minimumLength: 2,
+        maximumLength: 80,
+      });
     }
 
     if (nextCadence) {
+      const normalizedCadence = sanitizeTextInput(nextCadence, {
+        fieldLabel: "Delivery cadence",
+        minimumLength: 3,
+        maximumLength: 80,
+      });
+
       if (
         isManagedSubscription &&
-        nextCadence !== user.subscription.deliveryCadence
+        normalizedCadence !== user.subscription.deliveryCadence
       ) {
         return res.status(400).json({
           message:
@@ -1228,7 +1371,7 @@ app.patch(
         });
       }
 
-      user.subscription.deliveryCadence = nextCadence;
+      user.subscription.deliveryCadence = normalizedCadence;
     }
 
     await writeDatabase(database);
@@ -1299,43 +1442,65 @@ app.post(
 app.post(
   "/api/support/requests",
   optionalAuth,
-  upload.array("attachments", 5),
+  supportLimiter,
+  supportUpload.array("attachments", 5),
   asyncHandler(async (req, res) => {
-    const name = req.body.name?.trim();
-    const email = normalizeEmail(req.body.email);
-    const subject = req.body.subject?.trim();
-    const message = req.body.message?.trim();
-
-    if (!name || !emailPattern.test(email) || !subject || !message || message.length < 20) {
-      return res.status(400).json({
-        message: "Please complete the required support request details before submitting.",
-      });
-    }
+    const name = sanitizeTextInput(req.body.name, {
+      fieldLabel: "Name",
+      required: true,
+      minimumLength: 2,
+      maximumLength: 120,
+    });
+    const email = sanitizeEmailInput(req.body.email);
+    const subject = sanitizeTextInput(req.body.subject, {
+      fieldLabel: "Subject",
+      required: true,
+      minimumLength: 4,
+      maximumLength: 180,
+    });
+    const message = sanitizeTextInput(req.body.message, {
+      fieldLabel: "Message",
+      required: true,
+      minimumLength: 20,
+      maximumLength: 4000,
+    });
+    const attachments = await mapSupportRequestAttachments(req.files || []);
 
     const database = await readDatabase();
     const createdAt = new Date().toISOString();
     const supportRequest = {
       id: randomUUID(),
       userId: req.user?.id || null,
-      team: req.body.team?.trim() || "Customer Support",
-      teamEmail: req.body.teamEmail?.trim() || "care@otherhalfpets.com",
+      team: sanitizeTextInput(req.body.team || "Customer Support", {
+        fieldLabel: "Support team",
+        minimumLength: 2,
+        maximumLength: 80,
+      }),
+      teamEmail: req.body.teamEmail
+        ? sanitizeEmailInput(req.body.teamEmail, "team email address")
+        : "care@otherhalfpets.com",
       name,
       email,
-      phone: req.body.phone?.trim() || "",
-      orderNumber: req.body.orderNumber?.trim() || "",
-      dogName: req.body.dogName?.trim() || "",
+      phone: sanitizePhoneInput(req.body.phone),
+      orderNumber: sanitizeTextInput(req.body.orderNumber, {
+        fieldLabel: "Order number",
+        maximumLength: 60,
+      }),
+      dogName: sanitizeTextInput(req.body.dogName, {
+        fieldLabel: "Dog name",
+        maximumLength: 80,
+      }),
       subject,
-      category: req.body.category?.trim() || "other",
-      priority: req.body.priority?.trim() || "standard",
-      preferredContact: req.body.preferredContact?.trim() || "email",
+      category: sanitizeSupportChoice(req.body.category, allowedSupportCategories, "other"),
+      priority: sanitizeSupportChoice(req.body.priority, allowedSupportPriorities, "standard"),
+      preferredContact: sanitizeSupportChoice(
+        req.body.preferredContact,
+        allowedSupportContactMethods,
+        "email"
+      ),
       message,
       status: "new",
-      attachments: (req.files || []).map((file) => ({
-        fileName: file.filename,
-        originalName: file.originalname,
-        mimetype: file.mimetype,
-        size: file.size,
-      })),
+      attachments,
       emailNotification: {
         delivered: false,
         skipped: false,
@@ -1409,12 +1574,12 @@ app.get(
 app.post(
   "/api/newsletter/subscribe",
   asyncHandler(async (req, res) => {
-    const email = normalizeEmail(req.body.email);
-    const source = req.body.source?.trim() || "footer";
-
-    if (!emailPattern.test(email)) {
-      return res.status(400).json({ message: "Please enter a valid email address." });
-    }
+    const email = sanitizeEmailInput(req.body.email);
+    const source = sanitizeTextInput(req.body.source || "footer", {
+      fieldLabel: "Source",
+      minimumLength: 2,
+      maximumLength: 60,
+    });
 
     const database = await readDatabase();
     const existingSubscriber = database.newsletterSubscribers.find(
@@ -1446,14 +1611,43 @@ app.post(
   "/api/quiz/submissions",
   optionalAuth,
   asyncHandler(async (req, res) => {
-    const recommendationKey = req.body.recommendationKey?.trim();
-    const recommendationTitle = req.body.recommendationTitle?.trim();
-    const topFocuses = Array.isArray(req.body.topFocuses) ? req.body.topFocuses.slice(0, 3) : [];
-    const answers = Array.isArray(req.body.answers) ? req.body.answers.slice(0, 10) : [];
-
-    if (!recommendationKey || !recommendationTitle) {
-      return res.status(400).json({ message: "Quiz result is missing recommendation details." });
-    }
+    const recommendationKey = sanitizeTextInput(req.body.recommendationKey, {
+      fieldLabel: "Recommendation key",
+      required: true,
+      minimumLength: 2,
+      maximumLength: 60,
+    });
+    const recommendationTitle = sanitizeTextInput(req.body.recommendationTitle, {
+      fieldLabel: "Recommendation title",
+      required: true,
+      minimumLength: 2,
+      maximumLength: 120,
+    });
+    const topFocuses = Array.isArray(req.body.topFocuses)
+      ? req.body.topFocuses
+          .slice(0, 3)
+          .map((focus) =>
+            sanitizeTextInput(focus, {
+              fieldLabel: "Top focus",
+              minimumLength: 2,
+              maximumLength: 40,
+            })
+          )
+      : [];
+    const answers = Array.isArray(req.body.answers)
+      ? req.body.answers.slice(0, 10).map((answer) => ({
+          questionId: sanitizeTextInput(answer?.questionId, {
+            fieldLabel: "Question identifier",
+            minimumLength: 1,
+            maximumLength: 60,
+          }),
+          title: sanitizeTextInput(answer?.title, {
+            fieldLabel: "Answer title",
+            minimumLength: 1,
+            maximumLength: 140,
+          }),
+        }))
+      : [];
 
     const database = await readDatabase();
     const submission = {
@@ -1520,24 +1714,26 @@ app.post(
       productId: req.body.productId,
       productName: req.body.productName,
     });
-    const title = String(req.body.title || "").trim();
-    const description = String(req.body.description || "").trim();
+    const title = sanitizeTextInput(req.body.title, {
+      fieldLabel: "Review title",
+      required: true,
+      minimumLength: 4,
+      maximumLength: 140,
+    });
+    const description = sanitizeTextInput(req.body.description, {
+      fieldLabel: "Review description",
+      required: true,
+      minimumLength: 20,
+      maximumLength: 2400,
+    });
     const rating = Math.round(Number(req.body.rating || 0));
 
     if (!product) {
       return res.status(400).json({ message: "Please choose a valid purchased product." });
     }
 
-    if (!title || title.length < 4) {
-      return res.status(400).json({ message: "Review title should be at least 4 characters long." });
-    }
-
     if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
       return res.status(400).json({ message: "Please choose a rating between 1 and 5 stars." });
-    }
-
-    if (!description || description.length < 20) {
-      return res.status(400).json({ message: "Review description should be at least 20 characters long." });
     }
 
     const eligibleProducts = getReviewableProductsForUser(database.orders, database.reviews, req.user.id);
@@ -1564,7 +1760,10 @@ app.post(
       customerName: req.user.name,
       customerEmail: req.user.email,
       customerProfile:
-        req.body.customerProfile?.trim() ||
+        sanitizeTextInput(req.body.customerProfile, {
+          fieldLabel: "Customer profile",
+          maximumLength: 120,
+        }) ||
         `${req.user.subscription?.dogProfile?.breed || "Dog parent"} | ${product.productName}`,
       customerImage: product.testimonialImage,
       sourceOrderId: eligibleProduct.sourceOrderId,
@@ -1822,12 +2021,14 @@ app.get(
   })
 );
 
-app.use((error, _req, res, next) => {
+app.use((error, req, res, next) => {
   void next;
+  const requestId = req.requestId || randomUUID();
 
   if (error?.type === "entity.parse.failed") {
     return res.status(400).json({
       message: "Request body could not be read. Please check the submitted form data.",
+      requestId,
     });
   }
 
@@ -1835,20 +2036,46 @@ app.use((error, _req, res, next) => {
     return res.status(403).json({
       message:
         "This frontend origin is not allowed yet. Update CLIENT_ORIGIN or use localhost/127.0.0.1.",
+      requestId,
     });
   }
 
-  if (error instanceof multer.MulterError) {
+  if (error?.name === "MulterError") {
     if (error.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({ message: "Each attachment must be smaller than 8 MB." });
+      return res.status(400).json({
+        message: "Each attachment must be smaller than 8 MB.",
+        requestId,
+      });
     }
 
-    return res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message, requestId });
   }
 
-  console.error(error);
+  if (error?.statusCode) {
+    logWarn("request.failed", {
+      requestId,
+      method: req.method,
+      path: req.originalUrl || req.url,
+      statusCode: error.statusCode,
+      error,
+    });
+
+    return res.status(error.statusCode).json({
+      message: error.message || "The request could not be completed.",
+      requestId,
+    });
+  }
+
+  logError("request.failed", {
+    requestId,
+    method: req.method,
+    path: req.originalUrl || req.url,
+    statusCode: 500,
+    error,
+  });
   return res.status(500).json({
     message: "Something unexpected happened on the server.",
+    requestId,
   });
 });
 
@@ -1866,26 +2093,59 @@ if (fs.existsSync(DIST_INDEX)) {
 seedDatabase()
   .then((database) => {
     const adminCount = database.users.filter((user) => user.role === "admin").length;
+    const { secretKey, webhookSecret } = getStripeConfig();
+    const uploadStorageMode = getUploadStorageMode();
 
-    if (process.env.NODE_ENV === "production" && adminCount === 0) {
+    if (isProduction && adminCount === 0) {
       throw new Error(
         "No admin account is configured. Set BOOTSTRAP_ADMIN_EMAIL and BOOTSTRAP_ADMIN_PASSWORD before deploying."
       );
     }
 
-    if (process.env.NODE_ENV === "production" && configuredOrigins.length === 0 && !fs.existsSync(DIST_INDEX)) {
-      console.warn(
-        "CLIENT_ORIGIN is not set in production. If the frontend is hosted separately, configure CLIENT_ORIGIN to avoid open CORS."
+    if (isProduction && configuredOrigins.length === 0 && !fs.existsSync(DIST_INDEX)) {
+      throw new Error(
+        "CLIENT_ORIGIN must be configured in production when the frontend is hosted separately."
       );
     }
 
+    if (isProduction && configuredOrigins.some((origin) => !origin.startsWith("https://"))) {
+      logWarn("server.config.insecure_origin", {
+        configuredOrigins,
+      });
+    }
+
+    if (isProduction && !secretKey) {
+      logWarn("server.config.stripe_missing_secret", {
+        message:
+          "STRIPE_SECRET_KEY is not configured. Card checkout and subscription billing will stay disabled.",
+      });
+    }
+
+    if (isProduction && secretKey && !webhookSecret) {
+      logWarn("server.config.stripe_missing_webhook_secret", {
+        message:
+          "STRIPE_WEBHOOK_SECRET is not configured. Recurring Stripe subscription events will not be verified.",
+      });
+    }
+
+    if (isProduction && uploadStorageMode === "disabled") {
+      logWarn("server.config.upload_storage_disabled", {
+        message:
+          "Cloudinary is not configured, so support attachments are disabled in production until cloud storage is provided.",
+      });
+    }
+
     app.listen(PORT, () => {
-      console.log(`Other Half API listening on http://localhost:${PORT}`);
-      console.log(`MongoDB target: ${DATABASE_TARGET}`);
-      console.log(`Uploads directory: ${UPLOADS_DIR}`);
+      logInfo("server.started", {
+        port: PORT,
+        databaseTarget: DATABASE_TARGET,
+        uploadsDirectory: UPLOADS_DIR,
+        uploadStorageMode,
+        configuredOrigins,
+      });
     });
   })
   .catch((error) => {
-    console.error("Failed to seed database", error);
+    logError("server.start_failed", { error, port: PORT });
     process.exit(1);
   });

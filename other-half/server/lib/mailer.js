@@ -20,8 +20,8 @@ const toBoolean = (value, fallback = false) => {
 const getMailConfig = () => {
   const host = process.env.SMTP_HOST?.trim() || "";
   const port = Number(process.env.SMTP_PORT || 587);
-  const user = process.env.SMTP_USER?.trim() || "";
-  const pass = process.env.SMTP_PASS?.trim() || "";
+  const user = process.env.SMTP_USER?.trim() || process.env.EMAIL_USER?.trim() || "";
+  const pass = process.env.SMTP_PASS?.trim() || process.env.EMAIL_PASS?.trim() || "";
   const from = process.env.MAIL_FROM?.trim() || user || "no-reply@otherhalfpets.com";
   const supportNotificationEmail =
     process.env.SUPPORT_NOTIFICATION_EMAIL?.trim() ||
@@ -98,7 +98,7 @@ const buildSupportRequestText = (supportRequest) => {
               `- ${attachment.originalName} (${Math.max(
                 1,
                 Math.round((Number(attachment.size) || 0) / 1024)
-              )} KB)`
+              )} KB)${attachment.url ? ` - ${attachment.url}` : ""}`
           )
           .join("\n")
       : "No attachments";
@@ -161,11 +161,18 @@ const buildSupportRequestHtml = (supportRequest) => {
     Array.isArray(supportRequest.attachments) && supportRequest.attachments.length > 0
       ? `<ul style="margin:0;padding-left:18px;">${supportRequest.attachments
           .map(
-            (attachment) =>
-              `<li>${escapeHtml(attachment.originalName)} (${Math.max(
+            (attachment) => {
+              const label = `${escapeHtml(attachment.originalName)} (${Math.max(
                 1,
                 Math.round((Number(attachment.size) || 0) / 1024)
-              )} KB)</li>`
+              )} KB)`;
+
+              if (!attachment.url) {
+                return `<li>${label}</li>`;
+              }
+
+              return `<li><a href="${escapeHtml(attachment.url)}">${label}</a></li>`;
+            }
           )
           .join("")}</ul>`
       : "<p style=\"margin:0;\">No attachments</p>";
@@ -195,7 +202,7 @@ const buildSupportRequestHtml = (supportRequest) => {
 const buildMailAttachments = (supportRequest) => {
   return (supportRequest.attachments || [])
     .map((attachment) => {
-      if (!attachment?.fileName) {
+      if (!attachment?.fileName || attachment.storage === "cloudinary") {
         return null;
       }
 

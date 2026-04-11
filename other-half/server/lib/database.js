@@ -27,12 +27,10 @@ const configuredDatabaseMode = String(process.env.DATABASE_MODE || "")
 const isProduction = process.env.NODE_ENV === "production";
 const preferLocalDatabase = configuredDatabaseMode === "local";
 const enableDemoSeeding = (() => {
-  if (process.env.ENABLE_DEMO_SEEDING === undefined) {
-    return !isProduction;
-  }
-
   return ["1", "true", "yes", "on"].includes(
-    String(process.env.ENABLE_DEMO_SEEDING).trim().toLowerCase()
+    String(process.env.ENABLE_DEMO_SEEDING || "")
+      .trim()
+      .toLowerCase()
   );
 })();
 const bootstrapAdminEmail = String(process.env.BOOTSTRAP_ADMIN_EMAIL || "")
@@ -41,6 +39,14 @@ const bootstrapAdminEmail = String(process.env.BOOTSTRAP_ADMIN_EMAIL || "")
 const bootstrapAdminPassword = String(process.env.BOOTSTRAP_ADMIN_PASSWORD || "");
 const bootstrapAdminName =
   String(process.env.BOOTSTRAP_ADMIN_NAME || "").trim() || "Other Half Admin";
+const configuredMongoConnectTimeoutMs = Number.parseInt(
+  String(process.env.MONGODB_CONNECT_TIMEOUT_MS || "").trim(),
+  10
+);
+const mongoConnectTimeoutMs =
+  Number.isFinite(configuredMongoConnectTimeoutMs) && configuredMongoConnectTimeoutMs > 0
+    ? configuredMongoConnectTimeoutMs
+    : 12000;
 const APP_STATE_KEY = "primary";
 const DEFAULT_DATABASE_VERSION = 1;
 
@@ -148,6 +154,14 @@ const createDefaultSubscription = (dogName = "Maple") => ({
 
 const DEFAULT_ADMIN_EMAIL = "admin@otherhalfpets.com";
 const DEFAULT_MEMBER_EMAIL = "member@example.com";
+const LEGACY_DEMO_EMAILS = new Set([
+  DEFAULT_MEMBER_EMAIL,
+  "demo-admin@local.test",
+  "demo-member@local.test",
+]);
+const LEGACY_DEMO_NEWSLETTER_EMAILS = new Set(["packfan@example.com"]);
+const LEGACY_DEMO_ORDER_EMAILS = new Set([DEFAULT_MEMBER_EMAIL, "guest+checkout@example.com"]);
+const LEGACY_DEMO_ORDER_NUMBERS = new Set(["OH-3201", "OH-3202", "OH-3203"]);
 
 const createSeedAdminUser = async () => ({
   id: randomUUID(),
@@ -540,6 +554,31 @@ const ensureMongoConfiguration = () => {
   return true;
 };
 
+const createMongoBootTimeoutError = () => {
+  const error = new Error(
+    `MongoDB did not become ready within ${mongoConnectTimeoutMs} ms.`
+  );
+  error.code = "MONGODB_BOOT_TIMEOUT";
+  return error;
+};
+
+const waitForMongoConnection = async (connectionAttempt) => {
+  let timeoutId;
+
+  try {
+    return await Promise.race([
+      connectionAttempt,
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(createMongoBootTimeoutError());
+        }, mongoConnectTimeoutMs);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
 const connectToDatabase = async () => {
   if (useLocalDatabase) {
     return null;
@@ -554,16 +593,31 @@ const connectToDatabase = async () => {
   }
 
   if (!connectionPromise) {
-    connectionPromise = mongoose
+    const connectionAttempt = mongoose
       .connect(configuredMongoUri, {
         dbName: configuredMongoDbName,
-        serverSelectionTimeoutMS: 10000,
+        connectTimeoutMS: Math.min(mongoConnectTimeoutMs, 10000),
+        serverSelectionTimeoutMS: Math.min(mongoConnectTimeoutMs, 10000),
       })
+      .then(async (connection) => {
+        if (!useLocalDatabase) {
+          return connection;
+        }
+
+        await connection.disconnect().catch(() => undefined);
+        return null;
+      });
+
+    connectionPromise = waitForMongoConnection(connectionAttempt)
       .catch((error) => {
         connectionPromise = null;
 
         if (!isProduction) {
-          activateLocalDatabaseFallback(error.message || "MongoDB could not be reached");
+          activateLocalDatabaseFallback(
+            error.code === "MONGODB_BOOT_TIMEOUT"
+              ? `MongoDB bootstrap timed out after ${mongoConnectTimeoutMs} ms`
+              : error.message || "MongoDB could not be reached"
+          );
           return null;
         }
 
@@ -789,6 +843,101 @@ export const sanitizeUser = (user) => {
   return safeUser;
 };
 
+const stripDemoSeedData = (database) => {
+  const removedUserIds = new Set();
+  let didChange = false;
+
+  const nextUsers = database.users.filter((user) => {
+    const normalizedEmail = String(user.email || "").trim().toLowerCase();
+    const shouldRemove =
+      user.seedSource === "demo" || LEGACY_DEMO_EMAILS.has(normalizedEmail);
+
+    if (shouldRemove) {
+      removedUserIds.add(user.id);
+      didChange = true;
+      return false;
+    }
+
+    return true;
+  });
+
+  if (didChange) {
+    database.users = nextUsers;
+  }
+
+  const filterCollection = (collection, predicate) => {
+    const nextCollection = collection.filter((entry) => !predicate(entry));
+
+    if (nextCollection.length !== collection.length) {
+      didChange = true;
+    }
+
+    return nextCollection;
+  };
+
+  database.supportRequests = filterCollection(
+    database.supportRequests,
+    (entry) => {
+      const normalizedEmail = String(entry.email || "").trim().toLowerCase();
+      return (
+        entry.seedSource === "demo" ||
+        removedUserIds.has(entry.userId) ||
+        LEGACY_DEMO_EMAILS.has(normalizedEmail)
+      );
+    }
+  );
+
+  database.quizSubmissions = filterCollection(
+    database.quizSubmissions,
+    (entry) => {
+      const normalizedEmail = String(entry.email || "").trim().toLowerCase();
+      return (
+        entry.seedSource === "demo" ||
+        removedUserIds.has(entry.userId) ||
+        LEGACY_DEMO_EMAILS.has(normalizedEmail)
+      );
+    }
+  );
+
+  database.orders = filterCollection(
+    database.orders,
+    (entry) => {
+      const normalizedEmail = String(entry.customerEmail || "").trim().toLowerCase();
+      return (
+        entry.seedSource === "demo" ||
+        removedUserIds.has(entry.userId) ||
+        LEGACY_DEMO_ORDER_EMAILS.has(normalizedEmail) ||
+        LEGACY_DEMO_ORDER_NUMBERS.has(String(entry.orderNumber || "").trim())
+      );
+    }
+  );
+
+  database.reviews = filterCollection(
+    database.reviews,
+    (entry) => {
+      const normalizedEmail = String(entry.customerEmail || "").trim().toLowerCase();
+      return (
+        entry.seedSource === "demo" ||
+        removedUserIds.has(entry.userId) ||
+        LEGACY_DEMO_EMAILS.has(normalizedEmail)
+      );
+    }
+  );
+
+  database.newsletterSubscribers = filterCollection(
+    database.newsletterSubscribers,
+    (entry) => {
+      const normalizedEmail = String(entry.email || "").trim().toLowerCase();
+      return (
+        entry.seedSource === "demo" ||
+        LEGACY_DEMO_NEWSLETTER_EMAILS.has(normalizedEmail)
+      );
+    }
+  );
+
+  return didChange;
+};
+
 export const seedDatabase = async () => {
   const database = await readDatabase();
   let didChange = false;
@@ -814,6 +963,10 @@ export const seedDatabase = async () => {
   }
 
   if (!enableDemoSeeding) {
+    if (stripDemoSeedData(database)) {
+      didChange = true;
+    }
+
     if (!database.meta?.seededAt) {
       database.meta = {
         ...(database.meta || {}),
