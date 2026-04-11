@@ -95,6 +95,46 @@ Recurring subscriptions:
 - To sync first-time confirmations, renewals, cancellations, and next billing dates back into the app and admin dashboard, also set `STRIPE_WEBHOOK_SECRET` and point Stripe webhooks to `/api/payments/stripe/webhook`.
 - Recommended Stripe events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `invoice.paid`, `customer.subscription.updated`, and `customer.subscription.deleted`.
 
+## Deployment
+
+Recommended production setup:
+
+1. Build the frontend with `npm run build`.
+2. Keep the generated `dist/` folder on the server.
+3. Start the backend with `npm run start`.
+4. Let Express serve both the API and the built frontend from the same service.
+
+Required backend env vars before production start:
+
+- `NODE_ENV=production`
+- `JWT_SECRET`
+- `MONGODB_URI`
+- `MONGODB_DB_NAME`
+- `BOOTSTRAP_ADMIN_EMAIL`
+- `BOOTSTRAP_ADMIN_PASSWORD`
+
+Recommended env vars for a live domain:
+
+- `CLIENT_ORIGIN=https://your-frontend-domain.com,https://www.your-frontend-domain.com`
+- `VITE_SITE_URL=https://www.your-frontend-domain.com`
+- `VITE_API_BASE_URL=https://your-api-domain.com/api`
+
+If you deploy frontend and backend separately:
+
+1. Build the frontend with `npm run build`.
+2. Host `dist/` on your frontend provider.
+3. Deploy the Node backend separately.
+4. Set `CLIENT_ORIGIN` on the backend to your frontend URL.
+5. Set `VITE_API_BASE_URL` on the frontend to the backend API URL.
+6. Confirm `/api/health` works before testing login, checkout, or admin routes.
+
+Production notes:
+
+- The server will fail fast in production if `JWT_SECRET` is missing or still using the dev default.
+- The server will fail fast in production if no admin user can be bootstrapped.
+- If `STRIPE_SECRET_KEY` is missing, card checkout and recurring subscriptions stay disabled.
+- If Cloudinary is not configured and `ALLOW_LOCAL_UPLOAD_STORAGE` is not enabled, support attachments stay disabled in production.
+
 ## Demo credentials
 
 Admin:

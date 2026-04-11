@@ -11,7 +11,7 @@ const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim() || "";
 const cloudinaryApiKey = process.env.CLOUDINARY_API_KEY?.trim() || "";
 const cloudinaryApiSecret = process.env.CLOUDINARY_API_SECRET?.trim() || "";
 const cloudinaryFolder =
-  process.env.CLOUDINARY_FOLDER?.trim() || "pet-plus/support-attachments";
+  process.env.CLOUDINARY_FOLDER?.trim() || "other-half/support-attachments";
 const allowLocalUploadStorage = ["1", "true", "yes", "on"].includes(
   String(process.env.ALLOW_LOCAL_UPLOAD_STORAGE || "")
     .trim()
