@@ -40,3 +40,4 @@ const QualitySection = () => {
 };
 
 export default QualitySection;
+

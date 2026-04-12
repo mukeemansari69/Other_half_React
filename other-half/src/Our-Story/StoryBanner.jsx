@@ -24,3 +24,4 @@ const StoryBanner = () => {
 };
 
 export default StoryBanner;
+

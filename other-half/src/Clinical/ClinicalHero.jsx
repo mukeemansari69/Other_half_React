@@ -352,3 +352,5 @@ export default function ClinicalHero({ isolated = false }) {
 
   return heroMarkup;
 }
+
+

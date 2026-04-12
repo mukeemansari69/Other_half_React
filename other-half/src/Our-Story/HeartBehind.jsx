@@ -85,7 +85,7 @@ const HeartBehind = () => {
           </div>
         </div>
 
-        <img src="/public/OurStory/images/small-dog.png" alt="dog" className="hb-dog" />
+        <img src="/OurStory/images/small-dog.png" alt="dog" className="hb-dog" />
       </div>
 
       {/* MOBILE */}
@@ -143,3 +143,5 @@ const HeartBehind = () => {
 };
 
 export default HeartBehind;
+
+

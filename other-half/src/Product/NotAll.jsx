@@ -27,7 +27,7 @@ const NotAll = () => {
         {/* GREEN BACKGROUND BOX */}
         <div className="notall-center-box flex flex-col items-center">
           <img
-            src="./Product/images/logo.png"
+            src="/Product/images/logo.png"
             alt="logo"
             className="notall-logo"
           />
@@ -46,14 +46,14 @@ Brands</div>
 
               {/* CENTER CHECK */}
               <img
-                src="./Product/images/right.png"
+                src="/Product/images/right.png"
                 alt="check"
                 className="notall-check-center"
               />
 
               {/* RIGHT CROSS */}
               <img
-                src="./Product/images/cross.png"
+                src="/Product/images/cross.png"
                 alt="cross"
                 className="notall-cross"
               />
@@ -66,4 +66,7 @@ Brands</div>
 };
 
 export default NotAll;
+
+
+
 

@@ -16,7 +16,7 @@ const page = {
   title: "Privacy Policy",
   intro:
     "We collect only the information needed to run the store responsibly, fulfill orders, personalize your customer experience, and improve how the brand communicates with dog parents. This page explains what we collect, why we use it, and how you can control it.",
-  image: "public/Default/images/dogs3.jpg",
+  image: "/Default/images/dogs3.jpg",
   imageAlt: "Dog ingredients and product themed banner",
   stats: [
     { label: "Last updated", value: LAST_UPDATED },
@@ -138,3 +138,4 @@ const PrivacyPolicyPage = () => {
 };
 
 export default PrivacyPolicyPage;
+

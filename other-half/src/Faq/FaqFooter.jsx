@@ -57,3 +57,4 @@ sign up
 };
 
 export default FaqFooter;
+

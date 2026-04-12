@@ -50,7 +50,7 @@ const ScoopOne = () => {
         <video
           ref={videoRef}
           className="scoopone-video"
-          src="public\Product\images\dog-video.mp4"
+          src="/Product/images/dog-video.mp4"
           autoPlay
           loop
           muted
@@ -103,3 +103,6 @@ const ScoopOne = () => {
 };
 
 export default ScoopOne;
+
+
+

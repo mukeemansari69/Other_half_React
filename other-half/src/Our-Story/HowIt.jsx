@@ -47,7 +47,7 @@ const HowIt = () => {
         {/* RIGHT IMAGE */}
         <div className="howit-image-wrapper">
           <img
-            src="/public/OurStory/images/howit.jpg"
+            src="/OurStory/images/howit.jpg"
             alt="dog"
             className="howit-image"
           />
@@ -64,7 +64,7 @@ const HowIt = () => {
         </h2>
 
         <img
-          src="/public/OurStory/images/howit.jpg"
+          src="/OurStory/images/howit.jpg"
           alt="dog"
           className="howit-image mobile-img"
         />
@@ -98,3 +98,5 @@ const HowIt = () => {
 };
 
 export default HowIt;
+
+

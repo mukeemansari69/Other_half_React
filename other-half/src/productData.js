@@ -260,7 +260,7 @@ export const everydayProductData = {
   bundleSuggestions: [
     {
       id: "daily-duo",
-      image: "/Product/images/bundle/daily.png",
+      image: "/Product/images/multi.png",
       title: "Daily Duo Pack",
       subtitle: "Multivitamin + Immunity Boost",
       compareAtPrice: 89.99,
@@ -269,7 +269,7 @@ export const everydayProductData = {
     },
     {
       id: "mobility-pack",
-      image: "/Product/images/bundle/mobility.png",
+      image: "/Default/images/col1.png",
       title: "Mobility Pack",
       subtitle: "Joint + Bone Support",
       compareAtPrice: 84.99,
@@ -586,7 +586,7 @@ export const dogDentalProductData = {
     },
     {
       id: "complete-care",
-      image: "/Product/images/bundle/dental2.png",
+      image: "/Product/images/dogi-dental-powder.png",
       title: "Complete Oral Care",
       subtitle: "Dental Powder + Multivitamin",
       compareAtPrice: 94.99,
@@ -941,3 +941,4 @@ export const dailyDuoProductData = {
 
   initialVisibleTags: 5,
 };
+

@@ -623,7 +623,7 @@ const Quiz = () => {
               <div className="quiz-page__dog-scene-glow quiz-page__dog-scene-glow--one" />
               <div className="quiz-page__dog-scene-glow quiz-page__dog-scene-glow--two" />
               <img
-                src="public/Default/images/mkm.png"
+                src="/Default/images/mkm.png"
                 alt="Happy dog ready for the quiz"
                 className="quiz-page__dog-image"
               />
@@ -759,3 +759,6 @@ const Quiz = () => {
 };
 
 export default Quiz;
+
+
+

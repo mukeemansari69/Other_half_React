@@ -56,3 +56,4 @@ const OurMission = () => {
 };
 
 export default OurMission;
+

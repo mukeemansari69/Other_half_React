@@ -45,7 +45,7 @@ const products = [
     detailClass: "science-product-detail--foundation",
     cardTag: "Foundation Formula",
     cardImage: "/Default/images/col1.png",
-    detailImage: "public/Science/images/everyday.png",
+    detailImage: "/Science/images/everyday.png",
     title: "Everyday Daily Multivitamin",
     description: "A single scoop for joints, digestion, immunity, skin, and coat support.",
     product: everydayProductData,
@@ -88,8 +88,8 @@ const products = [
     route: "/dailyduo",
     detailClass: "science-product-detail--duo",
     cardTag: "Stacked Routine",
-    cardImage: "public/Science/images/dailyduo.png",
-    detailImage: "public/Science/images/dailyduo.png",
+    cardImage: "/Science/images/dailyduo.png",
+    detailImage: "/Science/images/dailyduo.png",
     title: "Daily Duo Bundle",
     description: "A paired routine that combines whole-body wellness with oral care in one stack.",
     product: dailyDuoProductData,
@@ -309,3 +309,4 @@ const Science = () => {
 };
 
 export default Science;
+

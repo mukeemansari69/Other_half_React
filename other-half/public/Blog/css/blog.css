@@ -14,7 +14,7 @@
   padding: 64px 24px;
   background-image: 
     linear-gradient(246.81deg, rgba(0, 0, 0, 0) 0.46%, #000000 84.51%), 
-    url("/public/Blog/images/blog-banner2.jpg");
+    url("/Blog/images/blog-banner2.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -476,3 +476,4 @@
     padding: 24px 24px;
   }
 }
+

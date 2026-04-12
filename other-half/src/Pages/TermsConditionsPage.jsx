@@ -19,7 +19,7 @@ const page = {
   title: "Terms & Conditions",
   intro:
     "These terms explain how you can browse the Other Half website, place orders, use subscriptions, and interact with our products and content. By visiting the site or completing a purchase, you agree to the terms below.",
-  image: "/public/Default/images/dog.jpg",
+  image: "/Default/images/dog.jpg",
   imageAlt: "A happy dog looking toward the camera",
   stats: [
     { label: "Effective date", value: LAST_UPDATED },
@@ -149,3 +149,4 @@ const TermsConditionsPage = () => {
 };
 
 export default TermsConditionsPage;
+

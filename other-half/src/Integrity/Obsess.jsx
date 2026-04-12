@@ -70,7 +70,7 @@ const Obsess = () => {
       {/* IMAGE */}
       <div className="obsess-image-wrapper w-full md:w-1/2">
         <img
-          src="\public\Integrity\images\dogi-img.jpg"
+          src="/Integrity/images/dogi-img.jpg"
           alt="product"
           className="obsess-image"
         />
@@ -83,3 +83,5 @@ const Obsess = () => {
 };
 
 export default Obsess;
+
+

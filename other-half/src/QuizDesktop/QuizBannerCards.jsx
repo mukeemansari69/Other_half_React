@@ -5,17 +5,17 @@ const cardData = [
   {
     title: "Moving Slower Than Usual",
     desc: "Less zoomies, more 'meh.' If your pup’s stiff, limping, or avoiding stairs, their joints might be waving a white flag.",
-    img: "/public/QuizDesktop/images/d1.jpg",
+    img: "/QuizDesktop/images/d1.jpg",
   },
   {
     title: "Gut Drama Meets Itchy Chaos",
     desc: "Frequent tummy issues? Gassy nights? Random scratching fits? Sounds like their gut and skin are throwing tantrums.",
-    img: "/public/QuizDesktop/images/dc2.png",
+    img: "/QuizDesktop/images/dc2.png",
   },
   {
     title: "Breath That Bites Back",
     desc: "If your dog’s kisses make you flinch, their mouth might need more than a dental chew. Constant licking’s a clue too.",
-    img: "/public/QuizDesktop/images/d3.jpg",
+    img: "/QuizDesktop/images/d3.jpg",
   },
 ];
 
@@ -74,3 +74,5 @@ const QuizBannerCards = () => {
 };
 
 export default QuizBannerCards;
+
+

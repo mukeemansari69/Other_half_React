@@ -10,7 +10,7 @@ const OurFlex = () => {
         {/* LEFT IMAGE */}
         <div className="ourFlex-imageWrapper">
           <img
-            src="/public/Integrity/images/dogi.png"
+            src="/Integrity/images/dogi.png"
             alt="dog"
             className="ourFlex-image"
           />
@@ -27,7 +27,7 @@ const OurFlex = () => {
           {/* Image for mobile (between heading & text) */}
           <div className="ourFlex-imageWrapper ourFlex-mobileImage">
             <img
-              src="/public/Integrity/images/dogi.png"
+              src="/Integrity/images/dogi.png"
               alt="dog"
               className="ourFlex-image"
             />
@@ -64,3 +64,5 @@ const OurFlex = () => {
 };
 
 export default OurFlex;
+
+

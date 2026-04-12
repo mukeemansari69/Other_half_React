@@ -35,3 +35,4 @@ const FaqBanner = () => {
 };
 
 export default FaqBanner;
+

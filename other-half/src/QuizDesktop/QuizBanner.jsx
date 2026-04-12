@@ -10,10 +10,10 @@ const QuizBanner = () => {
         {/* Top avatars + text */}
         <div className="QuizBanner__reviews">
           <div className="QuizBanner__avatars">
-            <img src="/public/QuizDesktop/images/user1.jpg" alt="" />
-            <img src="/public/QuizDesktop/images/user2.jpg" alt="" />
-            <img src="/public/QuizDesktop/images/user3.jpg" alt="" />
-            <img src="/public/QuizDesktop/images/user4.jpg" alt="" />
+            <img src="/QuizDesktop/images/user1.jpg" alt="" />
+            <img src="/QuizDesktop/images/user2.jpg" alt="" />
+            <img src="/QuizDesktop/images/user3.jpg" alt="" />
+            <img src="/QuizDesktop/images/user4.jpg" alt="" />
           </div>
           <p className="QuizBanner__reviewText">
             Loved by 50000+ of pet parents.
@@ -48,3 +48,5 @@ const QuizBanner = () => {
 };
 
 export default QuizBanner;
+
+

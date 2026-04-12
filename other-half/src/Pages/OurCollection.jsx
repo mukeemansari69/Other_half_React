@@ -10,8 +10,8 @@ const products = [
     link: "/product",
     tag: "Best Seller",
     tagColor: "bg-orange-500",
-    image: "/public/Default/images/col1.png",
-    hoverImage: "/public/Default/images/col5hov.png",
+    image: "/Default/images/col1.png",
+    hoverImage: "/Default/images/col5hov.png",
     rating: 4.9,
     reviews: 429,
     title: "Everyday Daily Multivitamin",
@@ -31,8 +31,8 @@ const products = [
     link: "/doggie-dental",
     tag: "New Release",
     tagColor: "bg-blue-500",
-    image: "/public/Default/images/col2.png",
-    hoverImage: "/public/Default/images/col5hov.png",
+    image: "/Default/images/col2.png",
+    hoverImage: "/Default/images/col5hov.png",
     rating: 4.9,
     reviews: 429,
     title: "Doggie Dental Powder",
@@ -52,8 +52,8 @@ const products = [
     link: "/dailyduo",
     tag: "Bundle & Save",
     tagColor: "bg-pink-600",
-    image: "/public/Default/images/col3.png",
-    hoverImage: "/public/Default/images/col5hov.png",
+    image: "/Default/images/col3.png",
+    hoverImage: "/Default/images/col5hov.png",
     rating: 4.9,
     reviews: 429,
     title: "Daily Duo Bundle",
@@ -176,3 +176,6 @@ const OurCollection = () => {
 };
 
 export default OurCollection;
+
+
+

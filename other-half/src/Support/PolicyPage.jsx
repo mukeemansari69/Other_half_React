@@ -235,3 +235,5 @@ const PolicyPage = ({ page }) => {
 };
 
 export default PolicyPage;
+
+
