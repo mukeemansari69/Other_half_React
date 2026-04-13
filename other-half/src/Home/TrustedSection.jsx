@@ -10,16 +10,16 @@ export default function TrustedSection() {
   const [muted, setMuted] = useState({});
 
   const videos = [
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
-    "/Home/images/dog1.mp4",
+    "https://www.pexels.com/download/video/7515921/",
+    "https://www.pexels.com/download/video/7189544/",
+    "https://www.pexels.com/download/video/7684007/",
+    "https://www.pexels.com/download/video/6131501/",
+    "https://www.pexels.com/download/video/17029739/",
+    "https://www.pexels.com/download/video/16622195/",
+    "https://www.pexels.com/download/video/31770762/",
+    "https://www.pexels.com/download/video/34935656/",
+    "https://www.pexels.com/download/video/5423960/",
+    "https://www.pexels.com/download/video/3042473/",
   ];
 
   useEffect(() => {

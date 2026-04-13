@@ -96,7 +96,7 @@ const formulaStudies = [
   {
     id: "duo",
     route: "/dailyduo",
-    image: "/Default/images/col3.png",
+    image: "/Default/images/col4.png",
     kicker: "Stacked routine",
     title: "Daily Duo Bundle",
     summary:
