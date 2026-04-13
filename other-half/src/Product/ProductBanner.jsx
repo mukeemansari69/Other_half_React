@@ -40,10 +40,10 @@ const defaultProductBannerData = {
   name: "45 in 1 Everyday Daily Multivitamin",
   review: { rating: 4.5, count: 50, href: "#reviews" },
   gallery: [
-    { id: "gallery-1", src: "/Product/images/p1.png", alt: "Product image 1" },
-    { id: "gallery-2", src: "/Product/images/p1.png", alt: "Product image 2" },
-    { id: "gallery-3", src: "/Product/images/p1.png", alt: "Product image 3" },
-    { id: "gallery-4", src: "/Product/images/p1.png", alt: "Product image 4" },
+    { id: "gallery-1", src: "/Product/images/Productimage.png", alt: "Product image 1" },
+    { id: "gallery-2", src: "/Home/images/EverydayProduct.png", alt: "Product image 2" },
+    { id: "gallery-3", src: "/Product/images/Productimage.png", alt: "Product image 3" },
+    { id: "gallery-4", src: "/Home/images/EverydayProduct.png", alt: "Product image 4" },
   ],
   qualityHighlights: [
     {
