@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 
@@ -266,7 +266,7 @@ export default function Header() {
         <div className="max-w-[1920px] mx-auto px-[20px] lg:px-[120px] py-[12px] flex items-center justify-between header-main__bar">
           <Link to="/" className="flex items-center w-[262px] header-logo" aria-label="Other Half home">
             <img
-              src="/Home/images/dog-logo.svg"
+              src="/Home/images/PetPlus-Logo.png"
               alt="Other Half logo"
               className="w-[40px] h-[40px]"
             />
@@ -424,7 +424,7 @@ export default function Header() {
         <div className="header-mobile-drawer__panel">
           <div className="header-mobile-drawer__top">
             <Link to="/" className="header-mobile-drawer__brand" onClick={closeMenu}>
-              <img src="/Home/images/dog-logo.svg" alt="Other Half logo" />
+              <img src="/Home/images/PetPlus-Logo.png" alt="Other Half logo" />
               <div>
                 <p className="header-mobile-drawer__brand-title">Other Half</p>
                 <p className="header-mobile-drawer__brand-text">Everything in one place</p>

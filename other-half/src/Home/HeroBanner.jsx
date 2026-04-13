@@ -48,7 +48,7 @@ export default function HeroBanner() {
 
           // ✅ AUTOPLAY
           autoplay={{
-            delay: 3000,
+            delay: 20000,
             disableOnInteraction: false,
           }}
 

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const SITE_NAME = "Other Half Pets";
-const FALLBACK_SITE_URL = "https://www.otherhalfpets.com";
+const FALLBACK_SITE_URL = "https://www.pet-plus.co.in/";
 const DEFAULT_DESCRIPTION =
   "Other Half Pets makes daily dog wellness routines easier with clean formulas, thoughtful education, and support that stays connected.";
 const DEFAULT_IMAGE_PATH = "/Home/images/logo2.png";

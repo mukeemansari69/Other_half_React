@@ -16,7 +16,7 @@ export default function HomeHeroSection() {
         lg:px-[120px]
       "
       style={{
-        backgroundImage: "url('/Home/images/banner-img.png')",
+        backgroundImage: "url('/Home/images/Home-banner.png')",
       }}
     >
       <div className="max-w-[1920px] mx-auto">

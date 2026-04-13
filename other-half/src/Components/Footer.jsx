@@ -134,7 +134,7 @@ const Footer = () => {
         <div className="w-full max-w-[1440px] flex justify-between items-start gap-[10px]">
           <div className="w-[130px] h-[155px] flex-shrink-0">
             <img
-              src="/Home/images/logo2.png"
+              src="/Home/images/PetPlus-Logo.png"
               alt="Other Half Logo"
               className="w-full h-full object-contain"
             />
@@ -184,7 +184,7 @@ const Footer = () => {
 
       <div className="flex md:hidden flex-col pt-[24px] px-[16px] pb-[24px] gap-[29px] items-start">
         <div className="flex flex-col gap-[17px] w-full mobile-logo">
-          <img src="/Home/images/logo2.png" alt="Logo" className="w-[100px] h-[120px] object-contain" />
+          <img src="/Home/images/PetPlus-Logo.png" alt="Logo" className="w-[100px] h-[120px] object-contain" />
           <div className="flex gap-[34px] items-center">
             <FaFacebookF className="w-[24px] h-[24px] social-icon-blue" />
             <FaTwitter className="w-[24px] h-[24px]" />

@@ -6,7 +6,7 @@ export default function Pup() {
 
   const products = [
     {
-      img: "/Home/images/p1.png",
+      img: "/Home/images/EverydayProduct.png",
       title: "Everyday Daily Multivitamin",
       price: "$99.99",
       old: "$69.99",
@@ -14,7 +14,7 @@ export default function Pup() {
       tags: ["Immunity Boost", "Digestive health", "Overall Wellness"]
     },
     {
-      img: "/Home/images/p2.png",
+      img: "/Home/images/DoggiDental.png",
       title: "Doggie Dental Powder",
       price: "$99.99",
       old: "$69.99",
@@ -22,7 +22,7 @@ export default function Pup() {
       tags: ["Dental Care", "Overall Wellness"]
     },
     {
-      img: "/Home/images/p3.png",
+      img: "/Home/images/Daily-Duo.png",
       title: "Daily Duo Bundle",
       price: "$99.99",
       old: "$69.99",
