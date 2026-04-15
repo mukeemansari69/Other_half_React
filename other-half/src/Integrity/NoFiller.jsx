@@ -1,4 +1,5 @@
 import React from "react";
+
 import "/public/Integrity/css/nofiller.css";
 
 const NoFiller = () => {
@@ -7,12 +8,10 @@ const NoFiller = () => {
       <div className="nofiller-overlay"></div>
 
       <div className="nofiller-content text-center flex flex-col items-center justify-center">
-        <h2 className="nofiller-heading">
-          WE’RE OTHER HALF — no FILLERS, no FAKES.
-        </h2>
+        <h2 className="nofiller-heading">WE&apos;RE PetPlus - no FILLERS, no FAKES.</h2>
         <p className="nofiller-subtext">
           Every scoop we make is obsessively clean, vet-formulated, and actually
-          does something. Because your dog’s health isn’t where we experiment.
+          does something. Because your dog&apos;s health isn&apos;t where we experiment.
         </p>
       </div>
     </section>
@@ -20,4 +19,3 @@ const NoFiller = () => {
 };
 
 export default NoFiller;
-

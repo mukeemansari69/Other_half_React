@@ -1,60 +1,40 @@
 import React from "react";
-import "/public/Default/css/FaqFooter.css";
 import { NavLink } from "react-router-dom";
+
+import "/public/Default/css/FaqFooter.css";
 
 const FaqFooter = () => {
   return (
     <section className="FaqFooter-container">
-
-      {/* BACKGROUND */}
       <div className="FaqFooter-bg">
-
-        {/* OVERLAY */}
         <div className="FaqFooter-overlay">
-
-          {/* CONTENT */}
           <div className="FaqFooter-content">
-
-            {/* TEXT */}
-            <h2 className="FaqFooter-heading">
-              Contact Our Other Half Products Experts
-            </h2>
+            <h2 className="FaqFooter-heading">Contact Our PetPlus Product Experts</h2>
 
             <p className="FaqFooter-subtext">
-              We’re here to help you and your furry friend. Whether you have
-              questions about our product or need guidance, feel free to reach
-              out to us anytime. Your dog deserves the best care possible.
+              We&apos;re here to help you and your furry friend. Whether you have
+              questions about our products or need guidance, feel free to reach
+              out anytime. Your dog deserves the best care possible.
             </p>
 
-            {/* BUTTON */}
-           <NavLink to="/contact" className="FaqFooter-btn">
-               <a >
+            <NavLink to="/contact" className="FaqFooter-btn">
               CONTACT US
-            </a>
             </NavLink>
-         
           </div>
-          
         </div>
-        
       </div>
- {/* BOTTOM LINE */}
+
       <div className="FaqFooter-bottom">
         <p>
-          See for yourself how convenient otherhalf can be and{" "}
+          See for yourself how convenient PetPlus can be and{" "}
           <NavLink to="/login" className="FaqFooter-link">
-sign up
-            </NavLink>
-          
-          {" "}
+            sign up
+          </NavLink>{" "}
           for a subscription today!
         </p>
       </div>
-     
-
     </section>
   );
 };
 
 export default FaqFooter;
-

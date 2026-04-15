@@ -19,7 +19,7 @@ const page = {
   intro:
     "Your subscription is built to stay flexible. This page explains how to update delivery timing, change product quantity, switch payment details, skip an upcoming shipment, or pause service without losing control of your routine.",
   image: "/Product/images/multi.png",
-  imageAlt: "Other Half Daily Duo product packaging",
+  imageAlt: "PetPlus Daily Duo product packaging",
   stats: [
     { label: "Updated", value: LAST_UPDATED },
     { label: "Best for", value: "Plan changes, skips, and payment updates" },

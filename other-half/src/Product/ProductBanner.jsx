@@ -17,6 +17,13 @@ import "/public/Product/css/ProductBanner.css";
 import { useCart } from "../context/CartContext.jsx";
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 import { getCadenceDetails } from "../../shared/subscriptionUtils.js";
+import {
+  MADE_IN_LABEL,
+  PAYMENT_PROVIDER,
+  formatStoreCurrency,
+  getDeliveryWindowText,
+  getFreeShippingText,
+} from "../../shared/storefrontConfig.js";
 
 const highlightIconMap = {
   clinicallyTested: FlaskConical,
@@ -236,26 +243,26 @@ const defaultProductBannerData = {
       ],
     },
   ],
-  shippingNote: "Zooming your way from the USA - ships within 24 hours*",
+  shippingNote: getDeliveryWindowText(),
   subscription: {
     title: "Subscribe and Save",
     description:
-      "Easily pause or cancel your subscription anytime, stress-free.",
+      `Easily pause or cancel your subscription anytime. Secure checkout powered by ${PAYMENT_PROVIDER}.`,
     enabledByDefault: true,
   },
   cta: {
     addToCartLabel: "Add to Cart",
-    shopPayLabel: "Buy with shop Pay",
+    shopPayLabel: `Pay with ${PAYMENT_PROVIDER}`,
     cartHref: "/cart",
   },
   guaranteeBadges: [
     {
       id: "shipping",
       iconKey: "shipping",
-      title: "Free Shipping on Orders $50+",
+      title: getFreeShippingText(),
     },
     { id: "guarantee", iconKey: "guarantee", title: "Money-Back Guarantee" },
-    { id: "origin", iconKey: "origin", title: "Made in the USA" },
+    { id: "origin", iconKey: "origin", title: MADE_IN_LABEL },
   ],
   bundleHeading: "Bundle Up & Save 5%",
   bundleSuggestions: [
@@ -316,13 +323,7 @@ const defaultProductBannerData = {
   initialVisibleTags: 5,
 };
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value) || 0);
+const formatCurrency = (value) => formatStoreCurrency(value);
 
 const RatingStars = ({ rating }) => (
   <div

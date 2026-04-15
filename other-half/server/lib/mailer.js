@@ -22,11 +22,11 @@ const getMailConfig = () => {
   const port = Number(process.env.SMTP_PORT || 587);
   const user = process.env.SMTP_USER?.trim() || process.env.EMAIL_USER?.trim() || "";
   const pass = process.env.SMTP_PASS?.trim() || process.env.EMAIL_PASS?.trim() || "";
-  const from = process.env.MAIL_FROM?.trim() || user || "no-reply@otherhalfpets.com";
+  const from = process.env.MAIL_FROM?.trim() || user || "no-reply@PetPlus.co.in";
   const supportNotificationEmail =
     process.env.SUPPORT_NOTIFICATION_EMAIL?.trim() ||
     process.env.ADMIN_NOTIFICATION_EMAIL?.trim() ||
-    "admin@otherhalfpets.com";
+    "admin@PetPlus.co.in";
   const secure = toBoolean(process.env.SMTP_SECURE, port === 465);
 
   return {

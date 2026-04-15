@@ -3,72 +3,19 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 import "/public/Default/css/ourCollection.css";
 import { useCart } from "../context/CartContext.jsx";
+import { collectionCards } from "../../shared/storeCatalog.js";
+import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
 
-const products = [
-  {
-    id: 1,
-    link: "/product",
-    tag: "Best Seller",
-    tagColor: "bg-orange-500",
-    image: "/Home/images/EverydayProduct.png",
-    hoverImage: "/Default/images/col5hov.png",
-    rating: 4.9,
-    reviews: 429,
-    title: "Everyday Daily Multivitamin",
-    badges: ["Immunity Boost", "Digestive health", "Overall Wellness"],
-    desc: "45 high-quality ingredients in every scoop...",
-    price: "$54.00",
-    oldPrice: "$54.00",
-    discount: "15% OFF",
-    cartId: "collection-everyday",
-    productId: "everyday-one",
-    cartImage: "/Default/images/col1.png",
-    unitPrice: 54,
-    cartDescription: "Everyday routine | Standard plan",
-  },
-  {
-    id: 2,
-    link: "/doggie-dental",
-    tag: "New Release",
-    tagColor: "bg-blue-500",
-    image: "/Home/images/DoggiDental.png",
-    hoverImage: "/Default/images/col5hov.png",
-    rating: 4.9,
-    reviews: 429,
-    title: "Doggie Dental Powder",
-    badges: ["Bad breath", "Plaque & Tartar Control", "Keep Teeth Clean"],
-    desc: "Doggie Dental is a breakthrough oral health powder...",
-    price: "$39.99",
-    oldPrice: "$42.00",
-    discount: "15% OFF",
-    cartId: "collection-dental",
-    productId: "doggie-dental",
-    cartImage: "/Default/images/col2.png",
-    unitPrice: 39.99,
-    cartDescription: "Dental support | Standard plan",
-  },
-  {
-    id: 3,
-    link: "/dailyduo",
-    tag: "Bundle & Save",
-    tagColor: "bg-pink-600",
-    image: "/Home/images/Daily-Duo.png",
-    hoverImage: "/Default/images/col5hov.png",
-    rating: 4.9,
-    reviews: 429,
-    title: "Daily Duo Bundle",
-    badges: ["Immunity Boost", "Digestive health", "Overall Wellness"],
-    desc: "Meet the Daily Duo Bundle...",
-    price: "$71.98",
-    oldPrice: "$77.00",
-    discount: "15% OFF",
-    cartId: "collection-daily-duo",
-    productId: "daily-duo",
-    cartImage: "/Default/images/col3.png",
-    unitPrice: 71.98,
-    cartDescription: "Daily Duo bundle | Standard plan",
-  },
-];
+const products = collectionCards.map((item) => ({
+  ...item,
+  price: formatStoreCurrency(item.startingPrice),
+  oldPrice: formatStoreCurrency(item.startingPrice * 1.15),
+  discount: "15% OFF",
+  cartId: `collection-${item.productId}`,
+  cartImage: item.image,
+  unitPrice: item.startingPrice,
+  cartDescription: `${item.defaultSelection.sizeLabel} (${item.defaultSelection.sizeWeight}) | ${item.defaultSelection.planLabel}`,
+}));
 
 const OurCollection = () => {
   const navigate = useNavigate();
@@ -91,6 +38,11 @@ const OurCollection = () => {
       image: item.cartImage,
       unitPrice: item.unitPrice,
       quantity: 1,
+      sizeId: item.defaultSelection.sizeId,
+      sizeLabel: item.defaultSelection.sizeLabel,
+      sizeWeight: item.defaultSelection.sizeWeight,
+      planId: item.defaultSelection.planId,
+      planLabel: item.defaultSelection.planLabel,
     });
   };
 
@@ -102,8 +54,8 @@ const OurCollection = () => {
         <div className="ourCollection-grid">
           {products.map((item) => (
             <NavLink
-              to={item.link}
-              key={item.id}
+              to={item.route}
+              key={item.productId}
               className="ourCollection-card group cursor-pointer block"
             >
               <span className={`ourCollection-tag ${item.tagColor}`}>
@@ -139,13 +91,16 @@ const OurCollection = () => {
 
               <div className="ourCollection-badges">
                 {item.badges.map((badge) => (
-                  <span key={`${item.id}-${badge}`} className="ourCollection-badge">
+                  <span
+                    key={`${item.productId}-${badge}`}
+                    className="ourCollection-badge"
+                  >
                     {badge}
                   </span>
                 ))}
               </div>
 
-              <p className="ourCollection-desc">{item.desc}</p>
+              <p className="ourCollection-desc">{item.description}</p>
 
               <div className="ourCollection-priceRow">
                 <span className="ourCollection-price">{item.price}</span>
@@ -157,7 +112,9 @@ const OurCollection = () => {
                 <div className="ourCollection-tick">+</div>
                 <div>
                   <p className="ourCollection-subscribeTitle">Subscribe & Save 20%</p>
-                  <p className="ourCollection-subscribeText">Shipped every 3 months</p>
+                  <p className="ourCollection-subscribeText">
+                    Delivered on your selected plan
+                  </p>
                 </div>
               </div>
 
@@ -176,6 +133,3 @@ const OurCollection = () => {
 };
 
 export default OurCollection;
-
-
-

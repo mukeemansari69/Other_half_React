@@ -30,7 +30,7 @@ const HeartBehind = () => {
     {
       num: "01",
       title: "Built on Love, Not Labels",
-      text: "Other Half was born from real-life dog struggles — not market trends. We started this to help our own pups when nothing else worked.",
+      text: "PetPlus was born from real-life dog struggles — not market trends. We started this to help our own pups when nothing else worked.",
     },
     {
       num: "02",

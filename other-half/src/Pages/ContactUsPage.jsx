@@ -10,9 +10,9 @@ import {
 import PolicyPage from "../Support/PolicyPage";
 import ContactSupportFormSection from "../Support/ContactSupportFormSection";
 
-const SUPPORT_EMAIL = "care@otherhalfpets.com";
-const SUBSCRIPTION_EMAIL = "subscriptions@otherhalfpets.com";
-const PARTNERS_EMAIL = "partners@otherhalfpets.com";
+const SUPPORT_EMAIL = "care@PetPlus.co.in";
+const SUBSCRIPTION_EMAIL = "subscriptions@PetPlus.co.in";
+const PARTNERS_EMAIL = "partners@PetPlus.co.in";
 
 const page = {
   path: "/contact",
@@ -25,7 +25,7 @@ const page = {
   imageAlt: "Dog carrying an object in its mouth",
   stats: [
     { label: "General response goal", value: "Within 1 business day" },
-    { label: "Support hours", value: "Monday to Friday, 9am to 5pm PT" },
+    { label: "Support hours", value: "Monday to Saturday, 10am to 6pm IST" },
     { label: "Best for", value: "Orders, subscriptions, refunds, and product questions" },
   ],
   actions: [
@@ -100,7 +100,7 @@ const page = {
         "If your issue relates to a shipment that arrived damaged or a renewal date that is close, mention that in the subject line so the team can prioritize the review appropriately.",
       ],
       callout:
-        "Other Half customer care is a store support team, not a veterinary hotline. If your dog is having a reaction or urgent symptoms, contact a veterinarian immediately.",
+        "PetPlus customer care is a store support team, not a veterinary hotline. If your dog is having a reaction or urgent symptoms, contact a veterinarian immediately.",
     },
   ],
   infoCards: [
@@ -119,7 +119,7 @@ const page = {
     {
       icon: Clock3,
       title: "Support hours",
-      text: "Monday to Friday, 9am to 5pm PT. We aim to reply within 1 business day.",
+      text: "Monday to Saturday, 10am to 6pm IST. We aim to reply within 1 business day.",
     },
   ],
   cta: {

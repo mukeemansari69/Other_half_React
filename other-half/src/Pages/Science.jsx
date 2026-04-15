@@ -10,14 +10,9 @@ import {
   dogDentalProductData,
   everydayProductData,
 } from "../productData";
+import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
 
-const formatPrice = (value) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value) || 0);
+const formatPrice = (value) => formatStoreCurrency(value);
 
 const scienceHighlights = [
   {

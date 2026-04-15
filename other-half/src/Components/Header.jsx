@@ -264,10 +264,10 @@ export default function Header() {
 
       <div className="w-full bg-white border-b border-black/20 backdrop-blur-md header-main">
         <div className="max-w-[1920px] mx-auto px-[20px] lg:px-[120px] py-[12px] flex items-center justify-between header-main__bar">
-          <Link to="/" className="flex items-center w-[262px] header-logo" aria-label="Other Half home">
+          <Link to="/" className="flex items-center w-[262px] header-logo" aria-label="PetPlus home">
             <img
               src="/Home/images/PetPlus-Logo.png"
-              alt="Other Half logo"
+              alt="PetPlus logo"
               className="w-[40px] h-[40px]"
             />
           </Link>
@@ -424,9 +424,9 @@ export default function Header() {
         <div className="header-mobile-drawer__panel">
           <div className="header-mobile-drawer__top">
             <Link to="/" className="header-mobile-drawer__brand" onClick={closeMenu}>
-              <img src="/Home/images/PetPlus-Logo.png" alt="Other Half logo" />
+              <img src="/Home/images/PetPlus-Logo.png" alt="PetPlus logo" />
               <div>
-                <p className="header-mobile-drawer__brand-title">Other Half</p>
+                <p className="header-mobile-drawer__brand-title">PetPlus</p>
                 <p className="header-mobile-drawer__brand-text">Everything in one place</p>
               </div>
             </Link>

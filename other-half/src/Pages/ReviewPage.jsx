@@ -168,7 +168,7 @@ const ReviewPage = () => {
           rating: formState.rating,
           description: formState.description.trim(),
           customerProfile: `${user?.subscription?.dogProfile?.breed || "Dog parent"} | ${
-            selectedProduct?.productName || "Other Half customer"
+            selectedProduct?.productName || "PetPlus customer"
           }`,
         },
       });

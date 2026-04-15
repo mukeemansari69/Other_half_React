@@ -23,7 +23,7 @@ const NextStep = () => {
 
             {/* Subtext */}
             <p className="nextstep-subtext">
-              We created Other Half because our dogs needed more than empty promises —
+              We created PetPlus because our dogs needed more than empty promises —
               and so did yours. Coming soon:
             </p>
 

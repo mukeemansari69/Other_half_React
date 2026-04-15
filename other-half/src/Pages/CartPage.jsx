@@ -1,21 +1,41 @@
 import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { apiRequest } from "../lib/api.js";
+import { loadRazorpayCheckout } from "../lib/loadRazorpayCheckout.js";
+import {
+  BRAND_NAME,
+  FLAT_SHIPPING_RATE,
+  PAYMENT_PROVIDER,
+  SHIPPING_THRESHOLD,
+  calculateShipping,
+  formatStoreCurrency,
+  getShippingRuleText,
+} from "../../shared/storefrontConfig.js";
 
-const SHIPPING_THRESHOLD = 50;
-const FLAT_SHIPPING_RATE = 6.99;
-
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value) || 0);
+const serializeCartItems = (items) =>
+  items.map((item) => ({
+    id: item.id,
+    productId: item.productId,
+    name: item.name,
+    description: item.description,
+    image: item.image,
+    unitPrice: item.unitPrice,
+    quantity: item.quantity,
+    purchaseType: item.purchaseType,
+    planId: item.planId,
+    planLabel: item.planLabel,
+    deliveryLabel: item.deliveryLabel,
+    deliveryCadence: item.deliveryCadence,
+    billingIntervalUnit: item.billingIntervalUnit,
+    billingIntervalCount: item.billingIntervalCount,
+    sizeId: item.sizeId,
+    sizeLabel: item.sizeLabel,
+    sizeWeight: item.sizeWeight,
+  }));
 
 const CartPage = () => {
   const { token, user, refreshUser } = useAuth();
@@ -27,111 +47,49 @@ const CartPage = () => {
     clearCart,
     cartCount,
   } = useCart();
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState({ type: "", message: "" });
   const [checkingOut, setCheckingOut] = useState(false);
-  const [upiCheckoutInfo, setUpiCheckoutInfo] = useState(null);
 
-  const shipping = useMemo(() => {
-    if (subtotal === 0 || subtotal >= SHIPPING_THRESHOLD) {
-      return 0;
-    }
-
-    return FLAT_SHIPPING_RATE;
-  }, [subtotal]);
-
+  const shipping = calculateShipping(subtotal);
   const total = subtotal + shipping;
 
-  useEffect(() => {
-    const checkoutState = searchParams.get("checkout");
-    const orderId = searchParams.get("orderId");
-    const sessionId = searchParams.get("session_id");
+  const handleVerifiedPayment = async ({ orderId, payment }) => {
+    const verification = await apiRequest("/payments/razorpay/verify-payment", {
+      method: "POST",
+      token,
+      body: {
+        orderId,
+        razorpayOrderId: payment.razorpay_order_id,
+        razorpayPaymentId: payment.razorpay_payment_id,
+        razorpaySignature: payment.razorpay_signature,
+      },
+    });
 
-    if (!checkoutState) {
+    clearCart();
+
+    if (user) {
+      await refreshUser();
+      navigate("/review", {
+        replace: true,
+        state: {
+          fromCheckout: true,
+          orderId,
+          message:
+            verification.message ||
+            "Payment received. Your order has been confirmed successfully.",
+        },
+      });
       return;
     }
 
-    let isActive = true;
-
-    const handleCheckoutState = async () => {
-      let confirmationMessage = "";
-      let confirmationFailed = false;
-
-      try {
-        if (orderId && sessionId && checkoutState === "success") {
-          const confirmation = await apiRequest("/payments/stripe/confirm-session", {
-            method: "POST",
-            token,
-            body: { orderId, sessionId },
-          });
-          confirmationMessage = confirmation.message || "";
-          await refreshUser();
-        }
-      } catch (error) {
-        confirmationFailed = true;
-        if (checkoutState === "success") {
-          setStatus({
-            type: "error",
-            message:
-              error.message ||
-              "Payment returned successfully, but order confirmation is still pending.",
-          });
-        }
-      }
-
-      if (!isActive) {
-        return;
-      }
-
-      const nextParams = new URLSearchParams(searchParams);
-      nextParams.delete("checkout");
-      nextParams.delete("orderId");
-      nextParams.delete("session_id");
-      setSearchParams(nextParams, { replace: true });
-
-      if (checkoutState === "success" && confirmationFailed) {
-        return;
-      }
-
-      if (checkoutState === "success") {
-        clearCart();
-
-        if (user) {
-          navigate("/review", {
-            replace: true,
-            state: {
-              fromCheckout: true,
-              orderId,
-              message:
-                confirmationMessage ||
-                "Payment received. Your order has been confirmed successfully.",
-            },
-          });
-          return;
-        }
-
-        setStatus({
-          type: "success",
-          message:
-            confirmationMessage ||
-            "Payment received. Thank you. Your order has been placed successfully.",
-        });
-      } else if (checkoutState === "cancelled") {
-        setStatus({
-          type: "error",
-          message:
-            "Payment was cancelled. Your cart is still saved, and you can try again anytime.",
-        });
-      }
-    };
-
-    handleCheckoutState();
-
-    return () => {
-      isActive = false;
-    };
-  }, [clearCart, navigate, refreshUser, searchParams, setSearchParams, token, user]);
+    setStatus({
+      type: "success",
+      message:
+        verification.message ||
+        "Payment received. Thank you. Your order has been placed successfully.",
+    });
+  };
 
   const handleCheckout = async () => {
     if (items.length === 0) {
@@ -144,61 +102,81 @@ const CartPage = () => {
 
     setCheckingOut(true);
     setStatus({ type: "", message: "" });
-    setUpiCheckoutInfo(null);
 
     try {
-      const response = await apiRequest("/payments/create-checkout-session", {
+      const order = await apiRequest("/payments/create-order", {
         method: "POST",
+        token,
         body: {
           email: user?.email || "",
-          successUrl: `${window.location.origin}/cart?checkout=success`,
-          cancelUrl: `${window.location.origin}/cart?checkout=cancelled`,
-          items: items.map((item) => ({
-            id: item.id,
-            productId: item.productId,
-            name: item.name,
-            description: item.description,
-            image: item.image,
-            unitPrice: item.unitPrice,
-            quantity: item.quantity,
-            purchaseType: item.purchaseType,
-            planId: item.planId,
-            planLabel: item.planLabel,
-            deliveryLabel: item.deliveryLabel,
-            deliveryCadence: item.deliveryCadence,
-            billingIntervalUnit: item.billingIntervalUnit,
-            billingIntervalCount: item.billingIntervalCount,
-            sizeId: item.sizeId,
-            sizeLabel: item.sizeLabel,
-            sizeWeight: item.sizeWeight,
-          })),
+          customerName: user?.name || "",
+          items: serializeCartItems(items),
         },
       });
 
-      if (!response?.url) {
-        if (response?.mode === "upi" && response?.upiUrl) {
-          setCheckingOut(false);
-          setUpiCheckoutInfo({
-            upiUrl: response.upiUrl,
-            vpa: response.vpa,
-            amount: response.amount,
-            currency: response.currency,
-            transactionRef: response.transactionRef,
-          });
+      const Razorpay = await loadRazorpayCheckout();
 
-          setStatus({
-            type: "success",
-            message:
-              "UPI payment link is ready. Open it in your UPI app and complete payment.",
-          });
-
-          return;
-        }
-
-        throw new Error("Checkout session could not be created. Please try again.");
+      if (!Razorpay) {
+        throw new Error(`${PAYMENT_PROVIDER} checkout could not be loaded.`);
       }
 
-      window.location.assign(response.url);
+      const checkout = new Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.gatewayOrderId,
+        name: BRAND_NAME,
+        description: `Order ${order.orderNumber}`,
+        image: "/Home/images/PetPlus-Logo.png",
+        prefill: {
+          name: user?.name || order.customerName || "",
+          email: user?.email || order.customerEmail || "",
+          contact: user?.phone || "",
+        },
+        notes: {
+          localOrderId: order.orderId,
+          orderNumber: order.orderNumber,
+        },
+        theme: {
+          color: "#0F4A12",
+        },
+        modal: {
+          ondismiss: () => {
+            setCheckingOut(false);
+            setStatus({
+              type: "error",
+              message:
+                "Payment was cancelled. Your cart is still saved, and you can try again anytime.",
+            });
+          },
+        },
+        handler: async (payment) => {
+          try {
+            await handleVerifiedPayment({ orderId: order.orderId, payment });
+          } catch (error) {
+            setStatus({
+              type: "error",
+              message:
+                error.message ||
+                "Payment was captured, but confirmation is still pending.",
+            });
+          } finally {
+            setCheckingOut(false);
+          }
+        },
+      });
+
+      checkout.on("payment.failed", (event) => {
+        setCheckingOut(false);
+        setStatus({
+          type: "error",
+          message:
+            event?.error?.description ||
+            "Payment could not be completed. Please try again.",
+        });
+      });
+
+      checkout.open();
     } catch (error) {
       setStatus({
         type: "error",
@@ -277,7 +255,7 @@ const CartPage = () => {
                     </p>
                   ) : null}
                   <p className="mt-3 text-sm font-semibold text-[#0F4A12]">
-                    {formatCurrency(item.unitPrice)} each
+                    {formatStoreCurrency(item.unitPrice)} each
                   </p>
                 </div>
 
@@ -309,7 +287,7 @@ const CartPage = () => {
                   </div>
 
                   <p className="text-lg font-semibold text-[#1A1A1A]">
-                    {formatCurrency(item.unitPrice * item.quantity)}
+                    {formatStoreCurrency(item.unitPrice * item.quantity)}
                   </p>
 
                   <button
@@ -336,20 +314,20 @@ const CartPage = () => {
             <div className="flex items-center justify-between">
               <span>Subtotal</span>
               <span className="font-semibold text-[#1A1A1A]">
-                {formatCurrency(subtotal)}
+                {formatStoreCurrency(subtotal)}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span>Shipping</span>
               <span className="font-semibold text-[#1A1A1A]">
-                {shipping === 0 ? "Free" : formatCurrency(shipping)}
+                {shipping === 0 ? "Free" : formatStoreCurrency(shipping)}
               </span>
             </div>
             <div className="h-px bg-[#E6DFCF]" />
             <div className="flex items-center justify-between text-base">
               <span className="font-semibold text-[#1A1A1A]">Total</span>
               <span className="font-semibold text-[#1A1A1A]">
-                {formatCurrency(total)}
+                {formatStoreCurrency(total)}
               </span>
             </div>
           </div>
@@ -360,7 +338,9 @@ const CartPage = () => {
             disabled={checkingOut}
             className="mt-6 w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {checkingOut ? "Redirecting to secure payment..." : "Proceed to secure payment"}
+            {checkingOut
+              ? `Opening ${PAYMENT_PROVIDER}...`
+              : `Proceed to ${PAYMENT_PROVIDER} checkout`}
           </button>
 
           {status.message ? (
@@ -375,25 +355,16 @@ const CartPage = () => {
             </div>
           ) : null}
 
-          {upiCheckoutInfo ? (
-            <div className="mt-4 rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-4 text-sm text-[#1A1A1A]">
-              <p className="font-semibold text-[#0F4A12]">UPI payment ready</p>
-              <p className="mt-2">UPI ID: {upiCheckoutInfo.vpa}</p>
-              <p>Amount: {formatCurrency(upiCheckoutInfo.amount)}</p>
-              <p>Reference: {upiCheckoutInfo.transactionRef}</p>
-              <a
-                href={upiCheckoutInfo.upiUrl}
-                className="mt-3 inline-flex rounded-full bg-[#0F4A12] px-4 py-2 text-xs font-semibold text-white"
-              >
-                Open UPI app
-              </a>
-            </div>
-          ) : null}
-
-          <p className="mt-4 text-xs leading-5 text-[#7A7468]">
-            If Stripe is configured, card checkout opens automatically. If not, the app
-            falls back to UPI checkout using the server UPI ID.
-          </p>
+          <div className="mt-4 rounded-2xl bg-[#FBF8EF] px-4 py-4 text-xs leading-5 text-[#7A7468]">
+            <p>
+              Secure payment powered by {PAYMENT_PROVIDER}. {getShippingRuleText()}
+            </p>
+            <p className="mt-2">
+              Orders above {formatStoreCurrency(SHIPPING_THRESHOLD)} ship free.
+              Smaller carts include a flat {formatStoreCurrency(FLAT_SHIPPING_RATE)} shipping
+              fee.
+            </p>
+          </div>
         </aside>
       </div>
     </main>

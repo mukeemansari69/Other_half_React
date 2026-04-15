@@ -1,4 +1,4 @@
-# Other Half Full-Stack App
+# PetPlus Full-Stack App
 
 This project now includes a React + Vite frontend and a Node.js + Express backend with:
 
@@ -88,12 +88,13 @@ Contact Us email delivery:
 - Optional notification inbox vars: `SUPPORT_NOTIFICATION_EMAIL` or `ADMIN_NOTIFICATION_EMAIL`.
 - If SMTP is missing, the UI now shows that the request was saved but admin email is still pending configuration.
 
-Recurring subscriptions:
+Payments and store rules:
 
-- One-time orders can use Stripe card checkout or the UPI fallback.
-- Auto-renewing subscriptions require `STRIPE_SECRET_KEY` because recurring billing is created through Stripe Checkout in subscription mode.
-- To sync first-time confirmations, renewals, cancellations, and next billing dates back into the app and admin dashboard, also set `STRIPE_WEBHOOK_SECRET` and point Stripe webhooks to `/api/payments/stripe/webhook`.
-- Recommended Stripe events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `invoice.paid`, `customer.subscription.updated`, and `customer.subscription.deleted`.
+- Checkout runs through Razorpay.
+- Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` on the backend before testing checkout.
+- Store currency is `INR`.
+- Shipping is `₹49` when the cart subtotal is below `₹500`, and free for carts above `₹500`.
+- Product messaging and storefront defaults are localized for India.
 
 ## Deployment
 
@@ -132,14 +133,14 @@ Production notes:
 
 - The server will fail fast in production if `JWT_SECRET` is missing or still using the dev default.
 - The server will fail fast in production if no admin user can be bootstrapped.
-- If `STRIPE_SECRET_KEY` is missing, card checkout and recurring subscriptions stay disabled.
+- If Razorpay credentials are missing, checkout stays disabled.
 - If Cloudinary is not configured and `ALLOW_LOCAL_UPLOAD_STORAGE` is not enabled, support attachments stay disabled in production.
 
 ## Demo credentials
 
 Admin:
 
-- Email: `admin@otherhalfpets.com`
+- Email: `admin@PetPlus.co.in`
 - Password: `Admin@123`
 
 Member:
@@ -176,9 +177,8 @@ Backend:
 - `GET /api/account/summary`
 - `PATCH /api/account/profile`
 - `POST /api/support/requests`
-- `POST /api/payments/create-checkout-session`
-- `POST /api/payments/stripe/confirm-session`
-- `POST /api/payments/stripe/webhook`
+- `POST /api/payments/create-order`
+- `POST /api/payments/razorpay/verify-payment`
 - `GET /api/reviews`
 - `GET /api/reviews/eligible`
 - `POST /api/reviews`

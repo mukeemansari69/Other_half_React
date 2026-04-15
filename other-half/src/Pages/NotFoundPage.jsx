@@ -70,7 +70,7 @@ const recoveryCards = [
     text: "Jump back into the complete wellness lineup, from daily multivitamins to dental support and bundled routines.",
     to: "/collection",
     image: "/Default/images/col3.png",
-    imageAlt: "Other Half product collection",
+    imageAlt: "PetPlus product collection",
     kicker: "Most visited",
     icon: ShoppingBag,
   },

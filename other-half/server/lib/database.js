@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import mongoose from "mongoose";
 
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
+import { convertLegacyUsdPrice, STORE_CURRENCY } from "../../shared/storefrontConfig.js";
 import { syncAllUserSubscriptions } from "./subscriptions.js";
 
 const ROOT_DIR = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
@@ -18,7 +19,7 @@ const configuredDataDir = process.env.APP_DATA_DIR?.trim();
 const configuredUploadsDir = process.env.APP_UPLOADS_DIR?.trim();
 const configuredMongoUri = String(process.env.MONGODB_URI || "").trim();
 const configuredMongoDbName =
-  String(process.env.MONGODB_DB_NAME || "").trim() || "other-half";
+  String(process.env.MONGODB_DB_NAME || "").trim() || "PetPlus";
 const configuredMongoCollection =
   String(process.env.MONGODB_COLLECTION || "").trim() || "appstates";
 const configuredDatabaseMode = String(process.env.DATABASE_MODE || "")
@@ -38,7 +39,7 @@ const bootstrapAdminEmail = String(process.env.BOOTSTRAP_ADMIN_EMAIL || "")
   .toLowerCase();
 const bootstrapAdminPassword = String(process.env.BOOTSTRAP_ADMIN_PASSWORD || "");
 const bootstrapAdminName =
-  String(process.env.BOOTSTRAP_ADMIN_NAME || "").trim() || "Other Half Admin";
+  String(process.env.BOOTSTRAP_ADMIN_NAME || "").trim() || "PetPlus Admin";
 const configuredMongoConnectTimeoutMs = Number.parseInt(
   String(process.env.MONGODB_CONNECT_TIMEOUT_MS || "").trim(),
   10
@@ -152,7 +153,7 @@ const createDefaultSubscription = (dogName = "Maple") => ({
   },
 });
 
-const DEFAULT_ADMIN_EMAIL = "admin@otherhalfpets.com";
+const DEFAULT_ADMIN_EMAIL = "admin@PetPlus.co.in";
 const DEFAULT_MEMBER_EMAIL = "member@example.com";
 const LEGACY_DEMO_EMAILS = new Set([
   DEFAULT_MEMBER_EMAIL,
@@ -165,7 +166,7 @@ const LEGACY_DEMO_ORDER_NUMBERS = new Set(["OH-3201", "OH-3202", "OH-3203"]);
 
 const createSeedAdminUser = async () => ({
   id: randomUUID(),
-  name: "Admin Other Half",
+  name: "Admin PetPlus",
   email: DEFAULT_ADMIN_EMAIL,
   phone: "+1 555 0100",
   role: "admin",
@@ -226,7 +227,7 @@ const createSeedSupportRequest = (user) => {
     id: randomUUID(),
     userId: user.id,
     team: "Subscription Team",
-    teamEmail: "subscriptions@otherhalfpets.com",
+    teamEmail: "subscriptions@PetPlus.co.in",
     name: user.name,
     email: user.email,
     phone: user.phone,
@@ -284,113 +285,119 @@ const createSeedSubscriber = () => ({
   createdAt: createIsoDate(-1),
 });
 
-const createSeedOrders = (user) => [
-  {
-    id: randomUUID(),
-    orderNumber: "OH-3201",
-    userId: user?.id || null,
-    customerName: user?.name || "Guest customer",
-    customerEmail: user?.email || "guest@example.com",
-    currency: "USD",
-    totalAmount: 89,
-    paymentMode: "card",
-    paymentStatus: "paid",
-    orderStatus: "delivered",
-    subscriptionType: "subscription",
-    deliveryStatus: "delivered",
-    deliveryDueAt: createIsoDate(-8),
-    items: [
-      {
-        productId: "daily-duo",
-        name: "Daily Duo Bundle",
-        quantity: 1,
-        unitPrice: 89,
-        lineTotal: 89,
-        purchaseType: "subscription",
-        planId: "1m",
-        planLabel: "1 Month Supply",
-        deliveryLabel: "Delivered every month",
-        billingIntervalUnit: "month",
-        billingIntervalCount: 1,
+const createSeedOrders = (user) => {
+  const dailyDuoTotal = convertLegacyUsdPrice(89);
+  const doggieDentalTotal = convertLegacyUsdPrice(49);
+  const everydayTotal = convertLegacyUsdPrice(199);
+
+  return [
+    {
+      id: randomUUID(),
+      orderNumber: "PP-3201",
+      userId: user?.id || null,
+      customerName: user?.name || "Guest customer",
+      customerEmail: user?.email || "guest@example.com",
+      currency: STORE_CURRENCY,
+      totalAmount: dailyDuoTotal,
+      paymentMode: "razorpay",
+      paymentStatus: "paid",
+      orderStatus: "delivered",
+      subscriptionType: "subscription",
+      deliveryStatus: "delivered",
+      deliveryDueAt: createIsoDate(-8),
+      items: [
+        {
+          productId: "daily-duo",
+          name: "Daily Duo Bundle",
+          quantity: 1,
+          unitPrice: dailyDuoTotal,
+          lineTotal: dailyDuoTotal,
+          purchaseType: "subscription",
+          planId: "1m",
+          planLabel: "1 Month Supply",
+          deliveryLabel: "Delivered every month",
+          billingIntervalUnit: "month",
+          billingIntervalCount: 1,
+        },
+      ],
+      subscription: {
+        status: "active",
+        planName: "Daily Duo Bundle - 1 Month Supply",
+        deliveryCadence: "Every month",
+        nextDelivery: createIsoDate(22),
+        intervalUnit: "month",
+        intervalCount: 1,
+        cancelAtPeriodEnd: false,
       },
-    ],
-    subscription: {
-      status: "active",
-      planName: "Daily Duo Bundle - 1 Month Supply",
-      deliveryCadence: "Every month",
-      nextDelivery: createIsoDate(22),
-      intervalUnit: "month",
-      intervalCount: 1,
-      cancelAtPeriodEnd: false,
+      createdAt: createIsoDate(-15),
+      updatedAt: createIsoDate(-8),
     },
-    createdAt: createIsoDate(-15),
-    updatedAt: createIsoDate(-8),
-  },
-  {
-    id: randomUUID(),
-    orderNumber: "OH-3202",
-    userId: user?.id || null,
-    customerName: user?.name || "Guest customer",
-    customerEmail: user?.email || "guest@example.com",
-    currency: "USD",
-    totalAmount: 49,
-    paymentMode: "card",
-    paymentStatus: "paid",
-    orderStatus: "processing",
-    subscriptionType: "one-time",
-    deliveryStatus: "in-transit",
-    deliveryDueAt: createIsoDate(2),
-    items: [
-      {
-        productId: "doggie-dental",
-        name: "Doggie Dental Powder",
-        quantity: 1,
-        unitPrice: 49,
-        lineTotal: 49,
-        purchaseType: "one-time",
-        planId: "1m",
-        planLabel: "1 Month Supply",
-        deliveryLabel: "Delivered every month",
-        billingIntervalUnit: "month",
-        billingIntervalCount: 1,
-      },
-    ],
-    createdAt: createIsoDate(-2),
-    updatedAt: createIsoDate(-1),
-  },
-  {
-    id: randomUUID(),
-    orderNumber: "OH-3203",
-    userId: null,
-    customerName: "Guest customer",
-    customerEmail: "guest+checkout@example.com",
-    currency: "INR",
-    totalAmount: 199,
-    paymentMode: "upi",
-    paymentStatus: "pending",
-    orderStatus: "placed",
-    subscriptionType: "one-time",
-    deliveryStatus: "queued",
-    deliveryDueAt: createIsoDate(4),
-    items: [
-      {
-        productId: "everyday-one",
-        name: "Everyday Wellness Plan",
-        quantity: 1,
-        unitPrice: 199,
-        lineTotal: 199,
-        purchaseType: "one-time",
-        planId: "6m",
-        planLabel: "6 Month Supply",
-        deliveryLabel: "Delivered every 6 months",
-        billingIntervalUnit: "month",
-        billingIntervalCount: 6,
-      },
-    ],
-    createdAt: createIsoDate(-1),
-    updatedAt: createIsoDate(-1),
-  },
-];
+    {
+      id: randomUUID(),
+      orderNumber: "PP-3202",
+      userId: user?.id || null,
+      customerName: user?.name || "Guest customer",
+      customerEmail: user?.email || "guest@example.com",
+      currency: STORE_CURRENCY,
+      totalAmount: doggieDentalTotal,
+      paymentMode: "razorpay",
+      paymentStatus: "paid",
+      orderStatus: "processing",
+      subscriptionType: "one-time",
+      deliveryStatus: "in-transit",
+      deliveryDueAt: createIsoDate(2),
+      items: [
+        {
+          productId: "doggie-dental",
+          name: "Doggie Dental Powder",
+          quantity: 1,
+          unitPrice: doggieDentalTotal,
+          lineTotal: doggieDentalTotal,
+          purchaseType: "one-time",
+          planId: "1m",
+          planLabel: "1 Month Supply",
+          deliveryLabel: "Delivered every month",
+          billingIntervalUnit: "month",
+          billingIntervalCount: 1,
+        },
+      ],
+      createdAt: createIsoDate(-2),
+      updatedAt: createIsoDate(-1),
+    },
+    {
+      id: randomUUID(),
+      orderNumber: "PP-3203",
+      userId: null,
+      customerName: "Guest customer",
+      customerEmail: "guest+checkout@example.com",
+      currency: STORE_CURRENCY,
+      totalAmount: everydayTotal,
+      paymentMode: "razorpay",
+      paymentStatus: "pending",
+      orderStatus: "placed",
+      subscriptionType: "one-time",
+      deliveryStatus: "queued",
+      deliveryDueAt: createIsoDate(4),
+      items: [
+        {
+          productId: "everyday-one",
+          name: "Everyday Wellness Plan",
+          quantity: 1,
+          unitPrice: everydayTotal,
+          lineTotal: everydayTotal,
+          purchaseType: "one-time",
+          planId: "6m",
+          planLabel: "6 Month Supply",
+          deliveryLabel: "Delivered every 6 months",
+          billingIntervalUnit: "month",
+          billingIntervalCount: 6,
+        },
+      ],
+      createdAt: createIsoDate(-1),
+      updatedAt: createIsoDate(-1),
+    },
+  ];
+};
 
 const createSeedReviews = (user) => {
   const productEntries = [
@@ -439,7 +446,7 @@ const createSeedReviews = (user) => {
         title: entry.title,
         description: entry.description,
         rating: entry.rating,
-        customerName: user?.name || "Other Half customer",
+        customerName: user?.name || "PetPlus customer",
         customerEmail: user?.email || "",
         customerProfile: entry.profile,
         customerImage: product.testimonialImage,
@@ -536,7 +543,7 @@ const ensureMongoConfiguration = () => {
     }
 
     throw new Error(
-      "MONGODB_URI is not set. Add your MongoDB Atlas connection string to other-half/.env."
+      "MONGODB_URI is not set. Add your MongoDB Atlas connection string to .env."
     );
   }
 
@@ -547,7 +554,7 @@ const ensureMongoConfiguration = () => {
     }
 
     throw new Error(
-      "MONGODB_URI still contains <db_password>. Replace it with your actual MongoDB Atlas password in other-half/.env."
+      "MONGODB_URI still contains <db_password>. Replace it with your actual MongoDB Atlas password in .env."
     );
   }
 

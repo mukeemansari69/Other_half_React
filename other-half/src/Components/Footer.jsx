@@ -135,7 +135,7 @@ const Footer = () => {
           <div className="w-[130px] h-[155px] flex-shrink-0">
             <img
               src="/Home/images/PetPlus-Logo.png"
-              alt="Other Half Logo"
+              alt="PetPlus logo"
               className="w-full h-full object-contain"
             />
           </div>
@@ -171,7 +171,7 @@ const Footer = () => {
 
         <div className="w-full max-w-[1440px] pt-[16px] border-t border-gray-100 flex justify-between items-center">
           <p className="text-[16px] font-medium leading-[30px] text-[#000000]">
-            © 2026 Other Half. All rights reserved.
+            © 2026 PetPlus. All rights reserved.
           </p>
           <div className="flex gap-[34px] items-center">
             <FaFacebookF className="w-[24px] h-[24px] cursor-pointer social-icon-blue" />
@@ -184,7 +184,11 @@ const Footer = () => {
 
       <div className="flex md:hidden flex-col pt-[24px] px-[16px] pb-[24px] gap-[29px] items-start">
         <div className="flex flex-col gap-[17px] w-full mobile-logo">
-          <img src="/Home/images/PetPlus-Logo.png" alt="Logo" className="w-[100px] h-[120px] object-contain" />
+          <img
+            src="/Home/images/PetPlus-Logo.png"
+            alt="PetPlus logo"
+            className="w-[100px] h-[120px] object-contain"
+          />
           <div className="flex gap-[34px] items-center">
             <FaFacebookF className="w-[24px] h-[24px] social-icon-blue" />
             <FaTwitter className="w-[24px] h-[24px]" />
@@ -219,7 +223,7 @@ const Footer = () => {
 
         <div className="pt-[16px] border-t border-gray-100 w-full">
           <p className="text-[16px] font-medium leading-[30px] text-[#000000]">
-            © 2026 Other Half. All rights reserved.
+            © 2026 PetPlus. All rights reserved.
           </p>
         </div>
       </div>
@@ -228,5 +232,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
-

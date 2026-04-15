@@ -1,3 +1,128 @@
+import { getCadenceDetails } from "../shared/subscriptionUtils.js";
+import {
+  MADE_IN_LABEL,
+  PAYMENT_PROVIDER,
+  convertLegacyUsdPrice,
+  formatStoreCurrency,
+  getDeliveryWindowText,
+  getFreeShippingText,
+} from "../shared/storefrontConfig.js";
+
+const POUNDS_TO_KILOGRAMS = 0.45359237;
+
+const toKilograms = (value) => Math.round(Number(value) * POUNDS_TO_KILOGRAMS);
+
+const localizeWeightLabel = (weightLabel = "") => {
+  const plusMatch = String(weightLabel).match(/(\d+)\+\s*lbs?/i);
+
+  if (plusMatch) {
+    return `${toKilograms(plusMatch[1])}+ kg`;
+  }
+
+  const rangeMatch = String(weightLabel).match(/(\d+)\s*-\s*(\d+)\s*lbs?/i);
+
+  if (rangeMatch) {
+    return `${toKilograms(rangeMatch[1])}-${toKilograms(rangeMatch[2])} kg`;
+  }
+
+  return weightLabel;
+};
+
+const getPlanDays = (plan) => {
+  const cadence = getCadenceDetails({
+    planId: plan?.id,
+    deliveryLabel: plan?.deliveryLabel,
+  });
+
+  if (cadence.intervalUnit === "week") {
+    return cadence.intervalCount * 7;
+  }
+
+  if (cadence.intervalUnit === "year") {
+    return cadence.intervalCount * 365;
+  }
+
+  return cadence.intervalCount * 30;
+};
+
+const formatPerDayLabel = (price, plan) => {
+  const planDays = getPlanDays(plan);
+
+  if (!planDays) {
+    return `${formatStoreCurrency(price)}/cycle`;
+  }
+
+  const perDayPrice = price / planDays;
+
+  return `(${formatStoreCurrency(perDayPrice, {
+    minimumFractionDigits: perDayPrice < 100 ? 2 : 0,
+    maximumFractionDigits: perDayPrice < 100 ? 2 : 0,
+  })}/day)`;
+};
+
+const localizePlan = (plan) => {
+  const localizedPrice = convertLegacyUsdPrice(plan.price);
+  const cadence = getCadenceDetails({
+    planId: plan.id,
+    deliveryLabel: plan.deliveryLabel,
+  });
+
+  return {
+    ...plan,
+    price: localizedPrice,
+    deliveryLabel: `Delivered every ${cadence.intervalCount} ${cadence.intervalUnit}${
+      cadence.intervalCount > 1 ? "s" : ""
+    }`,
+    perDayLabel: formatPerDayLabel(localizedPrice, plan),
+  };
+};
+
+const localizeBundleSuggestion = (bundleSuggestion) => ({
+  ...bundleSuggestion,
+  price: convertLegacyUsdPrice(bundleSuggestion.price),
+  compareAtPrice: convertLegacyUsdPrice(bundleSuggestion.compareAtPrice),
+});
+
+const applyIndiaStorefront = (product) => {
+  product.sizes = product.sizes.map((size) => ({
+    ...size,
+    weight: localizeWeightLabel(size.weight),
+    plans: size.plans.map(localizePlan),
+  }));
+  product.shippingNote = getDeliveryWindowText();
+  product.subscription = {
+    ...product.subscription,
+    description: `${product.subscription.description} Secure checkout powered by ${PAYMENT_PROVIDER}.`,
+  };
+  product.cta = {
+    ...product.cta,
+    shopPayLabel:
+      product.id === "daily-duo"
+        ? `Pay Bundle with ${PAYMENT_PROVIDER}`
+        : `Pay with ${PAYMENT_PROVIDER}`,
+  };
+  product.guaranteeBadges = product.guaranteeBadges.map((badge) => {
+    if (badge.id === "shipping") {
+      return {
+        ...badge,
+        title: getFreeShippingText(),
+      };
+    }
+
+    if (badge.id === "origin") {
+      return {
+        ...badge,
+        title: MADE_IN_LABEL,
+      };
+    }
+
+    return badge;
+  });
+  product.bundleSuggestions = product.bundleSuggestions.map(localizeBundleSuggestion);
+
+  return product;
+};
+
 export const everydayProductData = {
   id: "everyday-one",
   breadcrumb: [
@@ -233,7 +358,7 @@ export const everydayProductData = {
 
   cta: {
     addToCartLabel: "Add to Cart",
-    shopPayLabel: "Buy with Shop Pay",
+    shopPayLabel: `Pay with ${PAYMENT_PROVIDER}`,
     cartHref: "/cart",
   },
 
@@ -241,7 +366,7 @@ export const everydayProductData = {
     {
       id: "shipping",
       iconKey: "shipping",
-      title: "Free Shipping Over $50",
+      title: getFreeShippingText(),
     },
     {
       id: "guarantee",
@@ -550,7 +675,7 @@ export const dogDentalProductData = {
 
   cta: {
     addToCartLabel: "Add to Cart",
-    shopPayLabel: "Buy with Shop Pay",
+    shopPayLabel: `Pay with ${PAYMENT_PROVIDER}`,
     cartHref: "/cart",
   },
 
@@ -558,7 +683,7 @@ export const dogDentalProductData = {
     {
       id: "shipping",
       iconKey: "shipping",
-      title: "Free Shipping Over $50",
+      title: getFreeShippingText(),
     },
     {
       id: "guarantee",
@@ -941,4 +1066,8 @@ export const dailyDuoProductData = {
 
   initialVisibleTags: 5,
 };
+
+applyIndiaStorefront(everydayProductData);
+applyIndiaStorefront(dogDentalProductData);
+applyIndiaStorefront(dailyDuoProductData);
 

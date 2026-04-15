@@ -35,12 +35,25 @@ import {
   verifyStripeWebhookSignature,
 } from "./lib/stripe.js";
 import {
+  createRazorpayOrder,
+  fetchRazorpayPayment,
+  getRazorpayConfig,
+  verifyRazorpayPaymentSignature,
+} from "./lib/razorpay.js";
+import {
   getUploadStorageMode,
   mapSupportRequestAttachments,
   supportUpload,
 } from "./lib/uploads.js";
 import { resolveReviewProduct } from "../shared/reviewProductCatalog.js";
 import { addIntervalToDate, getCadenceDetails } from "../shared/subscriptionUtils.js";
+import {
+  BRAND_FULL_NAME,
+  PAYMENT_PROVIDER,
+  STORE_CURRENCY,
+  calculateShipping,
+  toMinorUnits,
+} from "../shared/storefrontConfig.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -153,8 +166,7 @@ const apiLimiter = rateLimit({
   max: isProduction ? 300 : 1500,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) =>
-    req.path === "/api/health" || req.path === "/api/payments/stripe/webhook",
+  skip: (req) => req.path === "/api/health",
   message: {
     message: "Too many requests were sent from this connection. Please try again shortly.",
   },
@@ -326,7 +338,7 @@ const createUpiPaymentLink = ({ vpa, payeeName, amount, note, transactionRef }) 
   return `upi://pay?${upiQuery.toString()}`;
 };
 
-const createOrderNumber = () => `OH-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`;
+const createOrderNumber = () => `PP-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`;
 
 const toSafeNumber = (value) => {
   const parsed = Number(value);
@@ -807,6 +819,11 @@ app.post(
   "/api/payments/stripe/webhook",
   express.raw({ type: "application/json" }),
   asyncHandler(async (req, res) => {
+    return res.status(410).json({
+      message:
+        "Stripe checkout has been retired for PetPlus. Use the Razorpay payment flow instead.",
+    });
+
     const { secretKey, webhookSecret } = getStripeConfig();
 
     if (!secretKey || !webhookSecret) {
@@ -882,15 +899,301 @@ app.use("/uploads", express.static(UPLOADS_DIR));
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
-    message: "Other Half API is healthy.",
+    message: "PetPlus API is healthy.",
     timestamp: new Date().toISOString(),
   });
 });
 
 app.post(
+  "/api/payments/create-order",
+  optionalAuth,
+  asyncHandler(async (req, res) => {
+    const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
+    const items = rawItems
+      .slice(0, 20)
+      .map((item) => ({
+        productId: String(item?.productId || "").trim(),
+        name: String(item?.name || "").trim(),
+        description: String(item?.description || "").trim().slice(0, 240),
+        image: String(item?.image || "").trim(),
+        unitPrice: Number(item?.unitPrice),
+        quantity: Math.max(1, Math.round(Number(item?.quantity || 1))),
+        purchaseType: item?.purchaseType === "subscription" ? "subscription" : "one-time",
+        planId: String(item?.planId || "").trim(),
+        planLabel: String(item?.planLabel || "").trim(),
+        deliveryLabel: String(item?.deliveryLabel || "").trim(),
+        deliveryCadence: String(item?.deliveryCadence || "").trim(),
+        billingIntervalUnit: String(item?.billingIntervalUnit || "").trim() || "month",
+        billingIntervalCount: Math.max(1, Math.round(Number(item?.billingIntervalCount || 1))),
+        sizeId: String(item?.sizeId || "").trim(),
+        sizeLabel: String(item?.sizeLabel || "").trim(),
+        sizeWeight: String(item?.sizeWeight || "").trim(),
+      }))
+      .filter(
+        (item) =>
+          item.name &&
+          Number.isFinite(item.unitPrice) &&
+          item.unitPrice > 0 &&
+          Number.isFinite(item.quantity) &&
+          item.quantity > 0
+      );
+
+    if (items.length === 0) {
+      return res.status(400).json({ message: "Your cart is empty." });
+    }
+
+    const { keyId, keySecret, isConfigured } = getRazorpayConfig();
+
+    if (!isConfigured) {
+      return res.status(503).json({
+        message:
+          "Razorpay is not configured yet. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET on the server.",
+      });
+    }
+
+    const localOrderId = randomUUID();
+    const localOrderNumber = createOrderNumber();
+    const email = normalizeEmail(req.body.email || "");
+    const itemSubtotal = items.reduce(
+      (runningTotal, item) => runningTotal + item.unitPrice * item.quantity,
+      0
+    );
+    const shippingAmount = calculateShipping(itemSubtotal);
+    const totalAmount = Number((itemSubtotal + shippingAmount).toFixed(2));
+    const customerName =
+      req.user?.name ||
+      (typeof req.body.customerName === "string" ? req.body.customerName.trim() : "") ||
+      "Guest customer";
+    const customerEmail = email || req.user?.email || "";
+    const subscriptionType = items.some((item) => item.purchaseType === "subscription")
+      ? "subscription"
+      : "one-time";
+    const now = new Date().toISOString();
+    const normalizedOrderItems = items.map((item) => ({
+      productId:
+        resolveCatalogProductFromOrderItem(item)?.productId || item.productId || "",
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: Number(item.unitPrice.toFixed(2)),
+      lineTotal: Number((item.unitPrice * item.quantity).toFixed(2)),
+      purchaseType: item.purchaseType,
+      planId: item.planId,
+      planLabel: item.planLabel,
+      deliveryLabel: item.deliveryLabel,
+      deliveryCadence:
+        item.deliveryCadence ||
+        getCadenceDetails({
+          planId: item.planId,
+          deliveryLabel: item.deliveryLabel,
+          intervalCount: item.billingIntervalCount,
+          intervalUnit: item.billingIntervalUnit,
+        }).cadenceLabel,
+      billingIntervalUnit: item.billingIntervalUnit,
+      billingIntervalCount: item.billingIntervalCount,
+      sizeId: item.sizeId,
+      sizeLabel: item.sizeLabel,
+      sizeWeight: item.sizeWeight,
+    }));
+    const pendingSubscriptionSnapshot =
+      subscriptionType === "subscription"
+        ? buildSubscriptionSnapshotFromItems(
+            normalizedOrderItems,
+            {
+              status: "pending",
+              sourceOrderId: localOrderId,
+              sourceOrderNumber: localOrderNumber,
+            },
+            now
+          )
+        : null;
+    const deliveryDueAt = pendingSubscriptionSnapshot?.nextDelivery || null;
+
+    const gatewayOrder = await createRazorpayOrder({
+      keyId,
+      keySecret,
+      amount: toMinorUnits(totalAmount),
+      currency: STORE_CURRENCY,
+      receipt: localOrderNumber,
+      notes: {
+        localOrderId,
+        orderNumber: localOrderNumber,
+        customerEmail,
+        subscriptionType,
+      },
+    });
+
+    const database = await readDatabase();
+    database.orders.unshift({
+      id: localOrderId,
+      orderNumber: localOrderNumber,
+      userId: req.user?.id || null,
+      customerName,
+      customerEmail,
+      currency: STORE_CURRENCY,
+      totalAmount,
+      paymentMode: "razorpay",
+      paymentStatus: "pending",
+      paymentReference: gatewayOrder.id,
+      orderStatus: "placed",
+      subscriptionType,
+      deliveryStatus:
+        subscriptionType === "subscription" ? "scheduled" : "queued",
+      deliveryDueAt,
+      items: normalizedOrderItems,
+      subscription: pendingSubscriptionSnapshot,
+      pricing: {
+        subtotalAmount: Number(itemSubtotal.toFixed(2)),
+        shippingAmount: Number(shippingAmount.toFixed(2)),
+      },
+      createdAt: now,
+      updatedAt: now,
+    });
+    await writeDatabase(database);
+
+    return res.status(201).json({
+      orderId: localOrderId,
+      orderNumber: localOrderNumber,
+      gatewayOrderId: gatewayOrder.id,
+      keyId,
+      amount: gatewayOrder.amount,
+      currency: gatewayOrder.currency || STORE_CURRENCY,
+      customerName,
+      customerEmail,
+      subtotalAmount: Number(itemSubtotal.toFixed(2)),
+      shippingAmount: Number(shippingAmount.toFixed(2)),
+      totalAmount,
+      paymentProvider: PAYMENT_PROVIDER,
+      subscriptionType,
+    });
+  })
+);
+
+app.post(
+  "/api/payments/razorpay/verify-payment",
+  optionalAuth,
+  asyncHandler(async (req, res) => {
+    const { keyId, keySecret, isConfigured } = getRazorpayConfig();
+
+    if (!isConfigured) {
+      return res.status(503).json({
+        message: "Razorpay payment confirmation is not configured yet.",
+      });
+    }
+
+    const orderId = String(req.body.orderId || "").trim();
+    const razorpayOrderId = String(req.body.razorpayOrderId || "").trim();
+    const razorpayPaymentId = String(req.body.razorpayPaymentId || "").trim();
+    const razorpaySignature = String(req.body.razorpaySignature || "").trim();
+
+    if (!orderId || !razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+      return res.status(400).json({
+        message: "Order ID and Razorpay payment details are required.",
+      });
+    }
+
+    if (
+      !verifyRazorpayPaymentSignature({
+        orderId: razorpayOrderId,
+        paymentId: razorpayPaymentId,
+        signature: razorpaySignature,
+        keySecret,
+      })
+    ) {
+      return res.status(400).json({
+        message: "Razorpay payment signature is invalid.",
+      });
+    }
+
+    const database = await readDatabase();
+    const order = database.orders.find((candidate) => candidate.id === orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order was not found." });
+    }
+
+    if (order.userId && req.user?.id && order.userId !== req.user.id) {
+      return res.status(403).json({
+        message: "You do not have access to confirm this order.",
+      });
+    }
+
+    if (String(order.paymentStatus || "").toLowerCase() === "paid") {
+      return res.json({
+        message: "Payment was already confirmed for this order.",
+        order: summarizeOrder(order),
+        user: syncDatabaseUserSubscription(database, order.userId),
+      });
+    }
+
+    if (order.paymentReference && order.paymentReference !== razorpayOrderId) {
+      return res.status(400).json({
+        message: "This Razorpay order does not belong to the requested order.",
+      });
+    }
+
+    const payment = await fetchRazorpayPayment({
+      keyId,
+      keySecret,
+      paymentId: razorpayPaymentId,
+    });
+
+    if (String(payment.order_id || "").trim() !== razorpayOrderId) {
+      return res.status(400).json({
+        message: "Razorpay payment does not match the expected order.",
+      });
+    }
+
+    const normalizedPaymentStatus = String(payment.status || "").toLowerCase();
+
+    if (
+      normalizedPaymentStatus !== "captured" &&
+      normalizedPaymentStatus !== "authorized"
+    ) {
+      return res.status(400).json({
+        message: "Razorpay payment is not in a payable state yet.",
+      });
+    }
+
+    if ((Number(payment.amount) || 0) !== toMinorUnits(order.totalAmount)) {
+      return res.status(400).json({
+        message: "Paid amount does not match the saved order total.",
+      });
+    }
+
+    order.paymentMode = "razorpay";
+    order.paymentReference = razorpayPaymentId;
+
+    if (String(order.subscriptionType || "").toLowerCase() === "subscription") {
+      applySubscriptionSnapshotToOrder(order, {
+        status: "active",
+        lastInvoiceId: razorpayPaymentId,
+      });
+    }
+
+    markOrderAsPaid(order, razorpayPaymentId);
+    const user = syncDatabaseUserSubscription(database, order.userId);
+    await writeDatabase(database);
+
+    return res.json({
+      message:
+        order.subscriptionType === "subscription"
+          ? "Payment confirmed and your subscription plan is now active."
+          : "Payment confirmed and your order is now processing.",
+      order: summarizeOrder(order),
+      user,
+    });
+  })
+);
+
+app.post(
   "/api/payments/create-checkout-session",
   optionalAuth,
   asyncHandler(async (req, res) => {
+    return res.status(410).json({
+      message:
+        "This legacy checkout endpoint has been retired. Use /api/payments/create-order for Razorpay checkout.",
+    });
+
     const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
     const items = rawItems
       .slice(0, 20)
@@ -927,7 +1230,7 @@ app.post(
 
     const { secretKey: stripeSecretKey } = getStripeConfig();
     const upiVpa = (process.env.UPI_VPA || "9690296846@ptsbi").trim();
-    const upiPayeeName = (process.env.UPI_PAYEE_NAME || "Other Half Pets").trim();
+    const upiPayeeName = (process.env.UPI_PAYEE_NAME || "PetPlus").trim();
     const fallbackOrigin = req.headers.origin
       ? req.headers.origin
       : `http://localhost:${PORT}`;
@@ -1115,7 +1418,7 @@ app.post(
 
     return res.status(503).json({
       message:
-        "Payment gateway is not configured yet. Add STRIPE_SECRET_KEY or UPI_VPA on the server.",
+        "Payment gateway is not configured yet. Add Razorpay credentials on the server.",
     });
   })
 );
@@ -1124,6 +1427,11 @@ app.post(
   "/api/payments/stripe/confirm-session",
   optionalAuth,
   asyncHandler(async (req, res) => {
+    return res.status(410).json({
+      message:
+        "Stripe confirmation has been retired for PetPlus. Razorpay payments are confirmed through /api/payments/razorpay/verify-payment.",
+    });
+
     const { secretKey: stripeSecretKey } = getStripeConfig();
 
     if (!stripeSecretKey) {
@@ -1330,9 +1638,7 @@ app.patch(
     const nextPhone = req.body.phone;
     const nextDogName = req.body.dogName;
     const nextCadence = req.body.deliveryCadence;
-    const isManagedSubscription =
-      Boolean(user.subscription?.sourceOrderId) ||
-      Boolean(user.subscription?.stripeSubscriptionId);
+    const isManagedSubscription = Boolean(user.subscription?.sourceOrderId);
 
     if (nextName) {
       user.name = sanitizeTextInput(nextName, {
@@ -1405,9 +1711,12 @@ app.post(
       return res.status(400).json({ message: "A valid order status is required." });
     }
 
-    if (nextStatus === "paid" && String(order.paymentMode || "").toLowerCase() === "card") {
+    if (
+      nextStatus === "paid" &&
+      ["card", "razorpay"].includes(String(order.paymentMode || "").toLowerCase())
+    ) {
       return res.status(400).json({
-        message: "Card orders are confirmed from Stripe, not from the browser.",
+        message: "Online payments are confirmed by the payment gateway, not from the browser.",
       });
     }
 
@@ -1478,7 +1787,7 @@ app.post(
       }),
       teamEmail: req.body.teamEmail
         ? sanitizeEmailInput(req.body.teamEmail, "team email address")
-        : "care@otherhalfpets.com",
+        : "care@PetPlus.co.in",
       name,
       email,
       phone: sanitizePhoneInput(req.body.phone),
@@ -2093,7 +2402,7 @@ if (fs.existsSync(DIST_INDEX)) {
 seedDatabase()
   .then((database) => {
     const adminCount = database.users.filter((user) => user.role === "admin").length;
-    const { secretKey, webhookSecret } = getStripeConfig();
+    const { isConfigured: isRazorpayConfigured } = getRazorpayConfig();
     const uploadStorageMode = getUploadStorageMode();
 
     if (isProduction && adminCount === 0) {
@@ -2114,17 +2423,10 @@ seedDatabase()
       });
     }
 
-    if (isProduction && !secretKey) {
-      logWarn("server.config.stripe_missing_secret", {
+    if (isProduction && !isRazorpayConfigured) {
+      logWarn("server.config.razorpay_missing_credentials", {
         message:
-          "STRIPE_SECRET_KEY is not configured. Card checkout and subscription billing will stay disabled.",
-      });
-    }
-
-    if (isProduction && secretKey && !webhookSecret) {
-      logWarn("server.config.stripe_missing_webhook_secret", {
-        message:
-          "STRIPE_WEBHOOK_SECRET is not configured. Recurring Stripe subscription events will not be verified.",
+          "Razorpay credentials are not configured. Checkout will stay unavailable until RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are set.",
       });
     }
 

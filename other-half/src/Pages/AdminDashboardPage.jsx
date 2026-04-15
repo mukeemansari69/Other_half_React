@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 
 import { useAuth } from "../context/AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
+import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
 
 const formatDate = (value) => {
   if (!value) {
@@ -24,10 +25,8 @@ const formatDate = (value) => {
   }).format(new Date(value));
 };
 
-const formatCurrency = (amount, currency = "USD") =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 2 }).format(
-    Number(amount || 0)
-  );
+const formatCurrency = (amount, currency = "INR") =>
+  formatStoreCurrency(amount, { currency });
 
 const statusTone = {
   new: "bg-[#FFF4D6] text-[#8A5A09]",
@@ -352,7 +351,7 @@ const AdminDashboardPage = () => {
                     <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#0F4A12]">{order.orderNumber}</p>
                     <h3 className="mt-1 text-lg font-semibold text-[#1A1A1A]">{order.customerName || "Guest customer"}</h3>
                     <p className="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-[#6A6458]">
-                      Amount: {formatCurrency(order.totalAmount, order.currency || "USD")} | Payment: {order.paymentStatus || "pending"} | Type: {order.subscriptionType || "one-time"}
+                      Amount: {formatCurrency(order.totalAmount, order.currency || "INR")} | Payment: {order.paymentStatus || "pending"} | Type: {order.subscriptionType || "one-time"}
                     </p>
                     {order.subscription ? (
                       <p className="mt-2 text-sm text-[#5F5B4F]">

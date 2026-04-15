@@ -187,9 +187,7 @@ const AccountDashboardPage = () => {
 
   const dogName = summary.subscription?.dogProfile?.name || "your dog";
   const supportStatusCounts = getSupportStatusCounts(summary.supportRequests);
-  const isManagedSubscription =
-    Boolean(summary.subscription?.sourceOrderId) ||
-    Boolean(summary.subscription?.stripeSubscriptionId);
+  const isManagedSubscription = Boolean(summary.subscription?.sourceOrderId);
   const deliveryCadenceOptions = ["Every 30 days", "Every 45 days", "Every 60 days"];
   const deliveryCadenceValue = formState.deliveryCadence || "Not set";
 

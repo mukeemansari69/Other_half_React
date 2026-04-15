@@ -18,7 +18,7 @@ const page = {
   eyebrow: "Customer Care / Store Terms",
   title: "Terms & Conditions",
   intro:
-    "These terms explain how you can browse the Other Half website, place orders, use subscriptions, and interact with our products and content. By visiting the site or completing a purchase, you agree to the terms below.",
+    "These terms explain how you can browse the PetPlus website, place orders, use subscriptions, and interact with our products and content. By visiting the site or completing a purchase, you agree to the terms below.",
   image: "/Default/images/dog.jpg",
   imageAlt: "A happy dog looking toward the camera",
   stats: [
@@ -110,8 +110,8 @@ const page = {
       id: "rights-liability",
       title: "5. Site content, liability, and updates",
       paragraphs: [
-        "All text, graphics, product photography, logos, and brand elements on the site belong to Other Half or our licensors and are protected by applicable intellectual property laws.",
-        "To the fullest extent allowed by law, Other Half is not liable for indirect or consequential damages arising from site use, delayed delivery, or product performance expectations. Continued use of the site after updates means you accept the revised terms.",
+        "All text, graphics, product photography, logos, and brand elements on the site belong to PetPlus or our licensors and are protected by applicable intellectual property laws.",
+        "To the fullest extent allowed by law, PetPlus is not liable for indirect or consequential damages arising from site use, delayed delivery, or product performance expectations. Continued use of the site after updates means you accept the revised terms.",
       ],
     },
   ],

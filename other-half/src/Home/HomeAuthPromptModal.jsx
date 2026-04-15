@@ -247,7 +247,7 @@ const HomeAuthPromptModal = () => {
                 <div className="home-auth-modal__brand-icon flex h-12 w-12 items-center justify-center rounded-[16px] sm:h-14 sm:w-14 sm:rounded-[18px]">
                   <img
                     src="/Home/images/dog-logo.svg"
-                    alt="Other Half"
+                    alt="PetPlus"
                     className="h-8 w-8 object-contain sm:h-9 sm:w-9"
                   />
                 </div>
@@ -260,7 +260,7 @@ const HomeAuthPromptModal = () => {
               </div>
 
               <div className="mt-6 max-w-[440px] sm:mt-8">
-                <p className="home-auth-modal__kicker">Other Half</p>
+                <p className="home-auth-modal__kicker">PetPlus</p>
                 <h2
                   id="home-auth-modal-heading"
                   className="home-auth-modal__title mt-3 sm:mt-4"
@@ -323,12 +323,12 @@ const HomeAuthPromptModal = () => {
                 <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#F3EEE1]">
                   <img
                     src="/Home/images/dog-logo.svg"
-                    alt="Other Half"
+                    alt="PetPlus"
                     className="h-7 w-7 object-contain"
                   />
                 </div>
                 <div>
-                  <p className="home-auth-modal__panel-kicker">Other Half</p>
+                  <p className="home-auth-modal__panel-kicker">PetPlus</p>
                   <p className="text-[13px] leading-5 text-[#625D51]">
                     Sign in to continue with your dog's account.
                   </p>

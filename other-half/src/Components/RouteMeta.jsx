@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-const SITE_NAME = "Other Half Pets";
-const FALLBACK_SITE_URL = "https://www.pet-plus.co.in/";
+const SITE_NAME = "PetPlus";
+const FALLBACK_SITE_URL = "https://www.PetPlus.co.in/";
 const DEFAULT_DESCRIPTION =
-  "Other Half Pets makes daily dog wellness routines easier with clean formulas, thoughtful education, and support that stays connected.";
+  "PetPlus makes daily dog wellness routines easier with clean formulas, thoughtful education, and support designed for dog parents across India.";
 const DEFAULT_IMAGE_PATH = "/Home/images/logo2.png";
 
 const routeMetadata = {
@@ -16,7 +16,7 @@ const routeMetadata = {
   "/collection": {
     title: "Shop The Collection",
     description:
-      "Explore Other Half's full collection of dog wellness products, including daily multivitamins, oral care, and value bundles.",
+      "Explore PetPlus products for daily multivitamins, oral care, and value bundles made for dog parents in India.",
   },
   "/product": {
     title: "Everyday Daily Multivitamin",
@@ -36,22 +36,22 @@ const routeMetadata = {
   "/science": {
     title: "Science Behind The Formulas",
     description:
-      "Learn how each Other Half formula supports dog wellness through ingredient choices, product structure, and daily-use design.",
+      "Learn how each PetPlus formula supports dog wellness through ingredient choices, product structure, and daily-use design.",
   },
   "/integrity": {
     title: "Ingredient Integrity",
     description:
-      "Review sourcing standards, manufacturing practices, and the quality principles behind Other Half products.",
+      "Review sourcing standards, manufacturing practices, and the quality principles behind PetPlus products.",
   },
   "/our-story": {
     title: "Our Story",
     description:
-      "Read the Other Half story, the care philosophy behind the brand, and how the team thinks about daily dog wellness.",
+      "Read the PetPlus story, the care philosophy behind the brand, and how the team thinks about daily dog wellness in India.",
   },
   "/story": {
     title: "Our Story",
     description:
-      "Read the Other Half story, the care philosophy behind the brand, and how the team thinks about daily dog wellness.",
+      "Read the PetPlus story, the care philosophy behind the brand, and how the team thinks about daily dog wellness in India.",
   },
   "/clinical-studies": {
     title: "Clinical Studies",
@@ -71,17 +71,17 @@ const routeMetadata = {
   "/faq": {
     title: "Frequently Asked Questions",
     description:
-      "Find answers about products, delivery plans, subscriptions, orders, and support across the Other Half experience.",
+      "Find answers about products, delivery plans, subscriptions, orders, and support across the PetPlus experience.",
   },
   "/faqPage": {
     title: "Frequently Asked Questions",
     description:
-      "Find answers about products, delivery plans, subscriptions, orders, and support across the Other Half experience.",
+      "Find answers about products, delivery plans, subscriptions, orders, and support across the PetPlus experience.",
   },
   "/quiz": {
     title: "Dog Wellness Quiz",
     description:
-      "Take the quiz to find the best Other Half routine for your dog's wellness goals and daily needs.",
+      "Take the quiz to find the best PetPlus routine for your dog's wellness goals and daily needs.",
   },
   "/quiz-desktop": {
     title: "Interactive Quiz Experience",
@@ -101,7 +101,7 @@ const routeMetadata = {
   "/contact": {
     title: "Contact Support",
     description:
-      "Reach the Other Half support team for help with orders, subscriptions, account access, and product questions.",
+      "Reach the PetPlus support team for help with orders, subscriptions, account access, and product questions.",
   },
   "/login": {
     title: "Sign In",
@@ -111,7 +111,7 @@ const routeMetadata = {
   "/register": {
     title: "Create Account",
     description:
-      "Create your Other Half account to save your dog's quiz results, support history, and subscription details.",
+      "Create your PetPlus account to save your dog's quiz results, support history, and subscription details.",
   },
   "/cart": {
     title: "Your Cart",

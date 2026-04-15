@@ -153,7 +153,7 @@ const NoMystery = () => {
             NO MYSTERY — JUST MASTERY
           </h2>
           <p className="noMystery-subtext">
-           At Other Half, we believe in radical transparency. Every scoop your dog gets is packed with purposeful, clinically studied ingredients — nothing hidden, nothing weird. Here's what goes into our formulas and why it matters.
+           At PetPlus, we believe in radical transparency. Every scoop your dog gets is packed with purposeful, clinically studied ingredients — nothing hidden, nothing weird. Here's what goes into our formulas and why it matters.
           </p>
         </div>
 

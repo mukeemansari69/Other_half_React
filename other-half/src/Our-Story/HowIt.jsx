@@ -39,7 +39,7 @@ const HowIt = () => {
 
           <p className="howit-para">
             The answer? Real ingredients. Real results. A daily scoop that
-            actually makes a difference. <br></br> And just like that, Other Half was born.
+            actually makes a difference. <br></br> And just like that, PetPlus was born.
           </p>
 
         </div>

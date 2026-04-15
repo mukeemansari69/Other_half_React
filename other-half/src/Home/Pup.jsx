@@ -1,129 +1,90 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+
 import "/public/Home/css/pup.css";
+import { collectionCards } from "../../shared/storeCatalog.js";
+import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
+
+const products = collectionCards.slice(0, 3).map((product) => ({
+  img: product.image,
+  title: product.title,
+  price: formatStoreCurrency(product.startingPrice),
+  old: formatStoreCurrency(product.startingPrice * 1.15),
+  link: product.route,
+  tags: product.badges,
+}));
 
 export default function Pup() {
-
-  const products = [
-    {
-      img: "/Home/images/EverydayProduct.png",
-      title: "Everyday Daily Multivitamin",
-      price: "$99.99",
-      old: "$69.99",
-      link: "/product",
-      tags: ["Immunity Boost", "Digestive health", "Overall Wellness"]
-    },
-    {
-      img: "/Home/images/DoggiDental.png",
-      title: "Doggie Dental Powder",
-      price: "$99.99",
-      old: "$69.99",
-      link: "/doggie-dental",
-      tags: ["Dental Care", "Overall Wellness"]
-    },
-    {
-      img: "/Home/images/Daily-Duo.png",
-      title: "Daily Duo Bundle",
-      price: "$99.99",
-      old: "$69.99",
-      link: "/dailyduo",
-      tags: ["Immunity Boost", "Digestive health", "Overall Wellness"]
-    }
-  ];
-
   return (
     <section className="w-full py-[36px] lg:py-[80px]">
       <div className="max-w-[1920px] mx-auto">
+        <h2 className="pup-heading">YOUR PUP WILL LOVE THESE</h2>
 
-        {/* Heading */}
-        <h2 className="pup-heading">
-          YOUR PUP WILL LOVE THESE
-        </h2>
-
-        {/* Desktop */}
         <div className="hidden lg:grid grid-cols-3 gap-6 max-w-[1440px] mx-auto mt-12 px-10">
-
-          {products.map((p, i) => (
+          {products.map((product) => (
             <NavLink
-              to={p.link}
-              key={i}
+              to={product.link}
+              key={product.title}
               className="pup-card cursor-pointer block"
             >
-
-              <img src={p.img} alt="" className="pup-image"/>
+              <img src={product.img} alt="" className="pup-image" />
 
               <div className="pup-text">
-
                 <div className="flex justify-center flex-wrap gap-2">
-                  {p.tags.map((tag,index)=>(
-                    <span key={index} className="pup-tag">{tag}</span>
+                  {product.tags.map((tag) => (
+                    <span key={tag} className="pup-tag">
+                      {tag}
+                    </span>
                   ))}
                 </div>
 
-                <h3 className="pup-title">{p.title}</h3>
+                <h3 className="pup-title">{product.title}</h3>
 
                 <div className="pup-rating">
-                  ★★★★★
-                  <span className="ml-2">4.9 (121)</span>
+                  5.0 <span className="ml-2">Verified dog parents</span>
                 </div>
-
               </div>
-
             </NavLink>
           ))}
-
         </div>
 
-        {/* Mobile Slider */}
         <div className="flex lg:hidden pup-slider mt-8">
-
-          {products.map((p, i) => (
+          {products.map((product) => (
             <NavLink
-              to={p.link}
-              key={i}
+              to={product.link}
+              key={product.title}
               className="pup-card-mobile cursor-pointer block"
             >
-
-              <img src={p.img} alt="" className="pup-image-mobile"/>
+              <img src={product.img} alt="" className="pup-image-mobile" />
 
               <div className="pup-text-mobile">
-
                 <div className="flex justify-center flex-wrap gap-1">
-                  {p.tags.slice(0,3).map((tag,index)=>(
-                    <span key={index} className="pup-tag-mobile">{tag}</span>
+                  {product.tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="pup-tag-mobile">
+                      {tag}
+                    </span>
                   ))}
                 </div>
 
-                <h3 className="pup-title-mobile">
-                  {p.title}
-                </h3>
+                <h3 className="pup-title-mobile">{product.title}</h3>
 
                 <div className="pup-rating-mobile">
-                  ★★★★★ <span>4.9 (121)</span>
+                  5.0 <span>Trusted picks</span>
                 </div>
-
               </div>
 
               <div className="pup-price-row">
-
                 <div>
-                  <span className="pup-price">{p.price}</span>
-                  <span className="pup-old">{p.old}</span>
+                  <span className="pup-price">{product.price}</span>
+                  <span className="pup-old">{product.old}</span>
                 </div>
 
-                <button className="pup-arrow">
-                  →
-                </button>
-
+                <button className="pup-arrow">+</button>
               </div>
-
             </NavLink>
           ))}
-
         </div>
-
       </div>
     </section>
   );
 }
-

@@ -34,7 +34,7 @@ const OurFlex = () => {
           </div>
 
           <p className="ourFlex-text">
-            We started Other Half because our own dogs were being let down by lazy
+            We started PetPlus because our own dogs were being let down by lazy
             formulas and low standards. Now? Every scoop we send out is our way of saying:
             <br />
             <span className="ourFlex-bold">“We got this.”</span>
