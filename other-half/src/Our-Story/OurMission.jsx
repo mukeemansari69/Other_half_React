@@ -40,6 +40,8 @@ const OurMission = () => {
             <img
               src={item.icon}
               alt={item.text}
+              loading="lazy"
+              decoding="async"
               className="ourMission-icon"
             />
 

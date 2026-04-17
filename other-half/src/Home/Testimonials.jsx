@@ -174,7 +174,7 @@ export default function Testimonials({ items = testimonialsData }) {
                   </div>
 
                   <div className="card-user">
-                    <img src={review.image} alt={review.name} />
+                    <img src={review.image} alt={review.name} loading="lazy" decoding="async" />
                     <div className="card-user-details">
                       <span className="card-user-name">{review.name}</span>
                       <p className="card-user-meta">{review.profile}</p>

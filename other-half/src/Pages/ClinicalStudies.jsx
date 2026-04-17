@@ -202,6 +202,8 @@ const ClinicalStudies = () => {
                   <img
                     src={study.image}
                     alt={study.title}
+                    loading="lazy"
+                    decoding="async"
                     className="clinical-formula-card__image"
                   />
                 </div>

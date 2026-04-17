@@ -631,6 +631,8 @@ const ContactSupportFormSection = () => {
                     key={preview.id}
                     src={preview.url}
                     alt={preview.file.name}
+                    loading="lazy"
+                    decoding="async"
                     className="support-upload-preview__image"
                   />
                 ))}

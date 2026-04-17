@@ -248,6 +248,8 @@ const HomeAuthPromptModal = () => {
                   <img
                     src="/Home/images/dog-logo.svg"
                     alt="PetPlus"
+                    loading="lazy"
+                    decoding="async"
                     className="h-8 w-8 object-contain sm:h-9 sm:w-9"
                   />
                 </div>
@@ -294,6 +296,8 @@ const HomeAuthPromptModal = () => {
                     <img
                       src="/Default/images/dogs4.avif"
                       alt="Happy dog enjoying a healthy routine"
+                      loading="lazy"
+                      decoding="async"
                       className="h-[220px] w-full object-cover sm:h-[250px] md:h-full md:min-h-[220px]"
                     />
                   </div>
@@ -324,6 +328,8 @@ const HomeAuthPromptModal = () => {
                   <img
                     src="/Home/images/dog-logo.svg"
                     alt="PetPlus"
+                    loading="lazy"
+                    decoding="async"
                     className="h-7 w-7 object-contain"
                   />
                 </div>

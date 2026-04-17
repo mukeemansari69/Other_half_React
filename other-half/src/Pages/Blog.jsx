@@ -165,7 +165,13 @@ const Blog = () => {
         <div className="blog-container">
           <article className="blog-featured-card">
             <div className="blog-featured-card__media">
-              <img src={featuredPost.image} alt={featuredPost.title} className="blog-featured-card__image" />
+              <img
+                src={featuredPost.image}
+                alt={featuredPost.title}
+                loading="lazy"
+                decoding="async"
+                className="blog-featured-card__image"
+              />
             </div>
 
             <div className="blog-featured-card__content">
@@ -220,7 +226,13 @@ const Blog = () => {
             {blogPosts.map((post) => (
               <article key={post.id} className="blog-post-card">
                 <div className="blog-post-card__media">
-                  <img src={post.image} alt={post.title} className="blog-post-card__image" />
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="blog-post-card__image"
+                  />
                 </div>
 
                 <div className="blog-post-card__content">

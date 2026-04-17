@@ -49,6 +49,8 @@ const HowIt = () => {
           <img
             src="/OurStory/images/howit.jpg"
             alt="dog"
+            loading="lazy"
+            decoding="async"
             className="howit-image"
           />
         </div>
@@ -66,6 +68,8 @@ const HowIt = () => {
         <img
           src="/OurStory/images/howit.jpg"
           alt="dog"
+          loading="lazy"
+          decoding="async"
           className="howit-image mobile-img"
         />
 

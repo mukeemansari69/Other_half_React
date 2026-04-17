@@ -72,6 +72,8 @@ const Obsess = () => {
         <img
           src="/Integrity/images/dogi-img.jpg"
           alt="product"
+          loading="lazy"
+          decoding="async"
           className="obsess-image"
         />
       </div>

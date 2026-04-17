@@ -15,6 +15,8 @@ export default function Starter() {
           <img
             src="/Home/images/home-Starter-Duo.png"
             alt="Starter duo product"
+            loading="lazy"
+            decoding="async"
             className="max-w-full h-auto md:h-[738px] object-contain"
           />
         </div>
@@ -83,6 +85,8 @@ export default function Starter() {
             <img
               src="/Home/images/home-Starter-Duo.png"
               alt="Starter duo product"
+              loading="lazy"
+              decoding="async"
               className="max-w-full h-auto object-contain"
             />
           </div>

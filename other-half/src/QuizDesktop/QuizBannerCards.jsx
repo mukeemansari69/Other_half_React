@@ -38,6 +38,8 @@ const QuizBannerCards = () => {
               <img
                 src={card.img}
                 alt={card.title}
+                loading="lazy"
+                decoding="async"
                 className="QuizBannerCards__image"
               />
               <h3 className="QuizBannerCards__cardTitle">

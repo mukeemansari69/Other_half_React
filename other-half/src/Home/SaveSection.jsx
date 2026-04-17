@@ -36,7 +36,7 @@ const SaveSection = () => {
           <div key={index} className="save-card">
 
             <div className="save-icon-circle">
-              <img src={item.img} alt={item.title} />
+              <img src={item.img} alt={item.title} loading="lazy" decoding="async" />
             </div>
 
             <h3 className="save-title">

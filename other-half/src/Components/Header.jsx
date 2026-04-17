@@ -424,7 +424,12 @@ export default function Header() {
         <div className="header-mobile-drawer__panel">
           <div className="header-mobile-drawer__top">
             <Link to="/" className="header-mobile-drawer__brand" onClick={closeMenu}>
-              <img src="/Home/images/PetPlus-Logo.png" alt="PetPlus logo" />
+              <img
+                src="/Home/images/PetPlus-Logo.png"
+                alt="PetPlus logo"
+                loading="lazy"
+                decoding="async"
+              />
               <div>
                 <p className="header-mobile-drawer__brand-title">PetPlus</p>
                 <p className="header-mobile-drawer__brand-text">Everything in one place</p>

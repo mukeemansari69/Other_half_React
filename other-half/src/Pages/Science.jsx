@@ -158,6 +158,8 @@ const Science = () => {
                   <img
                     src={item.cardImage}
                     alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                     className="science-product-card__image"
                   />
                 </div>
@@ -204,6 +206,8 @@ const Science = () => {
                   <img
                     src={item.detailImage}
                     alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                     className="science-product-detail__image"
                   />
                 </div>

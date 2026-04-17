@@ -25,7 +25,7 @@ const Features = () => {
       <div className="features-container">
         {data.map((item, index) => (
           <div key={index} className="feature-card">
-            <img src={item.img} alt={item.title} className="feature-icon" />
+            <img src={item.img} alt={item.title} loading="lazy" decoding="async" className="feature-icon" />
 
             <h3 className="feature-title">{item.title}</h3>
 

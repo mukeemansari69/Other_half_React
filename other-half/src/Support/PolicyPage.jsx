@@ -82,7 +82,13 @@ const PolicyPage = ({ page }) => {
           <div className="w-full support-hero__visual">
             <div className="support-hero__image-frame">
               <div className="support-hero__image-glow" aria-hidden="true" />
-              <img src={page.image} alt={page.imageAlt} className="support-hero__image" />
+              <img
+                src={page.image}
+                alt={page.imageAlt}
+                loading="lazy"
+                decoding="async"
+                className="support-hero__image"
+              />
             </div>
 
             <div className="grid support-highlight-grid">

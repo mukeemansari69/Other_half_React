@@ -192,6 +192,8 @@ const NotFoundPage = () => {
                 <img
                   src="/Default/images/dogs4.avif"
                   alt="Happy dog waiting for the right page"
+                  loading="lazy"
+                  decoding="async"
                   className="not-found-scene__photo-image"
                 />
               </div>
@@ -201,6 +203,8 @@ const NotFoundPage = () => {
                 <img
                   src="/Default/images/col1.png"
                   alt="Everyday Daily Multivitamin"
+                  loading="lazy"
+                  decoding="async"
                   className="not-found-product-card__image"
                 />
               </article>
@@ -210,6 +214,8 @@ const NotFoundPage = () => {
                 <img
                   src="/Default/images/col2.png"
                   alt="Doggie Dental Powder"
+                  loading="lazy"
+                  decoding="async"
                   className="not-found-product-card__image"
                 />
               </article>
@@ -282,6 +288,8 @@ const NotFoundPage = () => {
                     <img
                       src={card.image}
                       alt={card.imageAlt}
+                      loading="lazy"
+                      decoding="async"
                       className="not-found-guide-card__image"
                     />
                   </div>

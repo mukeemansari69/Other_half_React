@@ -26,6 +26,8 @@ export default function Marque() {
               <img
                 src="/Home/images/paw.svg"
                 alt="paw"
+                loading="lazy"
+                decoding="async"
                 className="paw-icon"
               />
 

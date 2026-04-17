@@ -136,6 +136,8 @@ const Footer = () => {
             <img
               src="/Home/images/PetPlus-Logo.png"
               alt="PetPlus logo"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-contain"
             />
           </div>
@@ -187,6 +189,8 @@ const Footer = () => {
           <img
             src="/Home/images/PetPlus-Logo.png"
             alt="PetPlus logo"
+            loading="lazy"
+            decoding="async"
             className="w-[100px] h-[120px] object-contain"
           />
           <div className="flex gap-[34px] items-center">

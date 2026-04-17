@@ -501,6 +501,8 @@ const Quiz = () => {
                     <img
                       src={resultProfile.recommendation.image}
                       alt={resultProfile.recommendation.title}
+                      loading="lazy"
+                      decoding="async"
                       className="quiz-page__result-image"
                     />
                   </div>
@@ -625,6 +627,8 @@ const Quiz = () => {
               <img
                 src="/Default/images/mkm.png"
                 alt="Happy dog ready for the quiz"
+                loading="lazy"
+                decoding="async"
                 className="quiz-page__dog-image"
               />
 

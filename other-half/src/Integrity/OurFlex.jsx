@@ -12,6 +12,8 @@ const OurFlex = () => {
           <img
             src="/Integrity/images/dogi.png"
             alt="dog"
+            loading="lazy"
+            decoding="async"
             className="ourFlex-image"
           />
         </div>
@@ -29,6 +31,8 @@ const OurFlex = () => {
             <img
               src="/Integrity/images/dogi.png"
               alt="dog"
+              loading="lazy"
+              decoding="async"
               className="ourFlex-image"
             />
           </div>

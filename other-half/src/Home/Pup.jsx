@@ -27,7 +27,7 @@ export default function Pup() {
               key={product.title}
               className="pup-card cursor-pointer block"
             >
-              <img src={product.img} alt="" className="pup-image" />
+              <img src={product.img} alt="" loading="lazy" decoding="async" className="pup-image" />
 
               <div className="pup-text">
                 <div className="flex justify-center flex-wrap gap-2">
@@ -55,7 +55,7 @@ export default function Pup() {
               key={product.title}
               className="pup-card-mobile cursor-pointer block"
             >
-              <img src={product.img} alt="" className="pup-image-mobile" />
+              <img src={product.img} alt="" loading="lazy" decoding="async" className="pup-image-mobile" />
 
               <div className="pup-text-mobile">
                 <div className="flex justify-center flex-wrap gap-1">

@@ -182,6 +182,8 @@ const NoMystery = () => {
               <img
                 src={item.img}
                 alt={item.title}
+                loading="lazy"
+                decoding="async"
                 className="noMystery-cardImg"
               />
 

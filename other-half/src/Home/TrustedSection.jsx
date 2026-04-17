@@ -100,6 +100,7 @@ export default function TrustedSection() {
                 src={src}
                 muted
                 playsInline
+                preload="metadata"
                 className="video-element"
               />
 
@@ -145,6 +146,7 @@ export default function TrustedSection() {
                 src={src}
                 muted
                 playsInline
+                preload="metadata"
                 className="mobile-video"
               />
 

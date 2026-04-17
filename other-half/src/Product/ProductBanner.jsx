@@ -592,6 +592,8 @@ const ProductBanner = ({
                     <img
                       src={image.src}
                       alt={image.alt}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   </button>
@@ -602,6 +604,8 @@ const ProductBanner = ({
                 <img
                   src={selectedImage.src}
                   alt={selectedImage.alt}
+                  loading="lazy"
+                  decoding="async"
                   className="aspect-[1/0.86] h-full w-full object-cover"
                 />
               </div>
@@ -682,6 +686,8 @@ const ProductBanner = ({
                     <img
                       src={item.icon}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="h-5 w-5 object-contain"
                     />
                   </span>
@@ -714,6 +720,8 @@ const ProductBanner = ({
                         <img
                           src={size.icon}
                           alt={`${size.name} dog size`}
+                          loading="lazy"
+                          decoding="async"
                           className="h-10 w-10 object-contain sm:h-11 sm:w-11"
                         />
                       </div>
@@ -874,6 +882,8 @@ const ProductBanner = ({
                         <img
                           src={activeSuggestion.image}
                           alt={activeSuggestion.title}
+                          loading="lazy"
+                          decoding="async"
                           className="h-full min-h-[8rem] w-full object-cover"
                         />
                       </div>

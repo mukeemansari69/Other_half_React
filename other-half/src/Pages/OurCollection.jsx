@@ -66,11 +66,15 @@ const OurCollection = () => {
                 <img
                   src={item.image}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="ourCollection-image group-hover:hidden"
                 />
                 <img
                   src={item.hoverImage}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="ourCollection-image hidden group-hover:block"
                 />
               </div>

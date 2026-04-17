@@ -271,6 +271,8 @@ const ReviewPage = () => {
                         <img
                           src={product.image}
                           alt={product.productName}
+                          loading="lazy"
+                          decoding="async"
                           className="h-16 w-16 rounded-[18px] bg-white object-contain p-2"
                         />
                         <div>

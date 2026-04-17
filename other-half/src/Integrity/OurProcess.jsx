@@ -49,7 +49,7 @@ const OurProcess = () => {
           <div className="ourProcess-row ourProcess-row-top">
             {processData.slice(0, 2).map((item, index) => (
               <div key={index} className="ourProcess-card">
-                <img src={item.icon} alt="icon" className="ourProcess-icon" />
+                <img src={item.icon} alt="icon" loading="lazy" decoding="async" className="ourProcess-icon" />
                 <h3 className="ourProcess-card-title">{item.title}</h3>
                 <p className="ourProcess-card-desc">{item.desc}</p>
                 <span className="ourProcess-number">{item.id}</span>
@@ -64,7 +64,7 @@ const OurProcess = () => {
           <div className="ourProcess-row ourProcess-row-bottom">
             {processData.slice(2).map((item, index) => (
               <div key={index} className="ourProcess-card">
-                <img src={item.icon} alt="icon" className="ourProcess-icon" />
+                <img src={item.icon} alt="icon" loading="lazy" decoding="async" className="ourProcess-icon" />
                 <h3 className="ourProcess-card-title">{item.title}</h3>
                 <p className="ourProcess-card-desc">{item.desc}</p>
                 <span className="ourProcess-number">{item.id}</span>
@@ -77,7 +77,7 @@ const OurProcess = () => {
         <div className="ourProcess-mobile">
           {processData.map((item, index) => (
             <div key={index} className="ourProcess-mobile-card">
-              <img src={item.icon} alt="icon" className="ourProcess-icon" />
+              <img src={item.icon} alt="icon" loading="lazy" decoding="async" className="ourProcess-icon" />
               <h3 className="ourProcess-card-title">{item.title}</h3>
               <p className="ourProcess-card-desc">{item.desc}</p>
               <span className="ourProcess-number">{item.id}</span>

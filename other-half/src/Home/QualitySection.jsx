@@ -23,6 +23,8 @@ const QualitySection = () => {
             <img
               src={item.icon}
               alt={item.text}
+              loading="lazy"
+              decoding="async"
               className="quality-icon"
             />
 

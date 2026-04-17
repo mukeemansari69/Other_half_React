@@ -55,6 +55,7 @@ const HeartBehind = () => {
             autoPlay
             loop
             muted
+            preload="metadata"
             className="hb-video"
           >
             <source src="/Home/images/dog1.mp4" type="video/mp4" />
@@ -85,7 +86,7 @@ const HeartBehind = () => {
           </div>
         </div>
 
-        <img src="/OurStory/images/small-dog.png" alt="dog" className="hb-dog" />
+        <img src="/OurStory/images/small-dog.png" alt="dog" loading="lazy" decoding="async" className="hb-dog" />
       </div>
 
       {/* MOBILE */}
@@ -99,6 +100,7 @@ const HeartBehind = () => {
       autoPlay
       loop
       muted
+      preload="metadata"
       className="hb-m-video"
     >
       <source src="/Home/images/dog1.mp4" type="video/mp4" />

@@ -105,7 +105,7 @@ const DogPeople = () => {
         >
           {data.map((item, i) => (
             <div key={i} className="dog-card">
-              <img src={item.img} alt="" className="dog-img" />
+              <img src={item.img} alt="" loading="lazy" decoding="async" className="dog-img" />
 
               <div className="dog-overlay">
                 <h3>{item.name}</h3>

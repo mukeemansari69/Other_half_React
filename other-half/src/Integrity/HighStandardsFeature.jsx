@@ -33,11 +33,15 @@ const HighStandardsFeature = () => {
           <img
             src="/Integrity/images/snooz-dog.png"
             alt="dog"
+            loading="lazy"
+            decoding="async"
             className="highstandardsfeature-dogimg"
           />
           <img
             src="/Integrity/images/snooz.png"
             alt="zzz"
+            loading="lazy"
+            decoding="async"
             className="highstandardsfeature-snooze"
           />
         </div>
@@ -54,13 +58,13 @@ const HighStandardsFeature = () => {
             <div className="highstandardsfeature-empty"></div>
 
             <div className="highstandardsfeature-card">
-              <img src={features[0].icon} className="highstandardsfeature-icon" />
+              <img src={features[0].icon} loading="lazy" decoding="async" className="highstandardsfeature-icon" />
               <h4>{features[0].title}</h4>
               <p>{features[0].text}</p>
             </div>
 
             <div className="highstandardsfeature-card">
-              <img src={features[1].icon} className="highstandardsfeature-icon" />
+              <img src={features[1].icon} loading="lazy" decoding="async" className="highstandardsfeature-icon" />
               <h4>{features[1].title}</h4>
               <p>{features[1].text}</p>
             </div>
@@ -71,13 +75,13 @@ const HighStandardsFeature = () => {
             <div className="highstandardsfeature-empty"></div>
 
             <div className="highstandardsfeature-card">
-              <img src={features[2].icon} className="highstandardsfeature-icon" />
+              <img src={features[2].icon} loading="lazy" decoding="async" className="highstandardsfeature-icon" />
               <h4>{features[2].title}</h4>
               <p>{features[2].text}</p>
             </div>
 
             <div className="highstandardsfeature-card">
-              <img src={features[3].icon} className="highstandardsfeature-icon" />
+              <img src={features[3].icon} loading="lazy" decoding="async" className="highstandardsfeature-icon" />
               <h4>{features[3].title}</h4>
               <p>{features[3].text}</p>
             </div>

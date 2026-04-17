@@ -60,6 +60,8 @@ export default function Slider() {
               <img
                 src={item.img}
                 alt="logo"
+                loading="lazy"
+                decoding="async"
                 className="
                 max-w-[80px] sm:max-w-[100px] md:max-w-[120px]
                 h-auto object-contain

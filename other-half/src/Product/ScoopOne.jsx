@@ -55,6 +55,7 @@ const ScoopOne = () => {
           loop
           muted
           playsInline
+          preload="metadata"
           onClick={handleVideoClick}
         />
 

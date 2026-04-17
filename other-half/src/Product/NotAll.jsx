@@ -29,6 +29,8 @@ const NotAll = () => {
           <img
             src="/Product/images/logo.png"
             alt="logo"
+            loading="lazy"
+            decoding="async"
             className="notall-logo"
           />
         </div>
@@ -48,6 +50,8 @@ Brands</div>
               <img
                 src="/Product/images/right.png"
                 alt="check"
+                loading="lazy"
+                decoding="async"
                 className="notall-check-center"
               />
 
@@ -55,6 +59,8 @@ Brands</div>
               <img
                 src="/Product/images/cross.png"
                 alt="cross"
+                loading="lazy"
+                decoding="async"
                 className="notall-cross"
               />
             </div>

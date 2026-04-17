@@ -244,6 +244,8 @@ const CartPage = () => {
                 <img
                   src={item.image || "/Default/images/col1.png"}
                   alt={item.name}
+                  loading="lazy"
+                  decoding="async"
                   className="h-[110px] w-full rounded-2xl object-cover"
                 />
 

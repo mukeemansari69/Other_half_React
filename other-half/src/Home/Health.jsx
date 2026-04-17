@@ -118,6 +118,8 @@ const ImageStack = ({ images, index }) => {
             key={i}
             src={img}
             alt="dog"
+            loading="lazy"
+            decoding="async"
             className={`
             absolute
             w-full h-full
