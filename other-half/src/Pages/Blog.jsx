@@ -67,7 +67,7 @@ const blogPosts = [
     excerpt:
       "A good bundle removes decision fatigue and turns multiple health goals into one easy routine. Here is the logic behind that.",
     image: "/Home/images/d3.jpg",
-    route: "/dailyduo",
+    route: "/daily-duo",
   },
   {
     id: "post-4",
@@ -100,7 +100,7 @@ const blogPosts = [
     excerpt:
       "Every strong pet brand needs a point of view. This story-style post connects education, design, and product purpose together.",
     image: "/OurStory/images/nextstep.jpg",
-    route: "/story",
+    route: "/our-story",
   },
 ];
 
@@ -282,7 +282,7 @@ const Blog = () => {
                 Visit collection
                 <ArrowRight size={16} />
               </NavLink>
-              <NavLink to="/story" className="blog-button blog-button--dark">
+              <NavLink to="/our-story" className="blog-button blog-button--dark">
                Explore Our Approach
                 <ArrowRight size={16} />
               </NavLink>

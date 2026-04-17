@@ -80,7 +80,7 @@ const products = [
   {
     id: "duo",
     anchor: "duo-science",
-    route: "/dailyduo",
+    route: "/daily-duo",
     detailClass: "science-product-detail--duo",
     cardTag: "Stacked Routine",
     cardImage: "/Science/images/dailyduo.png",

@@ -83,7 +83,7 @@ const recommendationMeta = {
     eyebrow: "Best match for full-body plus mouth support",
     description:
       "A stronger fit when your dog needs support in more than one area and you want one routine that covers body wellness and oral care together.",
-    route: "/dailyduo",
+    route: "/daily-duo",
     cta: "View Daily Duo",
     image: "/Default/images/col3.png",
     routine:

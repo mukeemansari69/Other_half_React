@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /api/
 
-Sitemap: https://www.PetPlus.co.in/sitemap.xml
+Sitemap: https://www.pet-plus.co.in/sitemap.xml

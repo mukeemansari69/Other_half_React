@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 
 import Footer from "./Components/Footer.jsx";
 import Header from "./Components/Header.jsx";
@@ -22,6 +22,7 @@ const DentalProduct = lazy(() => import("./Product/DentalProduct.jsx"));
 const Science = lazy(() => import("./Pages/Science.jsx"));
 const ClinicalStudies = lazy(() => import("./Pages/ClinicalStudies.jsx"));
 const Blog = lazy(() => import("./Pages/Blog.jsx"));
+const AIPetHealthPage = lazy(() => import("./Pages/AIPetHealthPage.jsx"));
 const TermsConditionsPage = lazy(() => import("./Pages/TermsConditionsPage.jsx"));
 const ManageSubscriptionPage = lazy(() => import("./Pages/ManageSubscriptionPage.jsx"));
 const RefundPolicyPage = lazy(() => import("./Pages/RefundPolicyPage.jsx"));
@@ -64,24 +65,27 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/integrity" element={<Integrity />} />
-              <Route path="/story" element={<Story />} />
+              <Route path="/our-story" element={<Story />} />
+              <Route path="/story" element={<Navigate to="/our-story" replace />} />
               <Route path="/science" element={<Science />} />
-              <Route path="/clinical" element={<ClinicalStudies />} />
               <Route path="/clinical-studies" element={<ClinicalStudies />} />
+              <Route path="/ai-pet-health" element={<AIPetHealthPage />} />
+              <Route path="/clinical" element={<Navigate to="/clinical-studies" replace />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/glossary" element={<GlossaryPage />} />
               <Route path="/quizdesktop" element={<QuizDestopPage />} />
               <Route path="/collection" element={<OurCollection />} />
-              <Route path="/faqPage" element={<FaqPage />} />
+              <Route path="/faq" element={<FaqPage />} />
+              <Route path="/faqPage" element={<Navigate to="/faq" replace />} />
               <Route path="/terms" element={<TermsConditionsPage />} />
               <Route path="/manage-subscription" element={<ManageSubscriptionPage />} />
               <Route path="/refund-policy" element={<RefundPolicyPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/subscription-policy" element={<SubscriptionPolicyPage />} />
               <Route path="/contact" element={<ContactUsPage />} />
-              <Route path="/dailyduo" element={<DailyDuoPage />} />
               <Route path="/daily-duo" element={<DailyDuoPage />} />
+              <Route path="/dailyduo" element={<Navigate to="/daily-duo" replace />} />
               <Route path="/doggie-dental" element={<DentalProduct />} />
               <Route path="/product" element={<ProductPage />} />
               <Route path="/cart" element={<CartPage />} />

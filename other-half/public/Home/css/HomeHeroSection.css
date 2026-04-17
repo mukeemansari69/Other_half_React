@@ -1,0 +1,94 @@
+.home-hero-section {
+  width: 100%;
+  background-image: url('/Home/images/Home-banner.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
+  padding: 41px 24px;
+}
+
+.hero-content {
+  max-width: 1440px;
+  gap: 21px;
+  text-align: center;
+}
+.home-hero-container{
+    max-width: 1440px;
+}
+/* Desktop */
+@media (min-width: 1024px) {
+  .hero-content {
+    gap: 53px;
+    text-align: left;
+    margin-left: 10%;
+        margin-top: 5%;
+  }
+}
+
+.hero-title {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 38px;
+  line-height: 122%;
+  color: #1A1A1A;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: 80px;
+    line-height: 125%;
+  }
+}
+
+.hero-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  color: #1A1A1A;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .hero-text {
+    font-size: 20px;
+    margin: 0;
+  }
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-block;
+  padding: 14px 30px;
+  border-radius: 333px;
+  background: #FAF9F5;
+  color: black;
+  font-weight: 600;
+  font-size: 18px;
+  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  background: #0F4A12;
+  color: #EBF466;
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 14px 30px;
+  border-radius: 333px;
+  background: #0F4A12;
+  color: #EBF466;
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+.btn-secondary:hover {
+  background: #FAF9F5;
+  color: black;
+}

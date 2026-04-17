@@ -11,9 +11,9 @@ import {
 
 import "/public/Clinical/css/clinicalStudies.css";
 
-const EATING_DURATION_MS = 5000;
+const EATING_DURATION_MS = 10000;
 const BARK_DURATION_MS = 2200;
-const CTA_REDIRECT_MS = 3000;
+const CTA_REDIRECT_MS = 10000;
 
 const heroSignals = [
   {
@@ -32,43 +32,43 @@ const heroSignals = [
     copy: "The collection is designed to stay easy enough for daily compliance.",
   },
 ];
-
 const clinicalStageStats = [
   {
     value: "3",
-    label: "formula pathways",
-    copy: "Daily nutrition, oral care, and bundle logic now read like one connected system.",
+    label: "Smart Health Pathways",
+    copy: "AI maps your dog’s behavior to nutrition and care, creating three adaptive pathways for complete wellness.",
     icon: FlaskConical,
   },
   {
     value: "5",
-    label: "support zones",
-    copy: "Digestion, immunity, coat, mobility, and oral care keep the science story grounded.",
+    label: "Vital Health Zones",
+    copy: "Each recommendation is aligned across five key areas — digestion, immunity, coat, mobility, and oral health.",
     icon: ShieldCheck,
   },
   {
     value: "1",
-    label: "daily ritual",
-    copy: "The whole page resolves into one simple bowl-time habit, not a complicated routine.",
+    label: "AI Daily Plan",
+    copy: "A single, easy-to-follow routine powered by AI — turning complex care into one simple daily habit.",
     icon: PawPrint,
   },
 ];
-
 const dogStates = {
   eating: {
-    label: "Crunch loop",
-    title: "Dog is eating from the bowl.",
-    copy: "The hero keeps looping through feed mode for 5 seconds before switching into bark mode.",
+    label: "AI Nutrition Scan",
+    title: "Analyzing feeding behavior...",
+    copy: "AI tracks appetite and eating patterns to detect digestion health and nutritional balance in real time.",
   },
+
   bark: {
-    label: "Bark check",
-    title: "Dog wants your attention now.",
-    copy: "After each feed cycle the dog barks for attention, then returns to the bowl and repeats the routine.",
+    label: "AI Behavior Insight",
+    title: "Attention signal detected.",
+    copy: "This behavior may reflect emotional needs or hidden discomfort. AI translates it into clear care guidance.",
   },
+
   play: {
-    label: "Play mode",
-    title: "Dog is chasing the selected CTA.",
-    copy: "The clicked button gets the playful dog handoff, then the chosen route opens after a 3 second beat.",
+    label: "AI Health Builder",
+    title: "Create your dog’s smart routine.",
+    copy: "Answer a few quick questions and get a personalized daily plan with tailored care and product recommendations.",
   },
 };
 
@@ -146,23 +146,21 @@ export default function ClinicalHero({ isolated = false }) {
         <div className="clinical-hero__frame">
           <div className="grid clinical-hero__layout">
             <div className="clinical-hero__content">
-              <span className="clinical-chip">BARK CHECK</span>
+              <span className="clinical-chip">AI BARK CHECK</span>
               <h1 className="clinical-hero__title">
-                Your dog's behavior speaks - we help you understand what it truly needs.
+               Your Dog’s Behavior Speaks — Our AI Helps You Understand It.
               </h1>
               <p className="clinical-hero__text">
-                When your dog seeks attention, it's often more than just a playful moment -
-                it can be a subtle signal of unmet physical, emotional, or nutritional
-                needs. From low energy levels to digestive discomfort or even oral health
-                issues, these small behaviors can reflect deeper imbalances in their daily
-                routine. Our clinically balanced formulas are designed to recognize and
-                support these signals at their root.
+                Not every bark, pause, or habit is random. Our AI analyzes your dog’s behavior to uncover hidden health signals — and turns them into a clear, personalized care plan.
+                <br />
+                From low energy to unusual eating patterns or dental discomfort — small behavior changes can signal deeper issues.
+Our AI connects these patterns with nutrition, routine, and health insights to guide you toward the right solution.
               </p>
 
               <div className="clinical-hero__actions">
                 <button
                   type="button"
-                  onClick={(event) => handleCtaClick(event, "/collection", "hero-shop")}
+                  onClick={(event) => handleCtaClick(event, "/quiz", "hero-shop")}
                   disabled={isRedirecting}
                   className={`clinical-shop-button clinical-cta-target ${
                     activeCtaKey === "hero-shop" ? "clinical-cta-target--active" : ""
@@ -171,14 +169,14 @@ export default function ClinicalHero({ isolated = false }) {
                   <span>
                     {activeCtaKey === "hero-shop" && isRedirecting
                       ? "Playtime opening collection..."
-                      : "Shop the formulas"}
+                      : "Analyze Your Dog’s Behavior"}
                   </span>
                   <ArrowRight size={18} />
                 </button>
 
                 <Link
                   to="/quiz"
-                  onClick={(event) => handleCtaClick(event, "/quiz", "hero-quiz")}
+                  onClick={(event) => handleCtaClick(event, "/ai-pet-health", "hero-quiz")}
                   className={`clinical-secondary-button clinical-cta-target ${
                     activeCtaKey === "hero-quiz" ? "clinical-cta-target--active" : ""
                   } ${isRedirecting ? "clinical-cta-target--busy" : ""}`}
@@ -186,7 +184,7 @@ export default function ClinicalHero({ isolated = false }) {
                 >
                   {activeCtaKey === "hero-quiz" && isRedirecting
                     ? "Dog is finding your routine..."
-                    : "Find the right routine"}
+                    : "Get Personalized Routine"}
                 </Link>
               </div>
 

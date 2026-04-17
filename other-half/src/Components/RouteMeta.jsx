@@ -1,141 +1,12 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-const SITE_NAME = "PetPlus";
-const FALLBACK_SITE_URL = "https://www.PetPlus.co.in/";
-const DEFAULT_DESCRIPTION =
-  "PetPlus makes daily dog wellness routines easier with clean formulas, thoughtful education, and support designed for dog parents across India.";
-const DEFAULT_IMAGE_PATH = "/Home/images/logo2.png";
-
-const routeMetadata = {
-  "/": {
-    title: "Daily Dog Wellness, Simplified",
-    description:
-      "Shop daily dog wellness formulas, explore the quiz, and build a routine that supports immunity, digestion, mobility, and oral care.",
-  },
-  "/collection": {
-    title: "Shop The Collection",
-    description:
-      "Explore PetPlus products for daily multivitamins, oral care, and value bundles made for dog parents in India.",
-  },
-  "/product": {
-    title: "Everyday Daily Multivitamin",
-    description:
-      "See size-based plans, formula benefits, and subscribe-ready options for the Everyday Daily Multivitamin.",
-  },
-  "/doggie-dental": {
-    title: "Doggie Dental Powder",
-    description:
-      "Discover a simple no-brush oral care routine designed for fresher breath, cleaner teeth, and happier gums.",
-  },
-  "/daily-duo": {
-    title: "Daily Duo Bundle",
-    description:
-      "Bundle daily wellness and oral care into one repeat-friendly routine with the Daily Duo subscription-ready stack.",
-  },
-  "/science": {
-    title: "Science Behind The Formulas",
-    description:
-      "Learn how each PetPlus formula supports dog wellness through ingredient choices, product structure, and daily-use design.",
-  },
-  "/integrity": {
-    title: "Ingredient Integrity",
-    description:
-      "Review sourcing standards, manufacturing practices, and the quality principles behind PetPlus products.",
-  },
-  "/our-story": {
-    title: "Our Story",
-    description:
-      "Read the PetPlus story, the care philosophy behind the brand, and how the team thinks about daily dog wellness in India.",
-  },
-  "/story": {
-    title: "Our Story",
-    description:
-      "Read the PetPlus story, the care philosophy behind the brand, and how the team thinks about daily dog wellness in India.",
-  },
-  "/clinical-studies": {
-    title: "Clinical Studies",
-    description:
-      "Explore research-inspired product pages and learn how the formulas map to real dog wellness goals.",
-  },
-  "/clinical": {
-    title: "Clinical Studies",
-    description:
-      "Explore research-inspired product pages and learn how the formulas map to real dog wellness goals.",
-  },
-  "/blog": {
-    title: "Blog",
-    description:
-      "Browse dog care education, product guidance, and practical notes for building a more consistent wellness routine.",
-  },
-  "/faq": {
-    title: "Frequently Asked Questions",
-    description:
-      "Find answers about products, delivery plans, subscriptions, orders, and support across the PetPlus experience.",
-  },
-  "/faqPage": {
-    title: "Frequently Asked Questions",
-    description:
-      "Find answers about products, delivery plans, subscriptions, orders, and support across the PetPlus experience.",
-  },
-  "/quiz": {
-    title: "Dog Wellness Quiz",
-    description:
-      "Take the quiz to find the best PetPlus routine for your dog's wellness goals and daily needs.",
-  },
-  "/quiz-desktop": {
-    title: "Interactive Quiz Experience",
-    description:
-      "Walk through the desktop quiz journey to match your dog with the right wellness routine.",
-  },
-  "/quizdesktop": {
-    title: "Interactive Quiz Experience",
-    description:
-      "Walk through the desktop quiz journey to match your dog with the right wellness routine.",
-  },
-  "/dailyduo": {
-    title: "Daily Duo Bundle",
-    description:
-      "Bundle daily wellness and oral care into one repeat-friendly routine with the Daily Duo subscription-ready stack.",
-  },
-  "/contact": {
-    title: "Contact Support",
-    description:
-      "Reach the PetPlus support team for help with orders, subscriptions, account access, and product questions.",
-  },
-  "/login": {
-    title: "Sign In",
-    description:
-      "Access your account to review saved recommendations, support conversations, and delivery details.",
-  },
-  "/register": {
-    title: "Create Account",
-    description:
-      "Create your PetPlus account to save your dog's quiz results, support history, and subscription details.",
-  },
-  "/cart": {
-    title: "Your Cart",
-    description:
-      "Review your cart, confirm product selections, and continue to secure checkout with server-verified pricing.",
-  },
-};
-
-const getSiteOrigin = () => {
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return window.location.origin;
-  }
-
-  return (import.meta.env.VITE_SITE_URL || FALLBACK_SITE_URL).replace(/\/+$/, "");
-};
-
-const getRouteMetadata = (pathname) => {
-  return (
-    routeMetadata[pathname] || {
-      title: SITE_NAME,
-      description: DEFAULT_DESCRIPTION,
-    }
-  );
-};
+import {
+  DEFAULT_SITE_URL,
+  OG_LOCALE,
+  SITE_LANGUAGE,
+  getSeoPayload,
+} from "../../shared/seo.js";
 
 const ensureMetaTag = (selector, attributes) => {
   let tag = document.head.querySelector(selector);
@@ -163,43 +34,91 @@ const ensureLinkTag = (selector, attributes) => {
   });
 };
 
+const ensureStructuredDataScript = (structuredData) => {
+  let tag = document.head.querySelector("#seo-schema");
+
+  if (!tag) {
+    tag = document.createElement("script");
+    tag.id = "seo-schema";
+    tag.type = "application/ld+json";
+    document.head.appendChild(tag);
+  }
+
+  tag.textContent = JSON.stringify(structuredData).replace(/</g, "\\u003c");
+};
+
+const removeTag = (selector) => {
+  const tag = document.head.querySelector(selector);
+
+  if (tag) {
+    tag.remove();
+  }
+};
+
+const getSiteOrigin = () => {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  return DEFAULT_SITE_URL.replace(/\/+$/, "");
+};
+
 const RouteMeta = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const siteOrigin = getSiteOrigin();
-    const metadata = getRouteMetadata(location.pathname);
-    const pageTitle =
-      metadata.title === SITE_NAME ? metadata.title : `${metadata.title} | ${SITE_NAME}`;
-    const description = metadata.description || DEFAULT_DESCRIPTION;
-    const canonicalUrl = `${siteOrigin}${location.pathname}`;
-    const imageUrl = `${siteOrigin}${DEFAULT_IMAGE_PATH}`;
+    const seo = getSeoPayload(location.pathname, getSiteOrigin());
 
-    document.title = pageTitle;
+    document.title = seo.title;
+    document.documentElement.lang = SITE_LANGUAGE;
 
     ensureMetaTag('meta[name="description"]', {
       name: "description",
-      content: description,
+      content: seo.description,
+    });
+    ensureMetaTag('meta[name="robots"]', {
+      name: "robots",
+      content: seo.robots,
+    });
+    ensureMetaTag('meta[name="googlebot"]', {
+      name: "googlebot",
+      content: seo.robots,
+    });
+    ensureMetaTag('meta[name="author"]', {
+      name: "author",
+      content: "PetPlus",
+    });
+    ensureMetaTag('meta[name="application-name"]', {
+      name: "application-name",
+      content: "PetPlus",
     });
     ensureMetaTag('meta[property="og:title"]', {
       property: "og:title",
-      content: pageTitle,
+      content: seo.title,
     });
     ensureMetaTag('meta[property="og:description"]', {
       property: "og:description",
-      content: description,
+      content: seo.description,
     });
     ensureMetaTag('meta[property="og:type"]', {
       property: "og:type",
       content: "website",
     });
-    ensureMetaTag('meta[property="og:url"]', {
-      property: "og:url",
-      content: canonicalUrl,
+    ensureMetaTag('meta[property="og:site_name"]', {
+      property: "og:site_name",
+      content: "PetPlus",
+    });
+    ensureMetaTag('meta[property="og:locale"]', {
+      property: "og:locale",
+      content: OG_LOCALE,
     });
     ensureMetaTag('meta[property="og:image"]', {
       property: "og:image",
-      content: imageUrl,
+      content: seo.imageUrl,
+    });
+    ensureMetaTag('meta[property="og:image:alt"]', {
+      property: "og:image:alt",
+      content: seo.imageAlt,
     });
     ensureMetaTag('meta[name="twitter:card"]', {
       name: "twitter:card",
@@ -207,20 +126,44 @@ const RouteMeta = () => {
     });
     ensureMetaTag('meta[name="twitter:title"]', {
       name: "twitter:title",
-      content: pageTitle,
+      content: seo.title,
     });
     ensureMetaTag('meta[name="twitter:description"]', {
       name: "twitter:description",
-      content: description,
+      content: seo.description,
     });
     ensureMetaTag('meta[name="twitter:image"]', {
       name: "twitter:image",
-      content: imageUrl,
+      content: seo.imageUrl,
     });
-    ensureLinkTag('link[rel="canonical"]', {
-      rel: "canonical",
-      href: canonicalUrl,
-    });
+
+    if (seo.canonicalUrl) {
+      ensureMetaTag('meta[property="og:url"]', {
+        property: "og:url",
+        content: seo.canonicalUrl,
+      });
+      ensureLinkTag('link[rel="canonical"]', {
+        rel: "canonical",
+        href: seo.canonicalUrl,
+      });
+      ensureLinkTag(`link[rel="alternate"][hreflang="${SITE_LANGUAGE}"]`, {
+        rel: "alternate",
+        hreflang: SITE_LANGUAGE,
+        href: seo.canonicalUrl,
+      });
+      ensureLinkTag('link[rel="alternate"][hreflang="x-default"]', {
+        rel: "alternate",
+        hreflang: "x-default",
+        href: seo.canonicalUrl,
+      });
+    } else {
+      removeTag('meta[property="og:url"]');
+      removeTag('link[rel="canonical"]');
+      removeTag(`link[rel="alternate"][hreflang="${SITE_LANGUAGE}"]`);
+      removeTag('link[rel="alternate"][hreflang="x-default"]');
+    }
+
+    ensureStructuredDataScript(seo.structuredData);
   }, [location.pathname]);
 
   return null;

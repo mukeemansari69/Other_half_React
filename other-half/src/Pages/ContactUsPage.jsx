@@ -30,7 +30,7 @@ const page = {
   ],
   actions: [
     { label: "Email customer care", href: `mailto:${SUPPORT_EMAIL}`, variant: "primary" },
-    { label: "Browse FAQs", to: "/faqPage", variant: "secondary" },
+    { label: "Browse FAQs", to: "/faq", variant: "secondary" },
   ],
   highlights: [
     {

@@ -7,17 +7,15 @@ export default function ScienceHero() {
   return (
     <section className="science-hero">
       <div className="science-container science-banner">
-        <span className="science-eyebrow">FOR DOGS YOU CALL FAMILY</span>
-        <h1 className="science-hero__title">Smarter Health for Your Dog, Backed by Science</h1>
+        <span className="science-eyebrow">FOR DOGS YOU CALL FAMILY ❤️</span>
+        <h1 className="science-hero__title">Smarter Health for Your Dog, Powered by AI Intelligence</h1>
         <p className="science-hero__text">
-          Clinically studied ingredients designed to support digestion, immunity, dental
-          health, and overall wellbeing - because your dog deserves more than just basic
-          nutrition.
+         We combine smart AI analysis with clinically trusted nutrition to understand your dog’s needs — and deliver a personalized health routine that actually works.
         </p>
 
         <div className="science-hero__actions">
-          <NavLink to="/integrity" className="science-button">
-            Shop Now
+          <NavLink to="/ai-pet-health" className="science-button">
+           Analyze My Dog with AI
             <ArrowRight size={16} />
           </NavLink>
 

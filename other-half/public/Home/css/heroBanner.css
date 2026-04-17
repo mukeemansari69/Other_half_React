@@ -320,6 +320,18 @@
   opacity: 0.85;
 }
 
+@media (min-width : 767px){
+  .home-hero-slider__slide > * {
+  width: 100%;
+  height: 857px;
+}
+}
+@media (max-width : 425px){
+  .home-hero-slider__slide > * {
+  width: 100%;
+  height: 694px;
+}
+}
 
 @media (max-width: 767px) {
   .home-hero-slider {

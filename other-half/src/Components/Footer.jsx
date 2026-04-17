@@ -15,16 +15,16 @@ const quickLinksPrimary = [
   { label: "Home", to: "/" },
   { label: "Shop All", to: "/collection" },
   { label: "Take the Quiz", to: "/quiz" },
-  { label: "About Us", to: "/story" },
+  { label: "About Us", to: "/our-story" },
   { label: "Science", to: "/science" },
-  { label: "FAQ", to: "/faqPage" },
+  { label: "FAQ", to: "/faq" },
 ];
 
 const quickLinksSecondary = [
   { label: "Ingredient Glossary", to: "/glossary" },
   { label: "Ingredient Integrity", to: "/integrity" },
   { label: "Blog", to: "/blog" },
-  { label: "Clinical Studies", to: "/clinical" },
+  { label: "Clinical Studies", to: "/clinical-studies" },
 ];
 
 const customerCareLinks = [
@@ -130,7 +130,7 @@ const NewsletterSignup = ({ source, compact = false }) => {
 const Footer = () => {
   return (
     <footer className="footer-font w-full bg-[#FFFFFF] footer-border-top">
-      <div className="hidden md:flex flex-col items-center pt-[80px] pb-[80px] gap-[36px]">
+      <div className="hidden lg:flex flex-col items-center pt-[80px] pb-[80px] gap-[36px]">
         <div className="w-full max-w-[1440px] flex justify-between items-start gap-[10px]">
           <div className="w-[130px] h-[155px] flex-shrink-0">
             <img
@@ -184,7 +184,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="flex md:hidden flex-col pt-[24px] px-[16px] pb-[24px] gap-[29px] items-start">
+      <div className="flex lg:hidden flex-col pt-[24px] px-[16px] pb-[24px] gap-[29px] items-start">
         <div className="flex flex-col gap-[17px] w-full mobile-logo">
           <img
             src="/Home/images/PetPlus-Logo.png"

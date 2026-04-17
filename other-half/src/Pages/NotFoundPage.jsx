@@ -145,7 +145,7 @@ const NotFoundPage = () => {
                 <ArrowRight size={18} />
               </Link>
 
-              <Link to="/faqPage" className="not-found-button not-found-button--ghost">
+              <Link to="/faq" className="not-found-button not-found-button--ghost">
                 Browse FAQ
               </Link>
             </div>

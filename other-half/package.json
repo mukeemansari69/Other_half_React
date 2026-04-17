@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:server": "node server/index.js",
     "dev:server:watch": "node --watch server/index.js",
-    "build": "vite build",
+    "build": "vite build && node scripts/postbuild-seo.mjs",
     "lint": "eslint .",
     "migrate:atlas": "node scripts/migrate-to-atlas.mjs --archive-local",
     "preview": "vite preview",

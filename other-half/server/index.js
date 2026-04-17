@@ -10,6 +10,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { optionalAuth, requireAdmin, requireAuth, signAuthToken } from "./lib/auth.js";
+import { buildDogHealthAssistantReply } from "./lib/aiPetAssistant.js";
 import {
   DATABASE_TARGET,
   readDatabase,
@@ -54,6 +55,12 @@ import {
   calculateShipping,
   toMinorUnits,
 } from "../shared/storefrontConfig.js";
+import {
+  SEO_REDIRECTS,
+  getCanonicalPath,
+  getRobotsDirectiveForPath,
+  isKnownRoute,
+} from "../shared/seo.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +73,17 @@ const configuredOrigins = (process.env.CLIENT_ORIGIN || "")
   .filter(Boolean);
 const DIST_DIR = path.join(ROOT_DIR, "dist");
 const DIST_INDEX = path.join(DIST_DIR, "index.html");
+const DIST_NOT_FOUND = path.join(DIST_DIR, "404.html");
+
+const resolveStaticHtmlPath = (requestPath) => {
+  const normalizedPath = String(requestPath || "/").replace(/\/+$/, "") || "/";
+
+  if (normalizedPath === "/") {
+    return DIST_INDEX;
+  }
+
+  return path.join(DIST_DIR, normalizedPath.replace(/^\//, ""), "index.html");
+};
 
 const app = express();
 app.disable("x-powered-by");
@@ -903,6 +921,24 @@ app.get("/api/health", (_req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.post(
+  "/api/ai/dog-health-assistant",
+  asyncHandler(async (req, res) => {
+    const description = sanitizeTextInput(req.body?.description, {
+      fieldLabel: "Dog problem description",
+      required: true,
+      minimumLength: 18,
+      maximumLength: 2200,
+    });
+
+    const guidance = await buildDogHealthAssistantReply({
+      description,
+    });
+
+    return res.json(guidance);
+  })
+);
 
 app.post(
   "/api/payments/create-order",
@@ -2389,13 +2425,56 @@ app.use((error, req, res, next) => {
 });
 
 if (fs.existsSync(DIST_INDEX)) {
-  app.use(express.static(DIST_DIR));
+  Object.entries(SEO_REDIRECTS).forEach(([sourcePath, destinationPath]) => {
+    app.get(sourcePath, (_req, res) => {
+      return res.redirect(301, destinationPath);
+    });
+  });
+
+  app.use(
+    express.static(DIST_DIR, {
+      setHeaders: (res, filePath) => {
+        const relativeFilePath = path.relative(DIST_DIR, filePath).replace(/\\/g, "/");
+
+        if (!relativeFilePath.endsWith("index.html")) {
+          return;
+        }
+
+        const routePath =
+          relativeFilePath === "index.html"
+            ? "/"
+            : `/${relativeFilePath.replace(/\/index\.html$/, "")}`;
+        const robotsDirective = getRobotsDirectiveForPath(routePath);
+
+        if (String(robotsDirective || "").toLowerCase().startsWith("noindex")) {
+          res.setHeader("X-Robots-Tag", robotsDirective);
+        }
+      },
+    })
+  );
+
   app.get("/{*path}", (req, res, next) => {
     if (req.path.startsWith("/api")) {
       return next();
     }
 
-    return res.sendFile(DIST_INDEX);
+    const canonicalPath = getCanonicalPath(req.path);
+    const robotsDirective = getRobotsDirectiveForPath(req.path);
+    const htmlPath = resolveStaticHtmlPath(canonicalPath);
+
+    if (String(robotsDirective || "").toLowerCase().startsWith("noindex")) {
+      res.set("X-Robots-Tag", robotsDirective);
+    }
+
+    if (isKnownRoute(canonicalPath) && fs.existsSync(htmlPath)) {
+      return res.sendFile(htmlPath);
+    }
+
+    if (fs.existsSync(DIST_NOT_FOUND)) {
+      return res.status(404).sendFile(DIST_NOT_FOUND);
+    }
+
+    return res.status(404).sendFile(DIST_INDEX);
   });
 }
 

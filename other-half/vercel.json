@@ -1,8 +1,89 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/((?!.*\\.[a-zA-Z0-9]+$).*)",
-      "destination": "/index.html"
+      "source": "/story",
+      "destination": "/our-story",
+      "permanent": true
+    },
+    {
+      "source": "/clinical",
+      "destination": "/clinical-studies",
+      "permanent": true
+    },
+    {
+      "source": "/dailyduo",
+      "destination": "/daily-duo",
+      "permanent": true
+    },
+    {
+      "source": "/faqPage",
+      "destination": "/faq",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/login",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
+    },
+    {
+      "source": "/register",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
+    },
+    {
+      "source": "/account",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
+    },
+    {
+      "source": "/admin",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
+    },
+    {
+      "source": "/review",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
+    },
+    {
+      "source": "/cart",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
+    },
+    {
+      "source": "/quizdesktop",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        }
+      ]
     }
   ]
 }

@@ -109,7 +109,7 @@ export default function Starter() {
 
 <div className="pt-2 w-full flex justify-center md:justify-start">
   <NavLink
-    to="/dailyduo"
+    to="/daily-duo"
     className={({ isActive }) =>
       `
       inline-block h-[55px] rounded-[333px]

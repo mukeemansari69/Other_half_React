@@ -9,9 +9,9 @@ import { useCart } from "../context/CartContext.jsx";
 const desktopLinks = [
   { label: "HOME", to: "/" },
   { label: "SHOP", to: "/collection" },
-  { label: "ABOUT", to: "/story" },
+  { label: "ABOUT", to: "/our-story" },
   { label: "SCIENCE", to: "/science" },
-  { label: "FAQ", to: "/faqPage" },
+  { label: "FAQ", to: "/faq" },
 ];
 
 const mobileSections = [
@@ -35,7 +35,7 @@ const mobileSections = [
       },
       {
         label: "Daily Duo",
-        to: "/dailyduo",
+        to: "/daily-duo",
         description: "Explore the wellness + dental bundle routine.",
       },
       {
@@ -60,7 +60,7 @@ const mobileSections = [
     links: [
       {
         label: "About Us",
-        to: "/story",
+        to: "/our-story",
         description: "Read the brand story and product vision.",
       },
       {
@@ -75,7 +75,7 @@ const mobileSections = [
       },
       {
         label: "Clinical Studies",
-        to: "/clinical",
+        to: "/clinical-studies",
         description: "Explore study-style product and formula pages.",
       },
       {
@@ -90,7 +90,7 @@ const mobileSections = [
       },
       {
         label: "FAQ",
-        to: "/faqPage",
+        to: "/faq",
         description: "Find answers about products and subscriptions.",
       },
     ],
@@ -142,9 +142,9 @@ const searchCatalog = mobileSections.flatMap((section) =>
 
 const quickSearchResults = [
   "/collection",
-  "/dailyduo",
+  "/daily-duo",
   "/science",
-  "/faqPage",
+  "/faq",
   "/cart",
   "/manage-subscription",
   "/contact",
