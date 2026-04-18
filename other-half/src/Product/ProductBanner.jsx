@@ -14,7 +14,10 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 import "/public/Product/css/ProductBanner.css";
+import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
+import { startRazorpayCheckout } from "../lib/startRazorpayCheckout.js";
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 import { getCadenceDetails } from "../../shared/subscriptionUtils.js";
 import {
@@ -325,6 +328,38 @@ const defaultProductBannerData = {
 
 const formatCurrency = (value) => formatStoreCurrency(value);
 
+const getPlanDays = (plan) => {
+  const cadence = getCadenceDetails({
+    planId: plan?.id,
+    deliveryLabel: plan?.deliveryLabel,
+  });
+
+  if (cadence.intervalUnit === "week") {
+    return cadence.intervalCount * 7;
+  }
+
+  if (cadence.intervalUnit === "year") {
+    return cadence.intervalCount * 365;
+  }
+
+  return cadence.intervalCount * 30;
+};
+
+const formatPlanPerDayLabel = (price, plan) => {
+  const planDays = getPlanDays(plan);
+
+  if (!planDays) {
+    return `${formatCurrency(price)}/cycle`;
+  }
+
+  const perDayPrice = price / planDays;
+
+  return `(${formatStoreCurrency(perDayPrice, {
+    minimumFractionDigits: perDayPrice < 100 ? 2 : 0,
+    maximumFractionDigits: perDayPrice < 100 ? 2 : 0,
+  })}/day)`;
+};
+
 const RatingStars = ({ rating }) => (
   <div
     className="flex items-center gap-1"
@@ -394,6 +429,7 @@ const ProductBanner = ({
   onAddToCart,
 }) => {
   const navigate = useNavigate();
+  const { token, user, refreshUser } = useAuth();
   const { addItem, hasItem } = useCart();
   const product = productData;
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -411,6 +447,9 @@ const ProductBanner = ({
   const [selectedBundleIds, setSelectedBundleIds] = useState([]);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [openAccordionId, setOpenAccordionId] = useState(null);
+  const [checkoutStatus, setCheckoutStatus] = useState({ type: "", message: "" });
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [showLoginDrawer, setShowLoginDrawer] = useState(false);
   const bundleSuggestions = useMemo(() => {
     return product.bundleSuggestions ?? [];
   }, [product.bundleSuggestions]);
@@ -453,8 +492,30 @@ const ProductBanner = ({
     : product.tags.slice(0, product.initialVisibleTags);
   const bundleTotal = bundleSuggestions
     .filter((item) => selectedBundleIds.includes(item.id))
-    .reduce((sum, item) => sum + item.price, 0);
-  const totalPrice = selectedPlan.price + bundleTotal;
+    .reduce(
+      (sum, item) =>
+        sum +
+        (isSubscribed
+          ? Number(item.price || 0)
+          : Number(item.compareAtPrice || item.price || 0)),
+      0
+    );
+  const selectedPlanFullPrice = Number(
+    selectedPlan.compareAtPrice || selectedPlan.price || 0
+  );
+  const selectedPlanEffectivePrice = isSubscribed
+    ? Number(selectedPlan.price || 0)
+    : selectedPlanFullPrice;
+  const totalPrice = selectedPlanEffectivePrice + bundleTotal;
+  const perProductCompareAtPrice = Number(
+    product.pricing?.unitCompareAtPrice || 0
+  );
+  const perProductDiscountedPrice = Number(
+    product.pricing?.unitDiscountedPrice || 0
+  );
+  const perProductDisplayPrice = isSubscribed
+    ? perProductDiscountedPrice || perProductCompareAtPrice
+    : perProductCompareAtPrice || perProductDiscountedPrice;
   const isActiveSuggestionAdded = activeSuggestion
     ? selectedBundleIds.includes(activeSuggestion.id)
     : false;
@@ -466,6 +527,24 @@ const ProductBanner = ({
       .filter((item) => sortedBundleIds.includes(item.id))
       .map((item) => item.title);
   }, [bundleSuggestions, sortedBundleIds]);
+  const lineDescription = useMemo(() => {
+    return [
+      `${selectedSize.name} (${selectedSize.weight})`,
+      selectedPlan.label,
+      isSubscribed ? "Subscribe & Save" : "One-time purchase",
+      selectedBundleTitles.length > 0
+        ? `Bundles: ${selectedBundleTitles.join(", ")}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" | ");
+  }, [
+    isSubscribed,
+    selectedBundleTitles,
+    selectedPlan.label,
+    selectedSize.name,
+    selectedSize.weight,
+  ]);
   const cartVariantId = useMemo(() => {
     return [
       product.id,
@@ -481,35 +560,8 @@ const ProductBanner = ({
     selectedSize.id,
     sortedBundleIds,
   ]);
-  const isInCart = hasItem(cartVariantId);
-
-  const handleSizeChange = (sizeId) => {
-    const nextSize = product.sizes.find((size) => size.id === sizeId);
-    setSelectedSizeId(sizeId);
-    setSelectedPlanId(nextSize?.plans[0]?.id ?? "");
-  };
-
-  const handleToggleBundle = (bundleId) => {
-    setSelectedBundleIds(
-      (current) =>
-        current.includes(bundleId)
-          ? current.filter((id) => id !== bundleId) // REMOVE
-          : [...current, bundleId], // ADD
-    );
-  };
-  const handleAddToCart = (source = "cart") => {
-    const lineDescription = [
-      `${selectedSize.name} (${selectedSize.weight})`,
-      selectedPlan.label,
-      isSubscribed ? "Subscribe & Save" : "One-time purchase",
-      selectedBundleTitles.length > 0
-        ? `Bundles: ${selectedBundleTitles.join(", ")}`
-        : "",
-    ]
-      .filter(Boolean)
-      .join(" | ");
-
-    addItem({
+  const checkoutLineItem = useMemo(() => {
+    return {
       id: cartVariantId,
       productId: product.id,
       name: product.name,
@@ -527,7 +579,55 @@ const ProductBanner = ({
       sizeId: selectedSize.id,
       sizeLabel: selectedSize.name,
       sizeWeight: selectedSize.weight,
-    });
+    };
+  }, [
+    cartVariantId,
+    isSubscribed,
+    lineDescription,
+    product.gallery,
+    product.id,
+    product.name,
+    selectedCadence.cadenceLabel,
+    selectedCadence.intervalCount,
+    selectedCadence.intervalUnit,
+    selectedImage?.src,
+    selectedPlan.deliveryLabel,
+    selectedPlan.id,
+    selectedPlan.label,
+    selectedSize.id,
+    selectedSize.name,
+    selectedSize.weight,
+    totalPrice,
+  ]);
+  const isInCart = hasItem(cartVariantId);
+  const activeSuggestionPrice = activeSuggestion
+    ? Number(
+        isSubscribed
+          ? activeSuggestion.price || 0
+          : activeSuggestion.compareAtPrice || activeSuggestion.price || 0
+      )
+    : 0;
+  const activeSuggestionCompareAtPrice =
+    isSubscribed && activeSuggestion?.compareAtPrice
+      ? Number(activeSuggestion.compareAtPrice || 0)
+      : null;
+
+  const handleSizeChange = (sizeId) => {
+    const nextSize = product.sizes.find((size) => size.id === sizeId);
+    setSelectedSizeId(sizeId);
+    setSelectedPlanId(nextSize?.plans[0]?.id ?? "");
+  };
+
+  const handleToggleBundle = (bundleId) => {
+    setSelectedBundleIds(
+      (current) =>
+        current.includes(bundleId)
+          ? current.filter((id) => id !== bundleId) // REMOVE
+          : [...current, bundleId], // ADD
+    );
+  };
+  const handleAddToCart = (source = "cart") => {
+    addItem(checkoutLineItem);
 
     if (typeof onAddToCart === "function") {
       onAddToCart({
@@ -538,6 +638,57 @@ const ProductBanner = ({
         bundleIds: selectedBundleIds,
         totalPrice,
       });
+    }
+  };
+
+  const handleDirectCheckout = async ({
+    skipAuthCheck = false,
+    authToken = token,
+    authUser = user,
+  } = {}) => {
+    if (!skipAuthCheck && !authToken) {
+      setCheckoutStatus({
+        type: "error",
+        message: "Please login first to continue with Razorpay payment.",
+      });
+      setShowLoginDrawer(true);
+      return;
+    }
+
+    setCheckingOut(true);
+    setCheckoutStatus({ type: "", message: "" });
+
+    try {
+      const result = await startRazorpayCheckout({
+        token: authToken,
+        user: authUser,
+        items: [checkoutLineItem],
+      });
+
+      await refreshUser().catch(() => null);
+      navigate("/review", {
+        replace: true,
+        state: {
+          fromCheckout: true,
+          orderId: result.order.orderId,
+          message:
+            result.verification.message ||
+            "Payment confirmed and your order has been placed successfully.",
+        },
+      });
+    } catch (error) {
+      if (error.status === 401) {
+        setShowLoginDrawer(true);
+      }
+
+      setCheckoutStatus({
+        type: "error",
+        message:
+          error.message ||
+          "Checkout could not be started right now. Please try again.",
+      });
+    } finally {
+      setCheckingOut(false);
     }
   };
 
@@ -633,6 +784,24 @@ const ProductBanner = ({
                   See All Reviews
                 </Link>
               </div>
+
+              {perProductDisplayPrice ? (
+                <div className="flex flex-wrap items-center gap-3 text-sm">
+                  {isSubscribed && perProductCompareAtPrice ? (
+                    <span className="text-[#8F8F8F] line-through">
+                      {formatCurrency(perProductCompareAtPrice)}
+                    </span>
+                  ) : null}
+                  <span className="font-semibold text-[#1A1A1A]">
+                    Per product {formatCurrency(perProductDisplayPrice)}
+                  </span>
+                  {product.pricing?.discountPercent ? (
+                    <span className="inline-flex rounded-full bg-[#FFF4D9] px-3 py-1 text-xs font-semibold text-[#7A4C00]">
+                      Subscribe & save {product.pricing.discountPercent}%
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
 
               <div className="flex flex-wrap gap-2">
                 {visibleTags.map((tag) => (
@@ -753,6 +922,22 @@ const ProductBanner = ({
               <div className="space-y-3">
                 {selectedSize.plans.map((plan) => {
                   const isSelected = plan.id === selectedPlan.id;
+                  const displayPlanPrice = Number(
+                    isSubscribed
+                      ? plan.price || 0
+                      : plan.compareAtPrice || plan.price || 0
+                  );
+                  const displayPlanCompareAtPrice =
+                    isSubscribed && plan.compareAtPrice
+                      ? Number(plan.compareAtPrice || 0)
+                      : null;
+                  const displayPlanSavings = isSubscribed
+                    ? Number(plan.savingsAmount || 0)
+                    : 0;
+                  const displayPerDayLabel = formatPlanPerDayLabel(
+                    displayPlanPrice,
+                    plan
+                  );
                   const badgeTone =
                     plan.badgeLabel === "Best Value"
                       ? "border-black bg-[#EBF466] text-[#1A1A1A]"
@@ -791,15 +976,31 @@ const ProductBanner = ({
                         <div className="space-y-2 text-right">
                           <div className="space-y-1">
                             <p className="text-xs leading-none text-[#9E9E9E]">
-                              {plan.perDayLabel}
+                              {displayPerDayLabel}
                             </p>
-                            <span className="inline-flex rounded-full bg-[#0F4A12] px-2 py-1 text-[10px] font-semibold leading-none text-[#EBF466]">
-                              {plan.offerLabel}
-                            </span>
+                            {isSubscribed ? (
+                              <span className="inline-flex rounded-full bg-[#0F4A12] px-2 py-1 text-[10px] font-semibold leading-none text-[#EBF466]">
+                                {plan.offerLabel}
+                              </span>
+                            ) : (
+                              <span className="inline-flex rounded-full bg-[#F4EFE5] px-2 py-1 text-[10px] font-semibold leading-none text-[#6A6458]">
+                                One-time
+                              </span>
+                            )}
                           </div>
+                          {displayPlanCompareAtPrice ? (
+                            <p className="text-xs font-medium leading-none text-[#9E9E9E] line-through">
+                              {formatCurrency(displayPlanCompareAtPrice)}
+                            </p>
+                          ) : null}
                           <p className="text-lg font-semibold leading-none text-[#E55C2A] sm:text-xl">
-                            {formatCurrency(plan.price)}
+                            {formatCurrency(displayPlanPrice)}
                           </p>
+                          {displayPlanSavings ? (
+                            <p className="text-xs font-semibold leading-none text-[#0F4A12]">
+                              Save {formatCurrency(displayPlanSavings)}
+                            </p>
+                          ) : null}
                         </div>
                       </div>
                     </button>
@@ -814,7 +1015,9 @@ const ProductBanner = ({
                       {product.subscription.title}
                     </h3>
                     <p className="mt-1 text-sm leading-[1.4] text-[#6C6C6C]">
-                      {product.subscription.description}
+                      {isSubscribed
+                        ? product.subscription.description
+                        : "Switch subscription on to apply the savings shown above."}
                     </p>
                   </div>
                   <button
@@ -849,15 +1052,27 @@ const ProductBanner = ({
                   <button
                     type="button"
                     onClick={() => {
-                      if (!isInCart) {
-                        handleAddToCart("shop-pay");
-                      }
-                      navigate(product.cta.cartHref || "/cart");
+                      void handleDirectCheckout();
                     }}
+                    disabled={checkingOut}
                     className="product-banner-cta flex w-full items-center justify-center rounded-full bg-[#4E3CE2] px-5 py-4 text-center text-base font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)]"
                   >
-                    {product.cta.shopPayLabel}
+                    {checkingOut
+                      ? `Opening ${PAYMENT_PROVIDER}...`
+                      : product.cta.shopPayLabel}
                   </button>
+
+                  {checkoutStatus.message ? (
+                    <div
+                      className={`rounded-2xl px-4 py-3 text-sm ${
+                        checkoutStatus.type === "success"
+                          ? "bg-[#EEF6E7] text-[#0F4A12]"
+                          : "bg-[#FFF1EE] text-[#A13A2C]"
+                      }`}
+                    >
+                      {checkoutStatus.message}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
@@ -905,11 +1120,13 @@ const ProductBanner = ({
 
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-lg font-semibold leading-[1.34] text-[#B2B2B2] line-through sm:text-xl">
-                                {formatCurrency(activeSuggestion.compareAtPrice)}
-                              </span>
+                              {activeSuggestionCompareAtPrice ? (
+                                <span className="text-lg font-semibold leading-[1.34] text-[#B2B2B2] line-through sm:text-xl">
+                                  {formatCurrency(activeSuggestionCompareAtPrice)}
+                                </span>
+                              ) : null}
                               <span className="text-lg font-semibold leading-[1.34] text-[#1A1A1A] sm:text-xl">
-                                {formatCurrency(activeSuggestion.price)}
+                                {formatCurrency(activeSuggestionPrice)}
                               </span>
                             </div>
 
@@ -958,6 +1175,24 @@ const ProductBanner = ({
           </div>
         </div>
       </div>
+      <CheckoutLoginDrawer
+        isOpen={showLoginDrawer}
+        onClose={() => setShowLoginDrawer(false)}
+        onAuthenticated={(authResponse) => {
+          setShowLoginDrawer(false);
+          setCheckoutStatus({
+            type: "success",
+            message: "Login successful. Opening Razorpay payment now.",
+          });
+          void handleDirectCheckout({
+            skipAuthCheck: true,
+            authToken: authResponse?.token || token,
+            authUser: authResponse?.user || user,
+          });
+        }}
+        title="Please login"
+        message="Razorpay payment on the product page is available only after sign in."
+      />
     </section>
   );
 };

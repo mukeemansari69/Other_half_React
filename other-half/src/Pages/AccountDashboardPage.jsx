@@ -190,6 +190,16 @@ const AccountDashboardPage = () => {
   const isManagedSubscription = Boolean(summary.subscription?.sourceOrderId);
   const deliveryCadenceOptions = ["Every 30 days", "Every 45 days", "Every 60 days"];
   const deliveryCadenceValue = formState.deliveryCadence || "Not set";
+  const verificationItems = [
+    {
+      label: "Email verified",
+      value: summary.user.emailVerified,
+    },
+    {
+      label: "Phone verified",
+      value: summary.user.phoneVerified,
+    },
+  ];
 
   return (
     <main className="bg-[#FBF8EF] px-6 py-8 md:px-10 lg:px-16">
@@ -206,6 +216,21 @@ const AccountDashboardPage = () => {
               From saved quiz answers to delivery timing and support messages, this space keeps
               the little details that help you care for {dogName} with less guesswork.
             </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              {verificationItems.map((item) => (
+                <span
+                  key={item.label}
+                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] ${
+                    item.value
+                      ? "bg-[#EBF466] text-[#163B1D]"
+                      : "border border-white/16 bg-white/8 text-white/72"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              ))}
+            </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               {metricCards(summary).map((card) => {
@@ -380,6 +405,12 @@ const AccountDashboardPage = () => {
                   onChange={(event) => handleFieldChange("phone", event.target.value)}
                   className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
                 />
+                {!summary.user.phoneVerified && formState.phone ? (
+                  <p className="mt-2 text-sm text-[#6A6458]">
+                    This number is saved, but OTP login will only work after you verify it through
+                    the mobile sign-in flow.
+                  </p>
+                ) : null}
               </label>
 
               <label className="block">

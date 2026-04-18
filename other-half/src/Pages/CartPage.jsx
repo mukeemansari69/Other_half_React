@@ -2,12 +2,11 @@ import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
-import { apiRequest } from "../lib/api.js";
-import { loadRazorpayCheckout } from "../lib/loadRazorpayCheckout.js";
+import { startRazorpayCheckout, toCheckoutItemPayload } from "../lib/startRazorpayCheckout.js";
 import {
-  BRAND_NAME,
   FLAT_SHIPPING_RATE,
   PAYMENT_PROVIDER,
   SHIPPING_THRESHOLD,
@@ -15,27 +14,6 @@ import {
   formatStoreCurrency,
   getShippingRuleText,
 } from "../../shared/storefrontConfig.js";
-
-const serializeCartItems = (items) =>
-  items.map((item) => ({
-    id: item.id,
-    productId: item.productId,
-    name: item.name,
-    description: item.description,
-    image: item.image,
-    unitPrice: item.unitPrice,
-    quantity: item.quantity,
-    purchaseType: item.purchaseType,
-    planId: item.planId,
-    planLabel: item.planLabel,
-    deliveryLabel: item.deliveryLabel,
-    deliveryCadence: item.deliveryCadence,
-    billingIntervalUnit: item.billingIntervalUnit,
-    billingIntervalCount: item.billingIntervalCount,
-    sizeId: item.sizeId,
-    sizeLabel: item.sizeLabel,
-    sizeWeight: item.sizeWeight,
-  }));
 
 const CartPage = () => {
   const { token, user, refreshUser } = useAuth();
@@ -50,48 +28,32 @@ const CartPage = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState({ type: "", message: "" });
   const [checkingOut, setCheckingOut] = useState(false);
+  const [showLoginDrawer, setShowLoginDrawer] = useState(false);
 
   const shipping = calculateShipping(subtotal);
   const total = subtotal + shipping;
 
-  const handleVerifiedPayment = async ({ orderId, payment }) => {
-    const verification = await apiRequest("/payments/razorpay/verify-payment", {
-      method: "POST",
-      token,
-      body: {
-        orderId,
-        razorpayOrderId: payment.razorpay_order_id,
-        razorpayPaymentId: payment.razorpay_payment_id,
-        razorpaySignature: payment.razorpay_signature,
-      },
-    });
-
+  const finalizePaidOrder = async (verification, orderId) => {
     clearCart();
 
-    if (user) {
-      await refreshUser();
-      navigate("/review", {
-        replace: true,
-        state: {
-          fromCheckout: true,
-          orderId,
-          message:
-            verification.message ||
-            "Payment received. Your order has been confirmed successfully.",
-        },
-      });
-      return;
-    }
-
-    setStatus({
-      type: "success",
-      message:
-        verification.message ||
-        "Payment received. Thank you. Your order has been placed successfully.",
+    await refreshUser().catch(() => null);
+    navigate("/review", {
+      replace: true,
+      state: {
+        fromCheckout: true,
+        orderId,
+        message:
+          verification.message ||
+          "Payment received. Your order has been confirmed successfully.",
+      },
     });
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = async ({
+    skipAuthCheck = false,
+    authToken = token,
+    authUser = user,
+  } = {}) => {
     if (items.length === 0) {
       setStatus({
         type: "error",
@@ -100,84 +62,30 @@ const CartPage = () => {
       return;
     }
 
+    if (!skipAuthCheck && !authToken) {
+      setStatus({
+        type: "error",
+        message: "Please login first to continue with Razorpay checkout.",
+      });
+      setShowLoginDrawer(true);
+      return;
+    }
+
     setCheckingOut(true);
     setStatus({ type: "", message: "" });
 
     try {
-      const order = await apiRequest("/payments/create-order", {
-        method: "POST",
-        token,
-        body: {
-          email: user?.email || "",
-          customerName: user?.name || "",
-          items: serializeCartItems(items),
-        },
+      const result = await startRazorpayCheckout({
+        token: authToken,
+        user: authUser,
+        items: items.map(toCheckoutItemPayload),
       });
 
-      const Razorpay = await loadRazorpayCheckout();
-
-      if (!Razorpay) {
-        throw new Error(`${PAYMENT_PROVIDER} checkout could not be loaded.`);
-      }
-
-      const checkout = new Razorpay({
-        key: order.keyId,
-        amount: order.amount,
-        currency: order.currency,
-        order_id: order.gatewayOrderId,
-        name: BRAND_NAME,
-        description: `Order ${order.orderNumber}`,
-        image: "/Home/images/PetPlus-Logo.png",
-        prefill: {
-          name: user?.name || order.customerName || "",
-          email: user?.email || order.customerEmail || "",
-          contact: user?.phone || "",
-        },
-        notes: {
-          localOrderId: order.orderId,
-          orderNumber: order.orderNumber,
-        },
-        theme: {
-          color: "#0F4A12",
-        },
-        modal: {
-          ondismiss: () => {
-            setCheckingOut(false);
-            setStatus({
-              type: "error",
-              message:
-                "Payment was cancelled. Your cart is still saved, and you can try again anytime.",
-            });
-          },
-        },
-        handler: async (payment) => {
-          try {
-            await handleVerifiedPayment({ orderId: order.orderId, payment });
-          } catch (error) {
-            setStatus({
-              type: "error",
-              message:
-                error.message ||
-                "Payment was captured, but confirmation is still pending.",
-            });
-          } finally {
-            setCheckingOut(false);
-          }
-        },
-      });
-
-      checkout.on("payment.failed", (event) => {
-        setCheckingOut(false);
-        setStatus({
-          type: "error",
-          message:
-            event?.error?.description ||
-            "Payment could not be completed. Please try again.",
-        });
-      });
-
-      checkout.open();
+      await finalizePaidOrder(result.verification, result.order.orderId);
     } catch (error) {
+      if (error.status === 401) {
+        setShowLoginDrawer(true);
+      }
       setStatus({
         type: "error",
         message:
@@ -369,6 +277,24 @@ const CartPage = () => {
           </div>
         </aside>
       </div>
+      <CheckoutLoginDrawer
+        isOpen={showLoginDrawer}
+        onClose={() => setShowLoginDrawer(false)}
+        onAuthenticated={(authResponse) => {
+          setShowLoginDrawer(false);
+          setStatus({
+            type: "success",
+            message: "Login successful. Opening Razorpay checkout now.",
+          });
+          void handleCheckout({
+            skipAuthCheck: true,
+            authToken: authResponse?.token || token,
+            authUser: authResponse?.user || user,
+          });
+        }}
+        title="Please login"
+        message="Razorpay checkout is available only for logged-in users."
+      />
     </main>
   );
 };

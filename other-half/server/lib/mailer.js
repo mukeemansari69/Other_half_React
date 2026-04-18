@@ -8,6 +8,13 @@ import { UPLOADS_DIR } from "./database.js";
 const emailPattern = /\S+@\S+\.\S+/;
 
 const normalizeEmail = (value = "") => String(value).trim().toLowerCase();
+const escapeHtml = (value = "") =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 
 const toBoolean = (value, fallback = false) => {
   if (value === undefined) {
@@ -128,14 +135,6 @@ const buildSupportRequestText = (supportRequest) => {
 };
 
 const buildSupportRequestHtml = (supportRequest) => {
-  const escapeHtml = (value = "") =>
-    String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-
   const rows = [
     ["Team", supportRequest.team],
     ["Customer name", supportRequest.name],
@@ -251,4 +250,163 @@ const sendSupportRequestEmail = async (supportRequest) => {
   };
 };
 
-export { getMailConfig, sendSupportRequestEmail };
+const sendMailMessage = async ({ to, subject, text, html, replyTo }) => {
+  const transporter = getTransporter();
+  const config = getMailConfig();
+
+  if (!transporter || !config.isConfigured) {
+    return {
+      delivered: false,
+      skipped: true,
+      reason:
+        "SMTP mail delivery is not configured yet. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, and MAIL_FROM in the server environment.",
+      recipients: [to].filter(Boolean),
+      messageId: null,
+    };
+  }
+
+  const info = await transporter.sendMail({
+    from: config.from,
+    to,
+    subject,
+    text,
+    html,
+    replyTo,
+  });
+
+  return {
+    delivered: true,
+    skipped: false,
+    reason: "",
+    recipients: [to].filter(Boolean),
+    messageId: info.messageId || null,
+  };
+};
+
+const buildAuthEmailHtml = ({ eyebrow, title, intro, otp, actionUrl, actionLabel, expiresInMinutes }) => {
+  const actionButton = actionUrl
+    ? `
+      <div style="margin:24px 0;">
+        <a href="${escapeHtml(actionUrl)}" style="display:inline-block;background:#0f4a12;color:#ffffff;padding:14px 24px;border-radius:999px;text-decoration:none;font-weight:700;">
+          ${escapeHtml(actionLabel)}
+        </a>
+      </div>
+    `
+    : "";
+
+  return `
+    <div style="font-family:Poppins,Arial,sans-serif;color:#1a1a1a;background:#f8f6ef;padding:24px;">
+      <div style="max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #e6dfcf;border-radius:28px;padding:32px;">
+        <p style="margin:0 0 12px;color:#0f4a12;font-size:12px;font-weight:700;letter-spacing:0.24em;text-transform:uppercase;">
+          ${escapeHtml(eyebrow)}
+        </p>
+        <h1 style="margin:0 0 16px;font-size:28px;line-height:1.2;color:#163b1d;">
+          ${escapeHtml(title)}
+        </h1>
+        <p style="margin:0 0 20px;color:#4f4a3e;line-height:1.7;">
+          ${escapeHtml(intro)}
+        </p>
+        <div style="margin:24px 0;padding:20px;border-radius:24px;background:#fbf8ef;border:1px solid #e6dfcf;">
+          <p style="margin:0 0 8px;color:#6a6458;font-size:13px;text-transform:uppercase;letter-spacing:0.18em;">
+            One-time code
+          </p>
+          <p style="margin:0;font-size:34px;letter-spacing:0.36em;font-weight:700;color:#163b1d;">
+            ${escapeHtml(otp)}
+          </p>
+          <p style="margin:12px 0 0;color:#6a6458;line-height:1.6;">
+            This code expires in ${expiresInMinutes} minutes.
+          </p>
+        </div>
+        ${actionButton}
+        <p style="margin:20px 0 0;color:#6a6458;line-height:1.7;">
+          If you did not request this, you can ignore this email.
+        </p>
+      </div>
+    </div>
+  `;
+};
+
+const buildAuthEmailText = ({ title, intro, otp, actionUrl, expiresInMinutes }) => {
+  return [
+    title,
+    "",
+    intro,
+    "",
+    `OTP: ${otp}`,
+    `This code expires in ${expiresInMinutes} minutes.`,
+    actionUrl ? `Verification link: ${actionUrl}` : "",
+    "",
+    "If you did not request this, you can ignore this email.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+};
+
+const sendEmailVerificationEmail = async ({
+  email,
+  userName,
+  otp,
+  verificationUrl,
+  expiresInMinutes,
+}) => {
+  const intro = `Hi ${userName || "there"}, confirm your email address to activate your PetPlus account.`;
+
+  return sendMailMessage({
+    to: email,
+    subject: "Verify your PetPlus email address",
+    text: buildAuthEmailText({
+      title: "Verify your email address",
+      intro,
+      otp,
+      actionUrl: verificationUrl,
+      expiresInMinutes,
+    }),
+    html: buildAuthEmailHtml({
+      eyebrow: "Email verification",
+      title: "Activate your PetPlus account",
+      intro,
+      otp,
+      actionUrl: verificationUrl,
+      actionLabel: "Verify email",
+      expiresInMinutes,
+    }),
+  });
+};
+
+const sendPasswordResetEmail = async ({
+  email,
+  userName,
+  otp,
+  resetUrl,
+  expiresInMinutes,
+}) => {
+  const intro = `Hi ${userName || "there"}, use this code to reset the password for your PetPlus account.`;
+
+  return sendMailMessage({
+    to: email,
+    subject: "Reset your PetPlus password",
+    text: buildAuthEmailText({
+      title: "Reset your password",
+      intro,
+      otp,
+      actionUrl: resetUrl,
+      expiresInMinutes,
+    }),
+    html: buildAuthEmailHtml({
+      eyebrow: "Password reset",
+      title: "Choose a new password",
+      intro,
+      otp,
+      actionUrl: resetUrl,
+      actionLabel: "Reset password",
+      expiresInMinutes,
+    }),
+  });
+};
+
+export {
+  getMailConfig,
+  sendEmailVerificationEmail,
+  sendPasswordResetEmail,
+  sendSupportRequestEmail,
+};

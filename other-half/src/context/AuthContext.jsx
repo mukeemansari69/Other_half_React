@@ -56,14 +56,21 @@ export const AuthProvider = ({ children }) => {
     setUser(nextUser);
   };
 
+  const consumeAuthResponse = (response) => {
+    if (response?.token && response?.user) {
+      persistSession(response.token, response.user);
+    }
+
+    return response;
+  };
+
   const login = async (credentials) => {
     const response = await apiRequest("/auth/login", {
       method: "POST",
       body: credentials,
     });
 
-    persistSession(response.token, response.user);
-    return response;
+    return consumeAuthResponse(response);
   };
 
   const register = async (payload) => {
@@ -72,8 +79,73 @@ export const AuthProvider = ({ children }) => {
       body: payload,
     });
 
-    persistSession(response.token, response.user);
-    return response;
+    return consumeAuthResponse(response);
+  };
+
+  const registerWithPhone = async (payload) => {
+    const response = await apiRequest("/auth/register/phone", {
+      method: "POST",
+      body: payload,
+    });
+
+    return consumeAuthResponse(response);
+  };
+
+  const requestPhoneOtp = async (payload) => {
+    return apiRequest("/auth/phone/send-otp", {
+      method: "POST",
+      body: payload,
+    });
+  };
+
+  const verifyPhoneOtp = async (payload) => {
+    const response = await apiRequest("/auth/phone/verify-otp", {
+      method: "POST",
+      body: payload,
+    });
+
+    return consumeAuthResponse(response);
+  };
+
+  const verifyEmailOtp = async (payload) => {
+    const response = await apiRequest("/auth/verify/email", {
+      method: "POST",
+      body: payload,
+    });
+
+    return consumeAuthResponse(response);
+  };
+
+  const resendEmailVerification = async (payload) => {
+    return apiRequest("/auth/verify/email/resend", {
+      method: "POST",
+      body: payload,
+    });
+  };
+
+  const requestPasswordReset = async (payload) => {
+    return apiRequest("/auth/password/forgot", {
+      method: "POST",
+      body: payload,
+    });
+  };
+
+  const resetPassword = async (payload) => {
+    const response = await apiRequest("/auth/password/reset", {
+      method: "POST",
+      body: payload,
+    });
+
+    return consumeAuthResponse(response);
+  };
+
+  const exchangeSocialLoginCode = async (code) => {
+    const response = await apiRequest("/auth/social/exchange", {
+      method: "POST",
+      body: { code },
+    });
+
+    return consumeAuthResponse(response);
   };
 
   const logout = () => {
@@ -107,6 +179,14 @@ export const AuthProvider = ({ children }) => {
         isAdmin: user?.role === "admin",
         login,
         register,
+        registerWithPhone,
+        requestPhoneOtp,
+        verifyPhoneOtp,
+        verifyEmailOtp,
+        resendEmailVerification,
+        requestPasswordReset,
+        resetPassword,
+        exchangeSocialLoginCode,
         logout,
         refreshUser,
         updateLocalUser,

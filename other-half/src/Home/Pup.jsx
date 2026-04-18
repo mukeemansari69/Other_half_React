@@ -8,8 +8,10 @@ import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
 const products = collectionCards.slice(0, 3).map((product) => ({
   img: product.image,
   title: product.title,
-  price: formatStoreCurrency(product.startingPrice),
-  old: formatStoreCurrency(product.startingPrice * 1.15),
+  price: formatStoreCurrency(product.displayPrice),
+  old: product.displayCompareAtPrice
+    ? formatStoreCurrency(product.displayCompareAtPrice)
+    : "",
   link: product.route,
   tags: product.badges,
 }));
@@ -76,7 +78,7 @@ export default function Pup() {
               <div className="pup-price-row">
                 <div>
                   <span className="pup-price">{product.price}</span>
-                  <span className="pup-old">{product.old}</span>
+                  {product.old ? <span className="pup-old">{product.old}</span> : null}
                 </div>
 
                 <button className="pup-arrow">+</button>

@@ -1,5 +1,4 @@
 import "./loadEnv.js";
-import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
@@ -9,7 +8,7 @@ import { randomUUID } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { optionalAuth, requireAdmin, requireAuth, signAuthToken } from "./lib/auth.js";
+import { optionalAuth, requireAdmin, requireAuth } from "./lib/auth.js";
 import { buildDogHealthAssistantReply } from "./lib/aiPetAssistant.js";
 import {
   DATABASE_TARGET,
@@ -21,9 +20,9 @@ import {
 } from "./lib/database.js";
 import { createRequestLogger, logError, logInfo, logWarn } from "./lib/logger.js";
 import { sendSupportRequestEmail } from "./lib/mailer.js";
+import createAuthRouter from "./routes/auth.js";
 import {
   ACTIVE_SUBSCRIPTION_STATUSES,
-  createInactiveSubscription,
   getPrimarySubscriptionItem,
   normalizeSubscriptionStatus,
   syncUserSubscriptionState,
@@ -61,6 +60,13 @@ import {
   getRobotsDirectiveForPath,
   isKnownRoute,
 } from "../shared/seo.js";
+import {
+  normalizeEmail,
+  normalizeTextValue,
+  sanitizeEmailInput,
+  sanitizePhoneInput,
+  sanitizeTextInput,
+} from "./lib/validation.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -96,8 +102,6 @@ const asyncHandler = (handler) => {
   return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 };
 
-const emailPattern = /\S+@\S+\.\S+/;
-const phonePattern = /^[0-9+()\-\s]{7,20}$/;
 const allowedSupportCategories = new Set([
   "billing",
   "delivery",
@@ -112,68 +116,6 @@ const allowedSupportCategories = new Set([
 const allowedSupportPriorities = new Set(["low", "standard", "priority", "urgent"]);
 const allowedSupportContactMethods = new Set(["email", "phone"]);
 
-const createHttpError = (message, statusCode = 400) => {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  return error;
-};
-
-const normalizeEmail = (value = "") => value.trim().toLowerCase();
-
-const normalizeTextValue = (value = "") =>
-  String(value)
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
-
-const sanitizeTextInput = (
-  value,
-  { fieldLabel, required = false, minimumLength = 0, maximumLength = 500 } = {}
-) => {
-  const normalizedValue = String(value ?? "").trim();
-
-  if (!normalizedValue) {
-    if (required) {
-      throw createHttpError(`${fieldLabel} is required.`, 400);
-    }
-
-    return "";
-  }
-
-  if (minimumLength > 0 && normalizedValue.length < minimumLength) {
-    throw createHttpError(
-      `${fieldLabel} must be at least ${minimumLength} characters long.`,
-      400
-    );
-  }
-
-  return normalizedValue.slice(0, maximumLength);
-};
-
-const sanitizeEmailInput = (value, fieldLabel = "Email address") => {
-  const normalizedEmail = normalizeEmail(value);
-
-  if (!emailPattern.test(normalizedEmail)) {
-    throw createHttpError(`Please enter a valid ${fieldLabel.toLowerCase()}.`, 400);
-  }
-
-  return normalizedEmail;
-};
-
-const sanitizePhoneInput = (value) => {
-  const normalizedValue = String(value ?? "").trim();
-
-  if (!normalizedValue) {
-    return "";
-  }
-
-  if (!phonePattern.test(normalizedValue)) {
-    throw createHttpError("Please enter a valid phone number.", 400);
-  }
-
-  return normalizedValue.slice(0, 20);
-};
-
 const sanitizeSupportChoice = (value, allowedValues, fallback) => {
   const normalizedValue = String(value ?? "").trim().toLowerCase();
   return allowedValues.has(normalizedValue) ? normalizedValue : fallback;
@@ -187,21 +129,6 @@ const apiLimiter = rateLimit({
   skip: (req) => req.path === "/api/health",
   message: {
     message: "Too many requests were sent from this connection. Please try again shortly.",
-  },
-});
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req) => {
-    const email = normalizeEmail(req.body?.email || "");
-    return `${ipKeyGenerator(req.ip || "")}:${email || "anonymous-auth"}`;
-  },
-  message: {
-    message:
-      "Too many sign-in or registration attempts were made. Please wait a few minutes and try again.",
   },
 });
 
@@ -337,10 +264,6 @@ const getReviewableProductsForUser = (orders, reviews, userId) => {
   return Array.from(productsById.values()).sort((firstProduct, secondProduct) => {
     return new Date(secondProduct.purchasedAt).getTime() - new Date(firstProduct.purchasedAt).getTime();
   });
-};
-
-const validatePassword = (password = "") => {
-  return password.trim().length >= 8;
 };
 
 const createUpiPaymentLink = ({ vpa, payeeName, amount, note, transactionRef }) => {
@@ -837,10 +760,12 @@ app.post(
   "/api/payments/stripe/webhook",
   express.raw({ type: "application/json" }),
   asyncHandler(async (req, res) => {
-    return res.status(410).json({
-      message:
-        "Stripe checkout has been retired for PetPlus. Use the Razorpay payment flow instead.",
-    });
+    if (PAYMENT_PROVIDER !== "stripe") {
+      return res.status(410).json({
+        message:
+          "Stripe checkout has been retired for PetPlus. Use the Razorpay payment flow instead.",
+      });
+    }
 
     const { secretKey, webhookSecret } = getStripeConfig();
 
@@ -922,6 +847,8 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+app.use("/api/auth", createAuthRouter());
+
 app.post(
   "/api/ai/dog-health-assistant",
   asyncHandler(async (req, res) => {
@@ -942,7 +869,7 @@ app.post(
 
 app.post(
   "/api/payments/create-order",
-  optionalAuth,
+  requireAuth,
   asyncHandler(async (req, res) => {
     const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
     const items = rawItems
@@ -1106,7 +1033,7 @@ app.post(
 
 app.post(
   "/api/payments/razorpay/verify-payment",
-  optionalAuth,
+  requireAuth,
   asyncHandler(async (req, res) => {
     const { keyId, keySecret, isConfigured } = getRazorpayConfig();
 
@@ -1225,10 +1152,12 @@ app.post(
   "/api/payments/create-checkout-session",
   optionalAuth,
   asyncHandler(async (req, res) => {
-    return res.status(410).json({
-      message:
-        "This legacy checkout endpoint has been retired. Use /api/payments/create-order for Razorpay checkout.",
-    });
+    if (PAYMENT_PROVIDER !== "stripe") {
+      return res.status(410).json({
+        message:
+          "This legacy checkout endpoint has been retired. Use /api/payments/create-order for Razorpay checkout.",
+      });
+    }
 
     const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
     const items = rawItems
@@ -1463,10 +1392,12 @@ app.post(
   "/api/payments/stripe/confirm-session",
   optionalAuth,
   asyncHandler(async (req, res) => {
-    return res.status(410).json({
-      message:
-        "Stripe confirmation has been retired for PetPlus. Razorpay payments are confirmed through /api/payments/razorpay/verify-payment.",
-    });
+    if (PAYMENT_PROVIDER !== "stripe") {
+      return res.status(410).json({
+        message:
+          "Stripe confirmation has been retired for PetPlus. Razorpay payments are confirmed through /api/payments/razorpay/verify-payment.",
+      });
+    }
 
     const { secretKey: stripeSecretKey } = getStripeConfig();
 
@@ -1533,105 +1464,6 @@ app.post(
   })
 );
 
-app.post(
-  "/api/auth/register",
-  authLimiter,
-  asyncHandler(async (req, res) => {
-    const name = sanitizeTextInput(req.body.name, {
-      fieldLabel: "Full name",
-      required: true,
-      minimumLength: 2,
-      maximumLength: 120,
-    });
-    const email = sanitizeEmailInput(req.body.email);
-    const phone = sanitizePhoneInput(req.body.phone);
-    const password = req.body.password || "";
-    const dogName = sanitizeTextInput(req.body.dogName || "Your dog", {
-      fieldLabel: "Dog name",
-      minimumLength: 2,
-      maximumLength: 80,
-    });
-
-    if (!validatePassword(password)) {
-      return res
-        .status(400)
-        .json({ message: "Password should be at least 8 characters long." });
-    }
-
-    const database = await readDatabase();
-    const existingUser = database.users.find((user) => user.email === email);
-
-    if (existingUser) {
-      return res.status(409).json({ message: "An account with this email already exists." });
-    }
-
-    const createdAt = new Date().toISOString();
-    const user = {
-      id: randomUUID(),
-      name,
-      email,
-      phone,
-      role: "user",
-      passwordHash: await bcrypt.hash(password, 10),
-      subscription: createInactiveSubscription(dogName),
-      createdAt,
-      lastLoginAt: createdAt,
-    };
-
-    database.users.unshift(user);
-    await writeDatabase(database);
-
-    return res.status(201).json({
-      token: signAuthToken(user),
-      user: sanitizeUser(user),
-      message: "Account created successfully.",
-    });
-  })
-);
-
-app.post(
-  "/api/auth/login",
-  authLimiter,
-  asyncHandler(async (req, res) => {
-    const email = sanitizeEmailInput(req.body.email);
-    const password = sanitizeTextInput(req.body.password, {
-      fieldLabel: "Password",
-      required: true,
-      minimumLength: 1,
-      maximumLength: 200,
-    });
-    const database = await readDatabase();
-    const user = database.users.find((candidate) => candidate.email === email);
-
-    if (!user) {
-      return res.status(401).json({ message: "Email or password is incorrect." });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isMatch) {
-      return res.status(401).json({ message: "Email or password is incorrect." });
-    }
-
-    user.lastLoginAt = new Date().toISOString();
-    await writeDatabase(database);
-
-    return res.json({
-      token: signAuthToken(user),
-      user: sanitizeUser(user),
-      message: "Welcome back.",
-    });
-  })
-);
-
-app.get(
-  "/api/auth/me",
-  requireAuth,
-  asyncHandler(async (req, res) => {
-    return res.json({ user: req.safeUser });
-  })
-);
-
 app.get(
   "/api/account/summary",
   requireAuth,
@@ -1675,6 +1507,7 @@ app.patch(
     const nextDogName = req.body.dogName;
     const nextCadence = req.body.deliveryCadence;
     const isManagedSubscription = Boolean(user.subscription?.sourceOrderId);
+    let didPhoneChange = false;
 
     if (nextName) {
       user.name = sanitizeTextInput(nextName, {
@@ -1685,7 +1518,26 @@ app.patch(
     }
 
     if (typeof nextPhone === "string") {
-      user.phone = sanitizePhoneInput(nextPhone);
+      const normalizedPhone = sanitizePhoneInput(nextPhone);
+      didPhoneChange = normalizedPhone !== user.phone;
+
+      if (didPhoneChange) {
+        const existingPhoneOwner = database.users.find(
+          (candidate) => candidate.id !== user.id && candidate.phone === normalizedPhone
+        );
+
+        if (existingPhoneOwner) {
+          return res.status(409).json({
+            message: "That mobile number is already linked to another account.",
+          });
+        }
+      }
+
+      user.phone = normalizedPhone;
+
+      if (didPhoneChange && normalizedPhone) {
+        user.phoneVerified = false;
+      }
     }
 
     if (nextDogName) {
@@ -1721,7 +1573,9 @@ app.patch(
     return res.json({
       user: sanitizeUser(user),
       subscription: user.subscription,
-      message: "Account details updated.",
+      message: didPhoneChange
+        ? "Account details updated. Verify the new mobile number the next time you use OTP sign-in."
+        : "Account details updated.",
     });
   })
 );
@@ -2408,6 +2262,7 @@ app.use((error, req, res, next) => {
     return res.status(error.statusCode).json({
       message: error.message || "The request could not be completed.",
       requestId,
+      ...(error.details ? { details: error.details } : {}),
     });
   }
 
@@ -2421,6 +2276,7 @@ app.use((error, req, res, next) => {
   return res.status(500).json({
     message: "Something unexpected happened on the server.",
     requestId,
+    ...(error?.details ? { details: error.details } : {}),
   });
 });
 

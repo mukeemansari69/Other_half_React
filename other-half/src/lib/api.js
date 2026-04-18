@@ -1,6 +1,7 @@
 const TOKEN_STORAGE_KEY = "other-half-auth-token";
 const UNREACHABLE_SERVER_MESSAGE =
   "Unable to reach the server right now. Make sure the backend is running with `npm run dev:server`.";
+let resolvedApiBaseUrl = "";
 
 const normalizeBaseUrl = (value = "") => value.trim().replace(/\/$/, "");
 
@@ -11,7 +12,7 @@ const isLikelyHtmlResponse = (payload) => {
   );
 };
 
-const getApiBaseCandidates = () => {
+export const getApiBaseCandidates = () => {
   const candidates = [];
   const addCandidate = (value) => {
     const normalizedValue = normalizeBaseUrl(value);
@@ -50,6 +51,12 @@ const getApiBaseCandidates = () => {
 };
 
 export const API_BASE_URL = getApiBaseCandidates()[0];
+export const getResolvedApiBaseUrl = () => resolvedApiBaseUrl || API_BASE_URL;
+
+export const buildApiUrl = (path) => {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${getResolvedApiBaseUrl()}${normalizedPath}`;
+};
 
 export class ApiError extends Error {
   constructor(message, status, data) {
@@ -149,6 +156,8 @@ export const apiRequest = async (
         payload
       );
     }
+
+    resolvedApiBaseUrl = baseUrl;
 
     return payload;
   }

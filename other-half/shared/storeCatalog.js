@@ -93,6 +93,8 @@ const buildProductCatalogEntry = (product) => {
                 offerLabel: plan.offerLabel || "",
                 badgeLabel: plan.badgeLabel || "",
                 price: Number(plan.price || 0),
+                compareAtPrice: Number(plan.compareAtPrice || 0),
+                savingsAmount: Number(plan.savingsAmount || 0),
                 billingIntervalUnit: cadence.intervalUnit,
                 billingIntervalCount: cadence.intervalCount,
                 deliveryCadence: cadence.cadenceLabel,
@@ -103,6 +105,9 @@ const buildProductCatalogEntry = (product) => {
     : [];
   const defaultSize = sizes[0] || null;
   const defaultPlan = defaultSize?.plans[0] || null;
+  const defaultPurchaseType = product.subscription?.enabledByDefault
+    ? "subscription"
+    : "one-time";
 
   return {
     productId: product.id,
@@ -142,7 +147,19 @@ const buildProductCatalogEntry = (product) => {
       sizeWeight: defaultSize?.weight || "",
       planId: defaultPlan?.id || "",
       planLabel: defaultPlan?.label || "",
-      purchaseType: "one-time",
+      deliveryLabel: defaultPlan?.deliveryLabel || "",
+      deliveryCadence: defaultPlan?.deliveryCadence || "",
+      billingIntervalUnit: defaultPlan?.billingIntervalUnit || "month",
+      billingIntervalCount: defaultPlan?.billingIntervalCount || 1,
+      purchaseType: defaultPurchaseType,
+    },
+    pricing: {
+      unitCompareAtPrice: Number(product.pricing?.unitCompareAtPrice || 0),
+      unitDiscountedPrice: Number(product.pricing?.unitDiscountedPrice || 0),
+      discountPercent: Number(product.pricing?.discountPercent || 0),
+      startingCompareAtPrice: Number(defaultPlan?.compareAtPrice || 0),
+      startingSavingsAmount: Number(defaultPlan?.savingsAmount || 0),
+      startingDiscountLabel: defaultPlan?.offerLabel || "",
     },
   };
 };
@@ -179,8 +196,23 @@ export const collectionCards = storeCatalog.map((entry) => {
       sizeWeight: defaultSize?.weight || "",
       planId: defaultPlan?.id || "",
       planLabel: defaultPlan?.label || "",
+      deliveryLabel: defaultPlan?.deliveryLabel || "",
+      deliveryCadence: defaultPlan?.deliveryCadence || "",
+      billingIntervalUnit: defaultPlan?.billingIntervalUnit || "month",
+      billingIntervalCount: defaultPlan?.billingIntervalCount || 1,
     },
     startingPrice: Number(defaultPlan?.price || 0),
+    startingCompareAtPrice: Number(defaultPlan?.compareAtPrice || 0),
+    startingSavingsAmount: Number(defaultPlan?.savingsAmount || 0),
+    startingDiscountLabel: defaultPlan?.offerLabel || "",
+    displayPrice: Number(
+      entry.pricing?.unitDiscountedPrice || defaultPlan?.price || 0
+    ),
+    displayCompareAtPrice: Number(entry.pricing?.unitCompareAtPrice || 0),
+    displayDiscountLabel: entry.pricing?.discountPercent
+      ? `${entry.pricing.discountPercent}% OFF`
+      : "",
+    subscriptionEnabledByDefault: Boolean(entry.subscription.enabledByDefault),
   };
 });
 
@@ -255,10 +287,20 @@ export const resolveCatalogLineItem = ({
   );
   const bundleLabels = selectedBundles.map((bundle) => bundle.title);
   const bundleTotal = selectedBundles.reduce(
-    (runningTotal, bundle) => runningTotal + Number(bundle.price || 0),
+    (runningTotal, bundle) =>
+      runningTotal +
+      Number(
+        normalizedPurchaseType === "subscription"
+          ? bundle.price || 0
+          : bundle.compareAtPrice || bundle.price || 0
+      ),
     0
   );
-  const unitPrice = Number((Number(selection.plan.price || 0) + bundleTotal).toFixed(2));
+  const basePlanPrice =
+    normalizedPurchaseType === "subscription"
+      ? Number(selection.plan.price || 0)
+      : Number(selection.plan.compareAtPrice || selection.plan.price || 0);
+  const unitPrice = Number((basePlanPrice + bundleTotal).toFixed(2));
   const lineDescription = [
     `${selection.size.name} (${selection.size.weight})`,
     selection.plan.label,

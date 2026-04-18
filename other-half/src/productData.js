@@ -60,36 +60,131 @@ const formatPerDayLabel = (price, plan) => {
   })}/day)`;
 };
 
-const localizePlan = (plan) => {
-  const localizedPrice = convertLegacyUsdPrice(plan.price);
+const PRODUCT_MARKETING_PRICING = {
+  "everyday-one": {
+    unitPrice: 300,
+    discountPercent: 15,
+  },
+  "doggie-dental": {
+    unitPrice: 150,
+    discountPercent: 18,
+  },
+  "daily-duo": {
+    unitPrice: 450,
+    discountPercent: 20,
+  },
+};
+
+const roundStorePrice = (value) => Number((Number(value) || 0).toFixed(2));
+
+const getPlanIntervalCountInMonths = (plan) => {
+  const cadence = getCadenceDetails({
+    planId: plan?.id,
+    deliveryLabel: plan?.deliveryLabel,
+  });
+
+  if (cadence.intervalUnit === "month") {
+    return cadence.intervalCount;
+  }
+
+  if (cadence.intervalUnit === "year") {
+    return cadence.intervalCount * 12;
+  }
+
+  if (cadence.intervalUnit === "week") {
+    return cadence.intervalCount / 4;
+  }
+
+  return cadence.intervalCount / 30;
+};
+
+const getPlanSavingsAmount = (plan, pricingRule) => {
+  if (!pricingRule) {
+    return 0;
+  }
+
+  const currentPlanMonths = Math.max(
+    1,
+    Math.round(getPlanIntervalCountInMonths(plan) || 1)
+  );
+  const compareAtPrice = pricingRule.unitPrice * currentPlanMonths;
+  const discountedPrice =
+    compareAtPrice * (1 - pricingRule.discountPercent / 100);
+
+  return roundStorePrice(compareAtPrice - discountedPrice);
+};
+
+const localizePlan = (plan, pricingRule) => {
   const cadence = getCadenceDetails({
     planId: plan.id,
     deliveryLabel: plan.deliveryLabel,
   });
+  const monthsInPlan = Math.max(
+    1,
+    Math.round(getPlanIntervalCountInMonths(plan) || 1)
+  );
+
+  if (!pricingRule) {
+    const localizedPrice = convertLegacyUsdPrice(plan.price);
+
+    return {
+      ...plan,
+      price: localizedPrice,
+      compareAtPrice: null,
+      savingsAmount: 0,
+      deliveryLabel: `Delivered every ${cadence.intervalCount} ${cadence.intervalUnit}${
+        cadence.intervalCount > 1 ? "s" : ""
+      }`,
+      perDayLabel: formatPerDayLabel(localizedPrice, plan),
+      offerLabel: plan.offerLabel,
+    };
+  }
+
+  const compareAtPrice = roundStorePrice(pricingRule.unitPrice * monthsInPlan);
+  const discountedPrice = roundStorePrice(
+    compareAtPrice * (1 - pricingRule.discountPercent / 100)
+  );
+  const savingsAmount = getPlanSavingsAmount(plan, pricingRule);
 
   return {
     ...plan,
-    price: localizedPrice,
+    price: discountedPrice,
+    compareAtPrice,
+    savingsAmount,
     deliveryLabel: `Delivered every ${cadence.intervalCount} ${cadence.intervalUnit}${
       cadence.intervalCount > 1 ? "s" : ""
     }`,
-    perDayLabel: formatPerDayLabel(localizedPrice, plan),
+    perDayLabel: formatPerDayLabel(discountedPrice, plan),
+    offerLabel: pricingRule ? `${pricingRule.discountPercent}% OFF` : plan.offerLabel,
   };
 };
 
 const localizeBundleSuggestion = (bundleSuggestion) => ({
   ...bundleSuggestion,
-  price: convertLegacyUsdPrice(bundleSuggestion.price),
-  compareAtPrice: convertLegacyUsdPrice(bundleSuggestion.compareAtPrice),
+  price: roundStorePrice(bundleSuggestion.price),
+  compareAtPrice: roundStorePrice(bundleSuggestion.compareAtPrice),
 });
 
 const applyIndiaStorefront = (product) => {
+  const pricingRule = PRODUCT_MARKETING_PRICING[product.id] || null;
+
   product.sizes = product.sizes.map((size) => ({
     ...size,
     weight: localizeWeightLabel(size.weight),
-    plans: size.plans.map(localizePlan),
+    plans: size.plans.map((plan) => localizePlan(plan, pricingRule)),
   }));
   product.shippingNote = getDeliveryWindowText();
+  const unitCompareAtPrice = Number(pricingRule?.unitPrice || 0);
+  const unitDiscountedPrice = pricingRule
+    ? roundStorePrice(
+        unitCompareAtPrice * (1 - pricingRule.discountPercent / 100)
+      )
+    : 0;
+  product.pricing = {
+    unitCompareAtPrice,
+    unitDiscountedPrice,
+    discountPercent: pricingRule?.discountPercent || null,
+  };
   product.subscription = {
     ...product.subscription,
     description: `${product.subscription.description} Secure checkout powered by ${PAYMENT_PROVIDER}.`,

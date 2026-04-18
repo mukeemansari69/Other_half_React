@@ -8,13 +8,18 @@ import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
 
 const products = collectionCards.map((item) => ({
   ...item,
-  price: formatStoreCurrency(item.startingPrice),
-  oldPrice: formatStoreCurrency(item.startingPrice * 1.15),
-  discount: "15% OFF",
+  price: formatStoreCurrency(item.displayPrice),
+  oldPrice: item.displayCompareAtPrice
+    ? formatStoreCurrency(item.displayCompareAtPrice)
+    : "",
+  discount: item.displayDiscountLabel || "",
   cartId: `collection-${item.productId}`,
   cartImage: item.image,
   unitPrice: item.startingPrice,
   cartDescription: `${item.defaultSelection.sizeLabel} (${item.defaultSelection.sizeWeight}) | ${item.defaultSelection.planLabel}`,
+  subscribeTitle: item.displayDiscountLabel
+    ? `Subscribe & Save ${item.displayDiscountLabel}`
+    : "Subscribe & Save",
 }));
 
 const OurCollection = () => {
@@ -38,11 +43,16 @@ const OurCollection = () => {
       image: item.cartImage,
       unitPrice: item.unitPrice,
       quantity: 1,
+      purchaseType: item.defaultSelection.purchaseType,
       sizeId: item.defaultSelection.sizeId,
       sizeLabel: item.defaultSelection.sizeLabel,
       sizeWeight: item.defaultSelection.sizeWeight,
       planId: item.defaultSelection.planId,
       planLabel: item.defaultSelection.planLabel,
+      deliveryLabel: item.defaultSelection.deliveryLabel,
+      deliveryCadence: item.defaultSelection.deliveryCadence,
+      billingIntervalUnit: item.defaultSelection.billingIntervalUnit,
+      billingIntervalCount: item.defaultSelection.billingIntervalCount,
     });
   };
 
@@ -108,16 +118,20 @@ const OurCollection = () => {
 
               <div className="ourCollection-priceRow">
                 <span className="ourCollection-price">{item.price}</span>
-                <span className="ourCollection-oldPrice">{item.oldPrice}</span>
-                <span className="ourCollection-discount">{item.discount}</span>
+                {item.oldPrice ? (
+                  <span className="ourCollection-oldPrice">{item.oldPrice}</span>
+                ) : null}
+                {item.discount ? (
+                  <span className="ourCollection-discount">{item.discount}</span>
+                ) : null}
               </div>
 
               <div className="ourCollection-subscribe">
                 <div className="ourCollection-tick">+</div>
                 <div>
-                  <p className="ourCollection-subscribeTitle">Subscribe & Save 20%</p>
+                  <p className="ourCollection-subscribeTitle">{item.subscribeTitle}</p>
                   <p className="ourCollection-subscribeText">
-                    Delivered on your selected plan
+                    Old price ke baad final discounted price shown hai.
                   </p>
                 </div>
               </div>

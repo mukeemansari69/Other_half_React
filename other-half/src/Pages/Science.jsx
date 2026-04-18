@@ -101,7 +101,11 @@ const products = [
   },
 ];
 
-const getStartingPrice = (product) => product?.sizes?.[0]?.plans?.[0]?.price ?? 0;
+const getDisplayPrice = (product) => product?.pricing?.unitDiscountedPrice ?? 0;
+const getDisplayCompareAtPrice = (product) =>
+  product?.pricing?.unitCompareAtPrice ?? 0;
+const getDiscountLabel = (product) =>
+  product?.pricing?.discountPercent ? `${product.pricing.discountPercent}% OFF on subscription` : "";
 const getBenefits = (product) => (product?.benefits ?? []).slice(0, 4).map((item) => item.text);
 const getTags = (product) => (product?.tags ?? []).slice(0, 4);
 
@@ -176,10 +180,22 @@ const Science = () => {
                 </div>
 
                 <div className="science-product-card__price">
-                  <p className="science-product-card__price-label">Starting from</p>
+                  <p className="science-product-card__price-label">Per product</p>
+                  {getDisplayCompareAtPrice(item.product) ? (
+                    <p className="science-product-card__price-label">
+                      <span className="line-through">
+                        {formatPrice(getDisplayCompareAtPrice(item.product))}
+                      </span>
+                    </p>
+                  ) : null}
                   <p className="science-product-card__price-value">
-                    {formatPrice(getStartingPrice(item.product))}
+                    {formatPrice(getDisplayPrice(item.product))}
                   </p>
+                  {getDiscountLabel(item.product) ? (
+                    <p className="science-product-card__price-label">
+                      {getDiscountLabel(item.product)}
+                    </p>
+                  ) : null}
                 </div>
 
                 <div className="science-product-card__action">
@@ -257,12 +273,17 @@ const Science = () => {
                       </div>
 
                       <div className="science-product-detail__cta">
-                        <p className="science-product-detail__cta-label">Exclosive Price</p>
+                        <p className="science-product-detail__cta-label">Per Product Price</p>
+                        {getDisplayCompareAtPrice(item.product) ? (
+                          <p className="science-product-detail__cta-text">
+                            Old price {formatPrice(getDisplayCompareAtPrice(item.product))}
+                          </p>
+                        ) : null}
                         <p className="science-product-detail__cta-price">
-                          {formatPrice(getStartingPrice(item.product))}
+                          {formatPrice(getDisplayPrice(item.product))}
                         </p>
                         <p className="science-product-detail__cta-text">
-                          Click to the blow visit the products
+                          Final subscription total changes with the selected months.
                         </p>
                         <div className="science-product-detail__cta-action">
                           <ButtonLink to={item.route} dark={false}>

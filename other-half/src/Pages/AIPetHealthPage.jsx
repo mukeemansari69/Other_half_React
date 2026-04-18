@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createElement, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertTriangle,
@@ -49,11 +49,11 @@ const statusToneClasses = {
   error: "border-[#F0C9C4] bg-[#FFF3F1] text-[#8A2F23]",
 };
 
-const ResponseSection = ({ title, icon: Icon, children }) => (
+const ResponseSection = ({ title, icon, children }) => (
   <section className="rounded-[28px] border border-[#E6DFCF] bg-[#FFFCF6] p-5 shadow-[0_18px_45px_rgba(32,28,19,0.05)] lg:p-6">
     <div className="flex items-center gap-3">
       <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#EBF466] text-[#0F4A12]">
-        <Icon size={18} />
+        {createElement(icon, { size: 18 })}
       </div>
       <h2 className="font-[Poppins] text-[20px] font-semibold text-[#1A1A1A]">{title}</h2>
     </div>
@@ -142,13 +142,13 @@ const AIPetHealthPage = () => {
                   </p>
 
                   <div className="mt-7 grid gap-4 sm:grid-cols-2">
-                    {guidanceCards.map(({ title, text, icon: Icon }) => (
+                    {guidanceCards.map(({ title, text, icon }) => (
                       <article
                         key={title}
                         className="rounded-[24px] border border-[#E6DFCF] bg-white/80 p-4 backdrop-blur-sm"
                       >
                         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0F4A12] text-[#EBF466]">
-                          <Icon size={18} />
+                          {createElement(icon, { size: 18 })}
                         </div>
                         <h2 className="mt-4 font-[Poppins] text-[18px] font-semibold text-[#1A1A1A]">
                           {title}
@@ -289,10 +289,10 @@ const AIPetHealthPage = () => {
                 What You&apos;ll Get
               </p>
               <div className="mt-5 space-y-4">
-                {guidanceCards.map(({ title, text, icon: Icon }) => (
+                {guidanceCards.map(({ title, text, icon }) => (
                   <div key={title} className="flex items-start gap-4">
                     <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-[#EBF466] text-[#0F4A12]">
-                      <Icon size={17} />
+                      {createElement(icon, { size: 17 })}
                     </div>
                     <div>
                       <h3 className="font-[Poppins] text-[16px] font-semibold text-[#1A1A1A]">

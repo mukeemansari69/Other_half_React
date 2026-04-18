@@ -10,6 +10,7 @@ import mongoose from "mongoose";
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 import { convertLegacyUsdPrice, STORE_CURRENCY } from "../../shared/storefrontConfig.js";
 import { syncAllUserSubscriptions } from "./subscriptions.js";
+import { normalizeEmail, normalizePhoneInput } from "./validation.js";
 
 const ROOT_DIR = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const LEGACY_DATA_DIR = path.join(ROOT_DIR, "server", "data");
@@ -77,6 +78,8 @@ const baseDatabase = () => ({
   quizSubmissions: [],
   orders: [],
   reviews: [],
+  authChallenges: [],
+  authExchanges: [],
 });
 
 const appStateSchema = new mongoose.Schema(
@@ -112,6 +115,14 @@ const appStateSchema = new mongoose.Schema(
       default: [],
     },
     reviews: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+    authChallenges: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+    authExchanges: {
       type: [mongoose.Schema.Types.Mixed],
       default: [],
     },
@@ -466,6 +477,83 @@ const ensureDirectories = async () => {
 
 const ensureArray = (value) => (Array.isArray(value) ? value : []);
 
+const normalizeSocialAccount = (account) => {
+  if (!account?.id) {
+    return null;
+  }
+
+  return {
+    id: String(account.id).trim(),
+    email: normalizeEmail(account.email || ""),
+    linkedAt: account.linkedAt || null,
+  };
+};
+
+const normalizeUserRecord = (user) => {
+  if (!user || typeof user !== "object") {
+    return user;
+  }
+
+  const normalizedEmail = normalizeEmail(user.email || "");
+  let normalizedPhone = "";
+
+  try {
+    normalizedPhone = normalizePhoneInput(user.phone || "");
+  } catch {
+    normalizedPhone = String(user.phone || "").trim();
+  }
+  const socialAccounts = {
+    google: normalizeSocialAccount(user.socialAccounts?.google),
+    facebook: normalizeSocialAccount(user.socialAccounts?.facebook),
+  };
+  const authProviders = {
+    password: Boolean(user.passwordHash) || Boolean(user.authProviders?.password),
+    phoneOtp: Boolean(user.phoneVerified) || Boolean(user.authProviders?.phoneOtp),
+    google: Boolean(socialAccounts.google) || Boolean(user.authProviders?.google),
+    facebook: Boolean(socialAccounts.facebook) || Boolean(user.authProviders?.facebook),
+  };
+  const emailVerified =
+    typeof user.emailVerified === "boolean"
+      ? user.emailVerified
+      : Boolean(normalizedEmail);
+  const phoneVerified =
+    typeof user.phoneVerified === "boolean" ? user.phoneVerified : false;
+  const derivedVerificationState =
+    emailVerified ||
+    phoneVerified ||
+    authProviders.google ||
+    authProviders.facebook ||
+    user.role === "admin";
+  const accountStatus =
+    String(user.accountStatus || "").trim().toLowerCase() ||
+    (derivedVerificationState
+      ? "active"
+      : normalizedEmail
+        ? "pending_email_verification"
+        : normalizedPhone
+          ? "pending_phone_verification"
+          : "pending");
+
+  return {
+    ...user,
+    email: normalizedEmail,
+    phone: normalizedPhone,
+    emailVerified,
+    phoneVerified,
+    isVerified:
+      typeof user.isVerified === "boolean"
+        ? user.isVerified
+        : Boolean(derivedVerificationState || accountStatus === "active"),
+    accountStatus,
+    authProviders,
+    socialAccounts,
+    lastLoginMethod: user.lastLoginMethod || null,
+    passwordUpdatedAt:
+      user.passwordUpdatedAt || (user.passwordHash ? user.createdAt || null : null),
+    authUpdatedAt: user.authUpdatedAt || user.updatedAt || user.createdAt || null,
+  };
+};
+
 const normalizeDatabaseShape = (database) => {
   const initialDatabase = baseDatabase();
   const safeDatabase = database && typeof database === "object" ? database : {};
@@ -477,12 +565,14 @@ const normalizeDatabaseShape = (database) => {
       ...initialDatabase.meta,
       ...(safeDatabase.meta || {}),
     },
-    users: ensureArray(safeDatabase.users),
+    users: ensureArray(safeDatabase.users).map(normalizeUserRecord).filter(Boolean),
     supportRequests: ensureArray(safeDatabase.supportRequests),
     newsletterSubscribers: ensureArray(safeDatabase.newsletterSubscribers),
     quizSubmissions: ensureArray(safeDatabase.quizSubmissions),
     orders: ensureArray(safeDatabase.orders),
     reviews: ensureArray(safeDatabase.reviews),
+    authChallenges: ensureArray(safeDatabase.authChallenges),
+    authExchanges: ensureArray(safeDatabase.authExchanges),
   };
 };
 
@@ -845,8 +935,9 @@ export const writeDatabase = async (database) => {
 };
 
 export const sanitizeUser = (user) => {
-  const safeUser = { ...user };
+  const safeUser = normalizeUserRecord(user);
   delete safeUser.passwordHash;
+  delete safeUser.socialAccounts;
   return safeUser;
 };
 

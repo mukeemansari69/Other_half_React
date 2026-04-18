@@ -31,6 +31,9 @@ const SubscriptionPolicyPage = lazy(() => import("./Pages/SubscriptionPolicyPage
 const ContactUsPage = lazy(() => import("./Pages/ContactUsPage.jsx"));
 const LoginPage = lazy(() => import("./Pages/LoginPage.jsx"));
 const RegisterPage = lazy(() => import("./Pages/RegisterPage.jsx"));
+const ForgotPasswordPage = lazy(() => import("./Pages/ForgotPasswordPage.jsx"));
+const VerifyEmailPage = lazy(() => import("./Pages/VerifyEmailPage.jsx"));
+const AuthCallbackPage = lazy(() => import("./Pages/AuthCallbackPage.jsx"));
 const AccountDashboardPage = lazy(() => import("./Pages/AccountDashboardPage.jsx"));
 const AdminDashboardPage = lazy(() => import("./Pages/AdminDashboardPage.jsx"));
 const CartPage = lazy(() => import("./Pages/CartPage.jsx"));
@@ -105,6 +108,9 @@ const App = () => {
                   </GuestOnlyRoute>
                 }
               />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/verify-email" element={<VerifyEmailPage />} />
+              <Route path="/auth/callback" element={<AuthCallbackPage />} />
               <Route
                 path="/account"
                 element={

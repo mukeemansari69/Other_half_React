@@ -1,62 +1,136 @@
-import { LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import AuthConnectionNotice from "../Components/AuthConnectionNotice.jsx";
+import AuthHeroPanel from "../Components/AuthHeroPanel.jsx";
+import AuthNotice from "../Components/AuthNotice.jsx";
+import AuthSocialButtons from "../Components/AuthSocialButtons.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useApiConnectionStatus } from "../hooks/useApiConnectionStatus.js";
+import { useAuthConfig } from "../hooks/useAuthConfig.js";
 
-const featurePoints = [
+const heroHighlights = [
   {
-    title: "For dog parents",
-    text: "Reopen your dog's saved quiz result, support history, and delivery snapshot in one place.",
-    icon: UserRound,
+    title: "Email + password",
+    text: "Secure password sign-in stays available after email verification succeeds.",
   },
   {
-    title: "For the care team",
-    text: "Review tickets, account activity, quiz saves, and new signups from one backend-powered dashboard.",
-    icon: ShieldCheck,
+    title: "Mobile OTP",
+    text: "Use a six-digit SMS code for quick access without remembering a password.",
   },
   {
-    title: "Protected session",
-    text: "Your account stays secure while the details tied to your dog's routine stay ready when you come back.",
-    icon: LockKeyhole,
+    title: "Social sign-in",
+    text: "Google and Facebook can be switched on from environment config without rewriting the UI.",
   },
 ];
 
 const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, requestPhoneOtp, verifyPhoneOtp } = useAuth();
   const { status: connectionStatus, retry: retryConnectionCheck } = useApiConnectionStatus();
-  const [formState, setFormState] = useState({
+  const { config, error: authConfigError } = useAuthConfig();
+  const [activeTab, setActiveTab] = useState("email");
+  const [emailForm, setEmailForm] = useState({
     email: "",
     password: "",
   });
+  const [phoneForm, setPhoneForm] = useState({
+    phone: "",
+    otp: "",
+  });
+  const [phoneChallenge, setPhoneChallenge] = useState(null);
+  const [debugPayload, setDebugPayload] = useState(null);
   const [status, setStatus] = useState({ type: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
 
-  const handleFieldChange = (field, value) => {
-    setFormState((currentState) => ({
-      ...currentState,
+  const defaultDestination = location.state?.from?.pathname || "/account";
+  const canUsePhoneOtp = config.delivery.smsConfigured || config.developmentDebugCodes;
+
+  const updateEmailField = (field, value) => {
+    setEmailForm((currentForm) => ({
+      ...currentForm,
       [field]: value,
     }));
   };
 
-  const handleSubmit = async (event) => {
+  const updatePhoneField = (field, value) => {
+    setPhoneForm((currentForm) => ({
+      ...currentForm,
+      [field]: value,
+    }));
+  };
+
+  const handleEmailLogin = async (event) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setDebugPayload(null);
+    setStatus({ type: "", message: "" });
+
+    try {
+      const response = await login(emailForm);
+      const destination = response.user.role === "admin" ? "/admin" : defaultDestination;
+      navigate(destination, { replace: true });
+    } catch (error) {
+      if (error.data?.requiresEmailVerification) {
+        setStatus({
+          type: "error",
+          message: "Email verification is still pending for this account.",
+        });
+        navigate(`/verify-email?email=${encodeURIComponent(error.data.email)}`, {
+          replace: false,
+          state: {
+            message: "Enter the OTP from your inbox or open the verification link we emailed you.",
+          },
+        });
+      } else {
+        setStatus({
+          type: "error",
+          message: error.message || "Login failed. Please try again.",
+        });
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSendPhoneOtp = async (event) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setStatus({ type: "", message: "" });
+    setDebugPayload(null);
+
+    try {
+      const response = await requestPhoneOtp({ phone: phoneForm.phone });
+      setPhoneChallenge(response.verification || { phone: phoneForm.phone });
+      setDebugPayload(response.debug || null);
+      setStatus({
+        type: "success",
+        message: response.message || "A one-time code has been sent to your mobile number.",
+      });
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message: error.message || "OTP could not be sent right now.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleVerifyPhoneOtp = async (event) => {
     event.preventDefault();
     setSubmitting(true);
     setStatus({ type: "", message: "" });
 
     try {
-      const response = await login(formState);
-      const fallbackRoute = response.user.role === "admin" ? "/admin" : "/account";
-      const destination = location.state?.from?.pathname || fallbackRoute;
+      const response = await verifyPhoneOtp(phoneForm);
+      const destination = response.user.role === "admin" ? "/admin" : defaultDestination;
       navigate(destination, { replace: true });
     } catch (error) {
       setStatus({
         type: "error",
-        message: error.message || "Login failed. Please try again.",
+        message: error.message || "OTP verification failed. Please try again.",
       });
     } finally {
       setSubmitting(false);
@@ -66,117 +140,204 @@ const LoginPage = () => {
   return (
     <main className="bg-[#FBF8EF] px-6 py-10 md:px-10 lg:px-16">
       <div className="mx-auto grid min-h-[70vh] max-w-[1240px] gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="rounded-[36px] bg-[#163B1D] p-8 text-white shadow-[0_32px_100px_rgba(13,32,18,0.22)] md:p-12">
-          <span className="inline-flex rounded-full bg-white/12 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#E8F0C7]">
-            Care that stays connected
-          </span>
-          <h1 className="mt-6 max-w-xl text-4xl font-semibold leading-tight md:text-5xl">
-            Come back to the place that keeps your dog's care story together.
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-white/78 md:text-lg">
-            Sign in to see saved recommendations, support conversations, and delivery details
-            for the dog who depends on you. Everything here now runs through the live backend,
-            so your updates stay with the account.
-          </p>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {featurePoints.map((point) => {
-              const Icon = point.icon;
-
-              return (
-                <article
-                  key={point.title}
-                  className="rounded-[28px] border border-white/10 bg-white/8 p-5 backdrop-blur-sm"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#EBF466] text-[#163B1D]">
-                    <Icon size={20} />
-                  </div>
-                  <h2 className="mt-4 text-lg font-semibold">{point.title}</h2>
-                  <p className="mt-2 text-sm leading-6 text-white/72">{point.text}</p>
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="mt-10 rounded-[28px] border border-white/10 bg-white/10 p-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#EBF466]">
-              Secure access note
-            </p>
-            <p className="mt-3 text-sm leading-7 text-white/78">
-              Demo credentials have been removed from the public login screen. Use the real
-              account email and password linked to your backend data, or create a new account
-              if this is your first time.
-            </p>
-          </div>
-        </section>
+        <AuthHeroPanel
+          eyebrow="Authentication"
+          title="Sign back in with the flow that fits your routine."
+          description="Email, SMS OTP, and social login now live in the same auth system, so dog parents can get back to their account without friction and without weakening security."
+          highlights={heroHighlights}
+          footer="If the backend is running locally without SMTP or Twilio, development mode will surface debug OTP details in the form so the flow still stays testable."
+        />
 
         <section className="rounded-[36px] border border-[#E6DFCF] bg-white p-8 shadow-[0_24px_80px_rgba(34,30,18,0.08)] md:p-10">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F4A12]">
-            Sign in
+            Login
           </p>
           <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Welcome back to the pack</h2>
           <p className="mt-3 text-sm leading-6 text-[#5F5B4F]">
-            Use the email tied to your account to reopen your dog's dashboard, review saved
-            care details, and pick up where you left off.
-          </p>
-          <p className="mt-2 text-xs leading-5 text-[#7A7468]">
-            If you see a server connection error, start the backend with <code>npm run dev:server</code>.
+            Choose password login, mobile OTP, or a connected social account.
           </p>
 
-          <div className="mt-4">
+          <div className="mt-4 space-y-3">
             <AuthConnectionNotice
               status={connectionStatus}
               onRetry={retryConnectionCheck}
             />
+            {authConfigError ? <AuthNotice type="neutral" message={authConfigError} /> : null}
           </div>
 
-          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-[#353126]">Email address</span>
-              <input
-                type="email"
-                autoComplete="email"
-                value={formState.email}
-                onChange={(event) => handleFieldChange("email", event.target.value)}
-                className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
-                placeholder="name@example.com"
-                required
-              />
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-[#353126]">Password</span>
-              <input
-                type="password"
-                autoComplete="current-password"
-                value={formState.password}
-                onChange={(event) => handleFieldChange("password", event.target.value)}
-                className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
-                placeholder="Enter your password"
-                required
-              />
-            </label>
-
-            {status.message ? (
-              <div
-                className={`rounded-2xl px-4 py-3 text-sm ${
-                  status.type === "error"
-                    ? "bg-[#FFF1EE] text-[#A13A2C]"
-                    : "bg-[#EEF6E7] text-[#0F4A12]"
+          <div className="mt-8 grid grid-cols-2 gap-2 rounded-full bg-[#F7F2E7] p-1">
+            {["email", "phone"].map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => {
+                  setActiveTab(tab);
+                  setStatus({ type: "", message: "" });
+                }}
+                className={`rounded-full px-4 py-3 text-sm font-semibold transition ${
+                  activeTab === tab
+                    ? "bg-[#0F4A12] text-white"
+                    : "text-[#5F5B4F]"
                 }`}
               >
-                {status.message}
-              </div>
-            ) : null}
+                {tab === "email" ? "Email login" : "Mobile OTP"}
+              </button>
+            ))}
+          </div>
 
-            <button
-              type="submit"
-              className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
-              disabled={submitting}
-            >
-              {submitting ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
+          <div className="mt-8">
+            <AuthSocialButtons social={config.social} disabled={submitting} redirectTo={defaultDestination} />
+          </div>
+
+          <div className="my-8 flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#8B8477]">
+            <span className="h-px flex-1 bg-[#E7DECC]" />
+            <span>or continue here</span>
+            <span className="h-px flex-1 bg-[#E7DECC]" />
+          </div>
+
+          {activeTab === "email" ? (
+            <form className="space-y-5" onSubmit={handleEmailLogin}>
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium text-[#353126]">Email address</span>
+                <input
+                  type="email"
+                  autoComplete="email"
+                  value={emailForm.email}
+                  onChange={(event) => updateEmailField("email", event.target.value)}
+                  className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
+                  placeholder="name@example.com"
+                  required
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium text-[#353126]">Password</span>
+                <input
+                  type="password"
+                  autoComplete="current-password"
+                  value={emailForm.password}
+                  onChange={(event) => updateEmailField("password", event.target.value)}
+                  className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
+                  placeholder="Enter your password"
+                  required
+                />
+              </label>
+
+              <div className="flex items-center justify-between gap-4 text-sm">
+                <Link to="/forgot-password" className="font-semibold text-[#0F4A12]">
+                  Forgot password?
+                </Link>
+                <Link
+                  to={emailForm.email ? `/verify-email?email=${encodeURIComponent(emailForm.email)}` : "/verify-email"}
+                  className="text-[#6A6458]"
+                >
+                  Verify email
+                </Link>
+              </div>
+
+              <AuthNotice type={status.type || "neutral"} message={status.message} />
+
+              <button
+                type="submit"
+                className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                disabled={submitting}
+              >
+                {submitting ? "Signing in..." : "Sign in with email"}
+              </button>
+            </form>
+          ) : (
+            <div className="space-y-5">
+              <AuthNotice
+                type={canUsePhoneOtp ? "info" : "neutral"}
+                message={
+                  canUsePhoneOtp
+                    ? `OTP expires in ${config.otpExpiresInMinutes} minutes. Use the same mobile number linked to your account.`
+                    : "SMS delivery is not configured yet, so mobile OTP sign-in is currently unavailable."
+                }
+              />
+
+              {!phoneChallenge ? (
+                <form className="space-y-5" onSubmit={handleSendPhoneOtp}>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-[#353126]">Mobile number</span>
+                    <input
+                      type="tel"
+                      autoComplete="tel"
+                      value={phoneForm.phone}
+                      onChange={(event) => updatePhoneField("phone", event.target.value)}
+                      className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
+                      placeholder="+91 9876543210"
+                      required
+                    />
+                  </label>
+
+                  <AuthNotice type={status.type || "neutral"} message={status.message} />
+
+                  <button
+                    type="submit"
+                    className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                    disabled={submitting || !canUsePhoneOtp}
+                  >
+                    {submitting ? "Sending OTP..." : "Send OTP"}
+                  </button>
+                </form>
+              ) : (
+                <form className="space-y-5" onSubmit={handleVerifyPhoneOtp}>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-[#353126]">Mobile number</span>
+                    <input
+                      type="tel"
+                      value={phoneForm.phone}
+                      onChange={(event) => updatePhoneField("phone", event.target.value)}
+                      className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
+                      required
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-[#353126]">
+                      {config.otpLength}-digit OTP
+                    </span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={config.otpLength}
+                      value={phoneForm.otp}
+                      onChange={(event) => updatePhoneField("otp", event.target.value.replace(/\D/g, ""))}
+                      className="w-full rounded-2xl border border-[#D9D1BF] bg-[#FBF8EF] px-4 py-3 text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
+                      placeholder="Enter OTP"
+                      required
+                    />
+                  </label>
+
+                  <AuthNotice type={status.type || "neutral"} message={status.message}>
+                    {debugPayload?.otp ? (
+                      <p className="font-mono text-xs">
+                        Dev OTP: <strong>{debugPayload.otp}</strong>
+                      </p>
+                    ) : null}
+                  </AuthNotice>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => setPhoneChallenge(null)}
+                      className="rounded-full border border-[#D9D1BF] px-6 py-3 text-sm font-semibold text-[#1A1A1A]"
+                    >
+                      Change number
+                    </button>
+                    <button
+                      type="submit"
+                      className="rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                      disabled={submitting}
+                    >
+                      {submitting ? "Verifying..." : "Verify OTP"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
 
           <p className="mt-6 text-sm text-[#5F5B4F]">
             Need a new account?{" "}
