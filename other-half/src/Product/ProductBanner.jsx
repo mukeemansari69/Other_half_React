@@ -17,6 +17,7 @@ import "/public/Product/css/ProductBanner.css";
 import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
+import { isDeliveryAddressComplete } from "../lib/deliveryAddress.js";
 import { startRazorpayCheckout } from "../lib/startRazorpayCheckout.js";
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 import { getCadenceDetails } from "../../shared/subscriptionUtils.js";
@@ -655,6 +656,20 @@ const ProductBanner = ({
       return;
     }
 
+    if (!isDeliveryAddressComplete(authUser?.deliveryAddress)) {
+      if (!hasItem(cartVariantId)) {
+        addItem(checkoutLineItem);
+      }
+
+      navigate("/cart", {
+        state: {
+          needsAddress: true,
+          message: "Please add your delivery address in cart before completing checkout.",
+        },
+      });
+      return;
+    }
+
     setCheckingOut(true);
     setCheckoutStatus({ type: "", message: "" });
 
@@ -662,6 +677,7 @@ const ProductBanner = ({
       const result = await startRazorpayCheckout({
         token: authToken,
         user: authUser,
+        deliveryAddress: authUser?.deliveryAddress || null,
         items: [checkoutLineItem],
       });
 

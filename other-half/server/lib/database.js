@@ -10,7 +10,11 @@ import mongoose from "mongoose";
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 import { convertLegacyUsdPrice, STORE_CURRENCY } from "../../shared/storefrontConfig.js";
 import { syncAllUserSubscriptions } from "./subscriptions.js";
-import { normalizeEmail, normalizePhoneInput } from "./validation.js";
+import {
+  normalizeDeliveryAddress,
+  normalizeEmail,
+  normalizePhoneInput,
+} from "./validation.js";
 
 const ROOT_DIR = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const LEGACY_DATA_DIR = path.join(ROOT_DIR, "server", "data");
@@ -164,6 +168,20 @@ const createDefaultSubscription = (dogName = "Maple") => ({
   },
 });
 
+const createSeedDeliveryAddress = (overrides = {}) => ({
+  addressType: "home",
+  fullName: "Sarah Bennett",
+  phone: "+1555010101",
+  line1: "27 Park View Apartments",
+  line2: "2nd Floor, Carter Road",
+  landmark: "Near Pet Park",
+  city: "Mumbai",
+  state: "Maharashtra",
+  postalCode: "400050",
+  country: "India",
+  ...overrides,
+});
+
 const DEFAULT_ADMIN_EMAIL = "admin@PetPlus.co.in";
 const DEFAULT_MEMBER_EMAIL = "member@example.com";
 const LEGACY_DEMO_EMAILS = new Set([
@@ -229,6 +247,7 @@ const createSeedMemberUser = async () => ({
   role: "user",
   passwordHash: await bcrypt.hash("Member@123", 10),
   subscription: createDefaultSubscription("Milo"),
+  deliveryAddress: createSeedDeliveryAddress(),
   createdAt: createIsoDate(-7),
   lastLoginAt: createIsoDate(-2),
 });
@@ -308,6 +327,8 @@ const createSeedOrders = (user) => {
       userId: user?.id || null,
       customerName: user?.name || "Guest customer",
       customerEmail: user?.email || "guest@example.com",
+      customerPhone:
+        user?.deliveryAddress?.phone || user?.phone || createSeedDeliveryAddress().phone,
       currency: STORE_CURRENCY,
       totalAmount: dailyDuoTotal,
       paymentMode: "razorpay",
@@ -316,6 +337,9 @@ const createSeedOrders = (user) => {
       subscriptionType: "subscription",
       deliveryStatus: "delivered",
       deliveryDueAt: createIsoDate(-8),
+      deliveryAddress: normalizeDeliveryAddress(
+        user?.deliveryAddress || createSeedDeliveryAddress()
+      ),
       items: [
         {
           productId: "daily-duo",
@@ -340,6 +364,10 @@ const createSeedOrders = (user) => {
         intervalCount: 1,
         cancelAtPeriodEnd: false,
       },
+      pricing: {
+        subtotalAmount: dailyDuoTotal,
+        shippingAmount: 0,
+      },
       createdAt: createIsoDate(-15),
       updatedAt: createIsoDate(-8),
     },
@@ -349,6 +377,8 @@ const createSeedOrders = (user) => {
       userId: user?.id || null,
       customerName: user?.name || "Guest customer",
       customerEmail: user?.email || "guest@example.com",
+      customerPhone:
+        user?.deliveryAddress?.phone || user?.phone || createSeedDeliveryAddress().phone,
       currency: STORE_CURRENCY,
       totalAmount: doggieDentalTotal,
       paymentMode: "razorpay",
@@ -357,6 +387,9 @@ const createSeedOrders = (user) => {
       subscriptionType: "one-time",
       deliveryStatus: "in-transit",
       deliveryDueAt: createIsoDate(2),
+      deliveryAddress: normalizeDeliveryAddress(
+        user?.deliveryAddress || createSeedDeliveryAddress()
+      ),
       items: [
         {
           productId: "doggie-dental",
@@ -372,6 +405,10 @@ const createSeedOrders = (user) => {
           billingIntervalCount: 1,
         },
       ],
+      pricing: {
+        subtotalAmount: doggieDentalTotal,
+        shippingAmount: 0,
+      },
       createdAt: createIsoDate(-2),
       updatedAt: createIsoDate(-1),
     },
@@ -381,6 +418,7 @@ const createSeedOrders = (user) => {
       userId: null,
       customerName: "Guest customer",
       customerEmail: "guest+checkout@example.com",
+      customerPhone: "+1555010199",
       currency: STORE_CURRENCY,
       totalAmount: everydayTotal,
       paymentMode: "razorpay",
@@ -389,6 +427,10 @@ const createSeedOrders = (user) => {
       subscriptionType: "one-time",
       deliveryStatus: "queued",
       deliveryDueAt: createIsoDate(4),
+      deliveryAddress: createSeedDeliveryAddress({
+        fullName: "Guest customer",
+        phone: "+1555010199",
+      }),
       items: [
         {
           productId: "everyday-one",
@@ -404,6 +446,10 @@ const createSeedOrders = (user) => {
           billingIntervalCount: 6,
         },
       ],
+      pricing: {
+        subtotalAmount: everydayTotal,
+        shippingAmount: 0,
+      },
       createdAt: createIsoDate(-1),
       updatedAt: createIsoDate(-1),
     },
@@ -538,6 +584,7 @@ const normalizeUserRecord = (user) => {
     ...user,
     email: normalizedEmail,
     phone: normalizedPhone,
+    deliveryAddress: normalizeDeliveryAddress(user.deliveryAddress),
     emailVerified,
     phoneVerified,
     isVerified:

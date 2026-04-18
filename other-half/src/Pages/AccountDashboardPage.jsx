@@ -1,9 +1,26 @@
-import { CalendarClock, CircleCheckBig, MessagesSquare, PawPrint, Sparkles } from "lucide-react";
+import {
+  CalendarClock,
+  CircleCheckBig,
+  MapPin,
+  MessagesSquare,
+  PawPrint,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import DeliveryAddressFields from "../Components/DeliveryAddressFields.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
+import {
+  createEmptyDeliveryAddress,
+  formatDeliveryAddressInline,
+  getDeliveryAddressTypeLabel,
+  hasDeliveryAddressInput,
+  isDeliveryAddressComplete,
+  normalizeDeliveryAddress,
+  validateDeliveryAddress,
+} from "../lib/deliveryAddress.js";
 
 const formatDate = (value) => {
   if (!value) {
@@ -74,11 +91,13 @@ const AccountDashboardPage = () => {
     phone: "",
     dogName: "",
     deliveryCadence: "",
+    deliveryAddress: createEmptyDeliveryAddress(),
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
   const [activeMetric, setActiveMetric] = useState("support");
+  const [addressErrors, setAddressErrors] = useState({});
 
   useEffect(() => {
     let isActive = true;
@@ -99,6 +118,7 @@ const AccountDashboardPage = () => {
           phone: response.user.phone || "",
           dogName: response.subscription?.dogProfile?.name || "",
           deliveryCadence: response.subscription?.deliveryCadence || "",
+          deliveryAddress: normalizeDeliveryAddress(response.user.deliveryAddress),
         });
       } catch (error) {
         if (isActive) {
@@ -128,8 +148,36 @@ const AccountDashboardPage = () => {
     }));
   };
 
+  const handleAddressFieldChange = (field, value) => {
+    setFormState((currentState) => ({
+      ...currentState,
+      deliveryAddress: {
+        ...currentState.deliveryAddress,
+        [field]: value,
+      },
+    }));
+    setAddressErrors((currentErrors) => ({
+      ...currentErrors,
+      [field]: "",
+    }));
+  };
+
   const handleSaveProfile = async (event) => {
     event.preventDefault();
+    const shouldSaveAddress = hasDeliveryAddressInput(formState.deliveryAddress);
+    const nextAddressErrors = shouldSaveAddress
+      ? validateDeliveryAddress(formState.deliveryAddress)
+      : {};
+
+    if (Object.keys(nextAddressErrors).length > 0) {
+      setAddressErrors(nextAddressErrors);
+      setStatus({
+        type: "error",
+        message: "Please complete the delivery address fields before saving.",
+      });
+      return;
+    }
+
     setSaving(true);
     setStatus({ type: "", message: "" });
 
@@ -137,7 +185,17 @@ const AccountDashboardPage = () => {
       const response = await apiRequest("/account/profile", {
         method: "PATCH",
         token,
-        body: formState,
+        body: {
+          name: formState.name,
+          phone: formState.phone,
+          dogName: formState.dogName,
+          deliveryCadence: formState.deliveryCadence,
+          ...(shouldSaveAddress
+            ? {
+                deliveryAddress: normalizeDeliveryAddress(formState.deliveryAddress),
+              }
+            : {}),
+        },
       });
 
       setSummary((currentSummary) => ({
@@ -145,6 +203,14 @@ const AccountDashboardPage = () => {
         user: response.user,
         subscription: response.subscription,
       }));
+      setFormState({
+        name: response.user.name || "",
+        phone: response.user.phone || "",
+        dogName: response.subscription?.dogProfile?.name || "",
+        deliveryCadence: response.subscription?.deliveryCadence || "",
+        deliveryAddress: normalizeDeliveryAddress(response.user.deliveryAddress),
+      });
+      setAddressErrors({});
       updateLocalUser(response.user);
       setStatus({ type: "success", message: response.message });
     } catch (error) {
@@ -190,6 +256,8 @@ const AccountDashboardPage = () => {
   const isManagedSubscription = Boolean(summary.subscription?.sourceOrderId);
   const deliveryCadenceOptions = ["Every 30 days", "Every 45 days", "Every 60 days"];
   const deliveryCadenceValue = formState.deliveryCadence || "Not set";
+  const savedDeliveryAddress = normalizeDeliveryAddress(summary.user.deliveryAddress);
+  const hasSavedDeliveryAddress = isDeliveryAddressComplete(savedDeliveryAddress);
   const verificationItems = [
     {
       label: "Email verified",
@@ -370,6 +438,29 @@ const AccountDashboardPage = () => {
               </div>
             </div>
 
+            <div className="mt-6 rounded-[28px] border border-[#E6DFCF] bg-white p-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#EEF6E7] text-[#0F4A12]">
+                  <MapPin size={18} />
+                </div>
+                <div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="rounded-full bg-[#EEF6E7] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#0F4A12]">
+                      {getDeliveryAddressTypeLabel(savedDeliveryAddress.addressType)}
+                    </span>
+                    <span className="rounded-full bg-[#FBF8EF] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#6A6458]">
+                      {hasSavedDeliveryAddress ? "Saved delivery address" : "Not saved yet"}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-[#5F5B4F]">
+                    {hasSavedDeliveryAddress
+                      ? formatDeliveryAddressInline(savedDeliveryAddress)
+                      : "Add a delivery address below so checkout can prefill it and admin can see the same shipping location."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <Link
               to="/manage-subscription"
               className="mt-6 inline-flex rounded-full border border-[#D6D0C1] px-5 py-3 text-sm font-semibold text-[#1A1A1A]"
@@ -448,6 +539,26 @@ const AccountDashboardPage = () => {
                     : "This field is only a saved preference until a recurring plan is active."}
                 </p>
               </label>
+
+              <div className="rounded-[28px] border border-[#E6DFCF] bg-[#F7F2E7] p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0F4A12]">
+                  Delivery address
+                </p>
+                <h3 className="mt-2 text-2xl font-semibold text-[#1A1A1A]">
+                  Save the address used for shipping
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-[#5F5B4F]">
+                  This is the address your cart will prefill and the same location the admin
+                  billing card will show for each order.
+                </p>
+
+                <DeliveryAddressFields
+                  address={formState.deliveryAddress}
+                  errors={addressErrors}
+                  onChange={handleAddressFieldChange}
+                  className="mt-5"
+                />
+              </div>
 
               {status.message ? (
                 <div

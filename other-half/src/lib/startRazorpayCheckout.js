@@ -22,13 +22,19 @@ export const toCheckoutItemPayload = (item) => ({
   sizeWeight: item.sizeWeight,
 });
 
-export const startRazorpayCheckout = async ({ token, user, items }) => {
+export const startRazorpayCheckout = async ({
+  token,
+  user,
+  items,
+  deliveryAddress = null,
+}) => {
   const order = await apiRequest("/payments/create-order", {
     method: "POST",
     token,
     body: {
       email: user?.email || "",
       customerName: user?.name || "",
+      deliveryAddress,
       items: items.map(toCheckoutItemPayload),
     },
   });
@@ -49,13 +55,24 @@ export const startRazorpayCheckout = async ({ token, user, items }) => {
       description: `Order ${order.orderNumber}`,
       image: "/Home/images/PetPlus-Logo.png",
       prefill: {
-        name: user?.name || order.customerName || "",
+        name:
+          order.deliveryAddress?.fullName ||
+          deliveryAddress?.fullName ||
+          user?.name ||
+          order.customerName ||
+          "",
         email: user?.email || order.customerEmail || "",
-        contact: user?.phone || "",
+        contact:
+          order.customerPhone ||
+          deliveryAddress?.phone ||
+          user?.phone ||
+          "",
       },
       notes: {
         localOrderId: order.orderId,
         orderNumber: order.orderNumber,
+        deliveryCity: order.deliveryAddress?.city || "",
+        deliveryPostalCode: order.deliveryAddress?.postalCode || "",
       },
       theme: {
         color: "#0F4A12",

@@ -28,6 +28,44 @@ const formatDate = (value) => {
 const formatCurrency = (amount, currency = "INR") =>
   formatStoreCurrency(amount, { currency });
 
+const formatDeliveryAddress = (address = {}) => {
+  if (!address || typeof address !== "object") {
+    return "";
+  }
+
+  const hasMeaningfulFields = Boolean(
+    address.fullName ||
+      address.line1 ||
+      address.line2 ||
+      address.landmark ||
+      address.city ||
+      address.state ||
+      address.postalCode ||
+      address.phone
+  );
+
+  if (!hasMeaningfulFields) {
+    return "";
+  }
+
+  return [
+    address.fullName,
+    [address.line1, address.line2].filter(Boolean).join(", "),
+    address.landmark ? `Landmark: ${address.landmark}` : "",
+    [address.city, address.state, address.postalCode].filter(Boolean).join(", "),
+    address.country,
+    address.phone ? `Phone: ${address.phone}` : "",
+  ]
+    .filter(Boolean)
+    .join(" • ");
+};
+
+const getBillType = (order) =>
+  order?.bill?.type ||
+  (String(order?.subscriptionType || "").toLowerCase() === "subscription"
+    ? "Subscription bill"
+    : "One-time order bill");
+
 const statusTone = {
   new: "bg-[#FFF4D6] text-[#8A5A09]",
   "in-review": "bg-[#E8F1FF] text-[#265A9A]",
@@ -215,6 +253,23 @@ const AdminDashboardPage = () => {
 
   const supportCounts = getSupportStatusCounts(supportRequests);
   const orderSummary = getOrderSummary(orders);
+  const billingSummary = orders.reduce(
+    (summary, order) => {
+      summary.totalShipping += Number(
+        order.bill?.shippingAmount || order.pricing?.shippingAmount || 0
+      );
+
+      if (String(order.paymentStatus || "").toLowerCase() === "paid") {
+        summary.paidBills += 1;
+      }
+
+      return summary;
+    },
+    {
+      totalShipping: 0,
+      paidBills: 0,
+    }
+  );
   const subscriptionSummary = getSubscriptionSummary(users);
   const dogParents = subscriptionSummary.dogParents;
   const withSubscription = subscriptionSummary.withSubscription;
@@ -234,6 +289,7 @@ const AdminDashboardPage = () => {
     { key: "open", label: "Open tickets", value: supportRequests.filter((request) => request.status !== "resolved").length, helper: `${supportCounts["in-review"]} in review`, icon: CircleCheckBig },
     { key: "newsletter", label: "Newsletter tickets", value: subscribers.length, helper: "Latest signups", icon: Mail },
     { key: "orders", label: "Orders", value: orders.length, helper: formatCurrency(orderSummary.totalRevenue), icon: BadgeDollarSign },
+    { key: "bill", label: "Bill", value: orders.length, helper: `${billingSummary.paidBills} paid`, icon: BadgeDollarSign },
     { key: "subscriptions", label: "Subscriptions", value: withSubscriptionCount, helper: `${activeSubscriptionCount} active`, icon: ShieldCheck },
     { key: "deliveries", label: "Deliveries due", value: deliverySummary.dueNow + deliverySummary.dueSoon, helper: `${deliverySummary.dueSoon} in 7 days`, icon: Truck },
   ];
@@ -285,6 +341,7 @@ const AdminDashboardPage = () => {
             {activePanel === "open" && "Open tickets data"}
             {activePanel === "newsletter" && "Newsletter subscribers"}
             {activePanel === "orders" && "Orders and revenue"}
+            {activePanel === "bill" && "Bills and addresses"}
             {activePanel === "subscriptions" && "Subscription split"}
             {activePanel === "deliveries" && "Delivery queue"}
           </h2>
@@ -305,6 +362,9 @@ const AdminDashboardPage = () => {
                   <p className="text-sm text-[#5F5B4F]">{account.email}</p>
                   <p className="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-[#6A6458]">
                     {account.subscription?.planName || "No subscription"} | Next delivery: {formatDate(account.subscription?.nextDelivery)}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-[#5F5B4F]">
+                    {formatDeliveryAddress(account.deliveryAddress) || "Delivery address not saved yet."}
                   </p>
                 </article>
               )) : <p className="rounded-[24px] bg-[#FBF8EF] px-4 py-5 text-sm text-[#5F5B4F]">No dog-parent accounts yet.</p>)}
@@ -358,8 +418,79 @@ const AdminDashboardPage = () => {
                         {order.subscription.planName} | Cadence: {order.subscription.deliveryCadence} | Status: {order.subscription.status}
                       </p>
                     ) : null}
+                    <p className="mt-2 text-sm leading-6 text-[#5F5B4F]">
+                      Ship to: {formatDeliveryAddress(order.deliveryAddress) || "Delivery address not saved yet."}
+                    </p>
                   </article>
                 )) : <p className="rounded-[24px] bg-[#FBF8EF] px-4 py-5 text-sm text-[#5F5B4F]">No orders yet.</p>}
+              </>
+            )}
+
+            {activePanel === "bill" && (
+              <>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="rounded-[20px] bg-[#EEF6E7] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#1E6B2D]">Paid bills</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{billingSummary.paidBills}</p></div>
+                  <div className="rounded-[20px] bg-[#E8F1FF] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#265A9A]">Shipping total</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{formatCurrency(billingSummary.totalShipping)}</p></div>
+                  <div className="rounded-[20px] bg-[#FFF4D6] px-4 py-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8A5A09]">Average bill</p><p className="mt-2 text-2xl font-semibold text-[#1A1A1A]">{formatCurrency(orderSummary.totalOrders > 0 ? orderSummary.totalRevenue / orderSummary.totalOrders : 0)}</p></div>
+                </div>
+                {orders.length > 0 ? orders.map((order) => (
+                  <article key={order.id} className="rounded-[24px] bg-[#FBF8EF] p-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#0F4A12]">{order.orderNumber}</p>
+                        <h3 className="mt-1 text-xl font-semibold text-[#1A1A1A]">{getBillType(order)}</h3>
+                      </div>
+                      <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#5B5448]">
+                        {order.paymentStatus || "pending"}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.95fr]">
+                      <div className="rounded-[20px] bg-white p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#0F4A12]">Bill to</p>
+                        <p className="mt-2 text-lg font-semibold text-[#1A1A1A]">
+                          {order.bill?.billedTo?.name || order.customerName || "Guest customer"}
+                        </p>
+                        <p className="mt-1 text-sm text-[#5F5B4F]">
+                          {order.bill?.billedTo?.email || order.customerEmail || "Email not saved"}
+                        </p>
+                        <p className="mt-1 text-sm text-[#5F5B4F]">
+                          {order.bill?.billedTo?.phone || "Phone not saved"}
+                        </p>
+                        <p className="mt-3 text-sm leading-6 text-[#5F5B4F]">
+                          {formatDeliveryAddress(order.bill?.deliveryAddress || order.deliveryAddress) || "Delivery address not saved yet."}
+                        </p>
+                      </div>
+
+                      <div className="rounded-[20px] bg-white p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#0F4A12]">Charges</p>
+                        <div className="mt-3 space-y-2 text-sm text-[#5F5B4F]">
+                          <div className="flex items-center justify-between">
+                            <span>Subtotal</span>
+                            <span className="font-semibold text-[#1A1A1A]">
+                              {formatCurrency(order.bill?.subtotalAmount || order.pricing?.subtotalAmount || 0, order.currency || "INR")}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span>Shipping</span>
+                            <span className="font-semibold text-[#1A1A1A]">
+                              {formatCurrency(order.bill?.shippingAmount || order.pricing?.shippingAmount || 0, order.currency || "INR")}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span>Total</span>
+                            <span className="font-semibold text-[#1A1A1A]">
+                              {formatCurrency(order.bill?.totalAmount || order.totalAmount || 0, order.currency || "INR")}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="mt-4 text-xs font-medium uppercase tracking-[0.12em] text-[#6A6458]">
+                          Items: {(order.items || []).map((item) => `${item.name} x${item.quantity}`).join(", ") || "No items"}
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                )) : <p className="rounded-[24px] bg-[#FBF8EF] px-4 py-5 text-sm text-[#5F5B4F]">No bills yet.</p>}
               </>
             )}
 

@@ -1,11 +1,20 @@
-import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { MapPin, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
+import DeliveryAddressFields from "../Components/DeliveryAddressFields.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { startRazorpayCheckout, toCheckoutItemPayload } from "../lib/startRazorpayCheckout.js";
+import {
+  formatDeliveryAddressInline,
+  getDeliveryAddressTypeLabel,
+  hasDeliveryAddressInput,
+  isDeliveryAddressComplete,
+  normalizeDeliveryAddress,
+  validateDeliveryAddress,
+} from "../lib/deliveryAddress.js";
 import {
   FLAT_SHIPPING_RATE,
   PAYMENT_PROVIDER,
@@ -26,12 +35,38 @@ const CartPage = () => {
     cartCount,
   } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const [status, setStatus] = useState({ type: "", message: "" });
   const [checkingOut, setCheckingOut] = useState(false);
   const [showLoginDrawer, setShowLoginDrawer] = useState(false);
+  const [deliveryAddress, setDeliveryAddress] = useState(() =>
+    normalizeDeliveryAddress(user?.deliveryAddress)
+  );
+  const [addressErrors, setAddressErrors] = useState({});
 
   const shipping = calculateShipping(subtotal);
   const total = subtotal + shipping;
+  const savedDeliveryAddress = normalizeDeliveryAddress(user?.deliveryAddress);
+  const hasSavedDeliveryAddress = isDeliveryAddressComplete(savedDeliveryAddress);
+  const previewAddress = hasDeliveryAddressInput(deliveryAddress)
+    ? deliveryAddress
+    : savedDeliveryAddress;
+  const previewAddressComplete = isDeliveryAddressComplete(previewAddress);
+
+  useEffect(() => {
+    setDeliveryAddress(normalizeDeliveryAddress(user?.deliveryAddress));
+  }, [user]);
+
+  useEffect(() => {
+    if (!location.state?.message) {
+      return;
+    }
+
+    setStatus({
+      type: location.state?.needsAddress ? "error" : "success",
+      message: location.state.message,
+    });
+  }, [location.state]);
 
   const finalizePaidOrder = async (verification, orderId) => {
     clearCart();
@@ -46,6 +81,26 @@ const CartPage = () => {
           verification.message ||
           "Payment received. Your order has been confirmed successfully.",
       },
+    });
+  };
+
+  const handleAddressFieldChange = (field, value) => {
+    setDeliveryAddress((currentAddress) => ({
+      ...currentAddress,
+      [field]: value,
+    }));
+    setAddressErrors((currentErrors) => ({
+      ...currentErrors,
+      [field]: "",
+    }));
+  };
+
+  const handleUseSavedAddress = () => {
+    setDeliveryAddress(savedDeliveryAddress);
+    setAddressErrors({});
+    setStatus({
+      type: "success",
+      message: "Saved delivery address loaded for checkout.",
     });
   };
 
@@ -71,6 +126,20 @@ const CartPage = () => {
       return;
     }
 
+    const resolvedDeliveryAddress = isDeliveryAddressComplete(deliveryAddress)
+      ? normalizeDeliveryAddress(deliveryAddress)
+      : normalizeDeliveryAddress(authUser?.deliveryAddress);
+
+    if (!isDeliveryAddressComplete(resolvedDeliveryAddress)) {
+      setAddressErrors(validateDeliveryAddress(deliveryAddress));
+      setStatus({
+        type: "error",
+        message: "Please add a complete delivery address before checkout.",
+      });
+      return;
+    }
+
+    setDeliveryAddress(resolvedDeliveryAddress);
     setCheckingOut(true);
     setStatus({ type: "", message: "" });
 
@@ -78,6 +147,7 @@ const CartPage = () => {
       const result = await startRazorpayCheckout({
         token: authToken,
         user: authUser,
+        deliveryAddress: resolvedDeliveryAddress,
         items: items.map(toCheckoutItemPayload),
       });
 
@@ -144,6 +214,64 @@ const CartPage = () => {
           </div>
 
           <div className="mt-8 space-y-4">
+            <section className="rounded-[28px] border border-[#E6DFCF] bg-[#F7F2E7] p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0F4A12]">
+                    Delivery address
+                  </p>
+                  <h2 className="mt-2 text-2xl font-semibold text-[#1A1A1A]">
+                    Where should we send this order?
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5F5B4F]">
+                    Add the exact delivery location you want on the label. We save it
+                    to your account and the admin billing view will use the same address.
+                  </p>
+                </div>
+
+                {hasSavedDeliveryAddress ? (
+                  <button
+                    type="button"
+                    className="rounded-full border border-[#D6D0C1] bg-white px-4 py-2 text-sm font-semibold text-[#1A1A1A]"
+                    onClick={handleUseSavedAddress}
+                  >
+                    Use saved address
+                  </button>
+                ) : null}
+              </div>
+
+              <div className="mt-5 rounded-[24px] border border-[#E6DFCF] bg-white p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#EEF6E7] text-[#0F4A12]">
+                    <MapPin size={18} />
+                  </div>
+                  <div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="rounded-full bg-[#EEF6E7] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#0F4A12]">
+                        {getDeliveryAddressTypeLabel(previewAddress.addressType)}
+                      </span>
+                      <span className="rounded-full bg-[#FBF8EF] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#6A6458]">
+                        {hasSavedDeliveryAddress ? "Saved on account" : "Add once, reuse later"}
+                      </span>
+                    </div>
+
+                    <p className="mt-3 text-sm leading-6 text-[#5F5B4F]">
+                      {previewAddressComplete
+                        ? formatDeliveryAddressInline(previewAddress)
+                        : "Complete the form below so your order, shipping address, and admin bill all stay in sync."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <DeliveryAddressFields
+                address={deliveryAddress}
+                errors={addressErrors}
+                onChange={handleAddressFieldChange}
+                className="mt-5"
+              />
+            </section>
+
             {items.map((item) => (
               <article
                 key={item.id}

@@ -61,8 +61,11 @@ import {
   isKnownRoute,
 } from "../shared/seo.js";
 import {
+  hasCompleteDeliveryAddress,
+  normalizeDeliveryAddress,
   normalizeEmail,
   normalizeTextValue,
+  sanitizeDeliveryAddressInput,
   sanitizeEmailInput,
   sanitizePhoneInput,
   sanitizeTextInput,
@@ -311,6 +314,26 @@ const toCurrencyAmountFromMinorUnits = (value) => {
   return Number.isFinite(parsed) ? Number((parsed / 100).toFixed(2)) : 0;
 };
 
+const hasSubmittedAddressFields = (value) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+
+  return [
+    "fullName",
+    "name",
+    "phone",
+    "line1",
+    "line2",
+    "landmark",
+    "city",
+    "state",
+    "postalCode",
+    "zip",
+    "pincode",
+  ].some((fieldName) => String(value[fieldName] ?? "").trim());
+};
+
 const buildSubscriptionSnapshotFromItems = (items, overrides = {}, referenceDate = new Date().toISOString()) => {
   const primaryItem = getPrimarySubscriptionItem({ items });
 
@@ -411,6 +434,75 @@ const syncDatabaseUserSubscription = (database, userId) => {
   return user ? sanitizeUser(user) : null;
 };
 
+const resolveOrderDeliveryAddress = (order, fallbackAddress = null) => {
+  const normalizedOrderAddress = normalizeDeliveryAddress(order?.deliveryAddress);
+
+  if (hasCompleteDeliveryAddress(normalizedOrderAddress)) {
+    return normalizedOrderAddress;
+  }
+
+  const normalizedFallbackAddress = normalizeDeliveryAddress(fallbackAddress);
+
+  if (hasCompleteDeliveryAddress(normalizedFallbackAddress)) {
+    return normalizedFallbackAddress;
+  }
+
+  return normalizedOrderAddress;
+};
+
+const getOrderSubtotalAmount = (order) => {
+  const savedSubtotal = toSafeNumber(order?.pricing?.subtotalAmount);
+
+  if (savedSubtotal > 0) {
+    return savedSubtotal;
+  }
+
+  return Array.isArray(order?.items)
+    ? order.items.reduce((runningTotal, item) => {
+        const lineTotal =
+          toSafeNumber(item?.lineTotal) ||
+          toSafeNumber(item?.unitPrice) * Math.max(1, Number(item?.quantity || 1));
+        return runningTotal + lineTotal;
+      }, 0)
+    : 0;
+};
+
+const getOrderShippingAmount = (order) => {
+  return toSafeNumber(order?.pricing?.shippingAmount);
+};
+
+const buildOrderBill = (order, deliveryAddress) => {
+  const subtotalAmount = Number(getOrderSubtotalAmount(order).toFixed(2));
+  const shippingAmount = Number(getOrderShippingAmount(order).toFixed(2));
+  const totalAmount = Number(
+    (toSafeNumber(order?.totalAmount) || subtotalAmount + shippingAmount).toFixed(2)
+  );
+
+  return {
+    type:
+      String(order?.subscriptionType || "").toLowerCase() === "subscription"
+        ? "Subscription bill"
+        : "One-time order bill",
+    itemCount: Array.isArray(order?.items)
+      ? order.items.reduce(
+          (runningTotal, item) => runningTotal + Math.max(1, Number(item?.quantity || 1)),
+          0
+        )
+      : 0,
+    subtotalAmount,
+    shippingAmount,
+    totalAmount,
+    currency: String(order?.currency || STORE_CURRENCY).toUpperCase(),
+    billedTo: {
+      name: order?.customerName || "",
+      email: order?.customerEmail || "",
+      phone: deliveryAddress?.phone || order?.customerPhone || "",
+    },
+    deliveryAddress,
+    generatedAt: order?.updatedAt || order?.createdAt || new Date().toISOString(),
+  };
+};
+
 const findLatestOrderBySubscriptionId = (orders, subscriptionId) => {
   return [...orders]
     .filter(
@@ -448,6 +540,10 @@ const createRenewalOrderFromInvoice = ({
     userId: sourceOrder.userId || null,
     customerName: sourceOrder.customerName,
     customerEmail: sourceOrder.customerEmail,
+    customerPhone:
+      sourceOrder.customerPhone ||
+      normalizeDeliveryAddress(sourceOrder.deliveryAddress).phone ||
+      "",
     currency: String(invoice.currency || sourceOrder.currency || "USD").toUpperCase(),
     totalAmount,
     paymentMode: "card",
@@ -457,8 +553,13 @@ const createRenewalOrderFromInvoice = ({
     subscriptionType: "subscription",
     deliveryStatus: "scheduled",
     deliveryDueAt: null,
+    deliveryAddress: resolveOrderDeliveryAddress(sourceOrder),
     items,
     subscription: null,
+    pricing: {
+      subtotalAmount: Number(getOrderSubtotalAmount(sourceOrder).toFixed(2)),
+      shippingAmount: Number(getOrderShippingAmount(sourceOrder).toFixed(2)),
+    },
     metadata: {
       renewalOfOrderId: sourceOrder.id,
       renewalOfOrderNumber: sourceOrder.orderNumber,
@@ -487,34 +588,54 @@ const createRenewalOrderFromInvoice = ({
   return order;
 };
 
-const summarizeOrder = (order) => ({
-  ...order,
-  items: Array.isArray(order.items)
-    ? order.items.map((item) => ({
-        productId: item.productId || "",
-        name: item.name,
-        quantity: item.quantity,
-        unitPrice: toSafeNumber(item.unitPrice),
-        lineTotal: toSafeNumber(item.lineTotal),
-        purchaseType: item.purchaseType || "one-time",
-        planId: item.planId || "",
-        planLabel: item.planLabel || "",
-        deliveryLabel: item.deliveryLabel || "",
-        deliveryCadence: item.deliveryCadence || "",
-        billingIntervalUnit: item.billingIntervalUnit || "",
-        billingIntervalCount: Number(item.billingIntervalCount || 0),
-        sizeId: item.sizeId || "",
-        sizeLabel: item.sizeLabel || "",
-        sizeWeight: item.sizeWeight || "",
-      }))
-    : [],
-  subscription: order.subscription
-    ? {
-        ...order.subscription,
-        intervalCount: Number(order.subscription.intervalCount || 0),
-      }
-    : null,
-});
+const summarizeOrder = (order, { fallbackAddress = null } = {}) => {
+  const deliveryAddress = resolveOrderDeliveryAddress(order, fallbackAddress);
+
+  return {
+    ...order,
+    customerPhone: order.customerPhone || deliveryAddress.phone || "",
+    deliveryAddress,
+    pricing: {
+      ...(order.pricing || {}),
+      subtotalAmount: Number(getOrderSubtotalAmount(order).toFixed(2)),
+      shippingAmount: Number(getOrderShippingAmount(order).toFixed(2)),
+    },
+    items: Array.isArray(order.items)
+      ? order.items.map((item) => ({
+          productId: item.productId || "",
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: toSafeNumber(item.unitPrice),
+          lineTotal: toSafeNumber(item.lineTotal),
+          purchaseType: item.purchaseType || "one-time",
+          planId: item.planId || "",
+          planLabel: item.planLabel || "",
+          deliveryLabel: item.deliveryLabel || "",
+          deliveryCadence: item.deliveryCadence || "",
+          billingIntervalUnit: item.billingIntervalUnit || "",
+          billingIntervalCount: Number(item.billingIntervalCount || 0),
+          sizeId: item.sizeId || "",
+          sizeLabel: item.sizeLabel || "",
+          sizeWeight: item.sizeWeight || "",
+        }))
+      : [],
+    subscription: order.subscription
+      ? {
+          ...order.subscription,
+          intervalCount: Number(order.subscription.intervalCount || 0),
+        }
+      : null,
+    bill: buildOrderBill(order, deliveryAddress),
+  };
+};
+
+const summarizeOrderForDatabase = (database, order) => {
+  const fallbackAddress =
+    database?.users?.find((candidate) => candidate.id === order?.userId)?.deliveryAddress ||
+    null;
+
+  return summarizeOrder(order, { fallbackAddress });
+};
 
 const getSupportStatusCounts = (supportRequests) => {
   return supportRequests.reduce(
@@ -905,6 +1026,13 @@ app.post(
       return res.status(400).json({ message: "Your cart is empty." });
     }
 
+    const rawDeliveryAddress = hasSubmittedAddressFields(req.body.deliveryAddress)
+      ? req.body.deliveryAddress
+      : req.user?.deliveryAddress;
+    const deliveryAddress = sanitizeDeliveryAddressInput(rawDeliveryAddress, {
+      required: true,
+    });
+
     const { keyId, keySecret, isConfigured } = getRazorpayConfig();
 
     if (!isConfigured) {
@@ -926,8 +1054,10 @@ app.post(
     const customerName =
       req.user?.name ||
       (typeof req.body.customerName === "string" ? req.body.customerName.trim() : "") ||
+      deliveryAddress.fullName ||
       "Guest customer";
     const customerEmail = email || req.user?.email || "";
+    const customerPhone = deliveryAddress.phone || req.user?.phone || "";
     const subscriptionType = items.some((item) => item.purchaseType === "subscription")
       ? "subscription"
       : "one-time";
@@ -981,17 +1111,27 @@ app.post(
         localOrderId,
         orderNumber: localOrderNumber,
         customerEmail,
+        customerPhone,
+        deliveryCity: deliveryAddress.city,
+        deliveryPostalCode: deliveryAddress.postalCode,
         subscriptionType,
       },
     });
 
     const database = await readDatabase();
+    const databaseUser = database.users.find((candidate) => candidate.id === req.user?.id);
+
+    if (databaseUser) {
+      databaseUser.deliveryAddress = deliveryAddress;
+    }
+
     database.orders.unshift({
       id: localOrderId,
       orderNumber: localOrderNumber,
       userId: req.user?.id || null,
       customerName,
       customerEmail,
+      customerPhone,
       currency: STORE_CURRENCY,
       totalAmount,
       paymentMode: "razorpay",
@@ -1002,6 +1142,7 @@ app.post(
       deliveryStatus:
         subscriptionType === "subscription" ? "scheduled" : "queued",
       deliveryDueAt,
+      deliveryAddress,
       items: normalizedOrderItems,
       subscription: pendingSubscriptionSnapshot,
       pricing: {
@@ -1022,6 +1163,8 @@ app.post(
       currency: gatewayOrder.currency || STORE_CURRENCY,
       customerName,
       customerEmail,
+      customerPhone,
+      deliveryAddress,
       subtotalAmount: Number(itemSubtotal.toFixed(2)),
       shippingAmount: Number(shippingAmount.toFixed(2)),
       totalAmount,
@@ -1506,6 +1649,7 @@ app.patch(
     const nextPhone = req.body.phone;
     const nextDogName = req.body.dogName;
     const nextCadence = req.body.deliveryCadence;
+    const nextDeliveryAddress = req.body.deliveryAddress;
     const isManagedSubscription = Boolean(user.subscription?.sourceOrderId);
     let didPhoneChange = false;
 
@@ -1566,6 +1710,12 @@ app.patch(
       }
 
       user.subscription.deliveryCadence = normalizedCadence;
+    }
+
+    if (hasSubmittedAddressFields(nextDeliveryAddress)) {
+      user.deliveryAddress = sanitizeDeliveryAddressInput(nextDeliveryAddress, {
+        required: true,
+      });
     }
 
     await writeDatabase(database);
@@ -2123,7 +2273,7 @@ app.get(
       latestSupportRequests: supportRequests.slice(0, 5).map(summarizeSupportRequest),
       latestQuizSubmissions: quizSubmissions.slice(0, 5),
       latestSubscribers: newsletterSubscribers.slice(0, 5),
-      latestOrders: orders.slice(0, 5).map(summarizeOrder),
+      latestOrders: orders.slice(0, 5).map((order) => summarizeOrderForDatabase(database, order)),
       deliveryQueue: deliveryQueue.slice(0, 15),
     });
   })
@@ -2146,7 +2296,9 @@ app.get(
   requireAdmin,
   asyncHandler(async (_req, res) => {
     const database = await readDatabase();
-    const orders = sortByDateDescending(database.orders).map(summarizeOrder);
+    const orders = sortByDateDescending(database.orders).map((order) =>
+      summarizeOrderForDatabase(database, order)
+    );
     return res.json({ orders });
   })
 );
