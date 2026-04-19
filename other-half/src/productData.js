@@ -235,10 +235,10 @@ export const everydayProductData = {
   },
 
   gallery: [
-    { id: "g1", src: "/Product/images/everyday/1.png", alt: "Front View" },
-    { id: "g2", src: "/Product/images/everyday/2.png", alt: "Back View" },
-    { id: "g3", src: "/Product/images/everyday/3.png", alt: "Usage" },
-    { id: "g4", src: "/Product/images/everyday/4.png", alt: "Ingredients" },
+    { id: "g1", src: "/Home/images/everyday.png", alt: "Front View" },
+    { id: "g2", src: "/Product/images/p1.png", alt: "Back View" },
+    { id: "g3", src: "/Home/images/everyday.png", alt: "Usage" },
+    { id: "g4", src: "/Home/images/everyday.png", alt: "Ingredients" },
   ],
 
   qualityHighlights: [
@@ -281,27 +281,27 @@ export const everydayProductData = {
     },
     {
       id: "immunity",
-      icon: "/Product/images/immunity.png",
+      icon: "/Product/images/immunity (1) 1.png",
       text: "Stronger Immunity",
     },
     {
       id: "allergies",
-      icon: "/Product/images/allergy.png",
+      icon: "/Product/images/allergies 1.png",
       text: "Allergy Relief",
     },
     {
       id: "coat",
-      icon: "/Product/images/coat.png",
+      icon: "/Product/images/pl.jpg",
       text: "Healthy Skin & Coat",
     },
     {
       id: "digestion",
-      icon: "/Product/images/digestion.png",
+      icon: "/Product/images/stomach 1.png",
       text: "Better Digestion",
     },
     {
       id: "aging",
-      icon: "/Product/images/aging.png",
+      icon: "/Product/images/love 1.png",
       text: "Supports Healthy Aging",
     },
   ],
