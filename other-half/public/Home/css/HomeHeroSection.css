@@ -19,10 +19,9 @@
 /* Desktop */
 @media (min-width: 1024px) {
   .hero-content {
-    gap: 53px;
+    gap: 24px;
     text-align: left;
-    margin-left: 10%;
-        margin-top: 5%;
+    
   }
 }
 
