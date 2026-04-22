@@ -8,6 +8,13 @@ import {
   storeCatalog,
 } from "../shared/storeCatalog.js";
 
+const PLACEHOLDER_FRAGMENTS = [
+  "prouct food name",
+  "per qth",
+  "some amount here",
+  "replace this with real admin-fed",
+];
+
 test("store catalog exposes the core storefront products", () => {
   assert.ok(storeCatalog.length >= 3);
   assert.ok(collectionCards.some((entry) => entry.productId === "everyday-one"));
@@ -75,4 +82,29 @@ test("collection cards expose centralized pricing and default subscription state
   assert.equal(dentalCard?.startingDiscountLabel, "18% OFF");
   assert.equal(duoCard?.startingDiscountLabel, "20% OFF");
   assert.equal(everydayCard?.defaultSelection.purchaseType, "subscription");
+});
+
+test("catalog data does not leak placeholder storefront copy", () => {
+  const serializedCatalog = JSON.stringify(storeCatalog).toLowerCase();
+
+  PLACEHOLDER_FRAGMENTS.forEach((fragment) => {
+    assert.equal(
+      serializedCatalog.includes(fragment),
+      false,
+      `Unexpected placeholder fragment found: ${fragment}`
+    );
+  });
+});
+
+test("catalog entries expose normalized availability metadata", () => {
+  storeCatalog.forEach((entry) => {
+    assert.ok(entry.availability);
+    assert.ok(["in_stock", "out_of_stock"].includes(entry.availability.status));
+    assert.ok(typeof entry.availability.message === "string");
+  });
+});
+
+test("collection cards keep canonical product ids and routes unique", () => {
+  assert.equal(new Set(collectionCards.map((entry) => entry.productId)).size, collectionCards.length);
+  assert.equal(new Set(collectionCards.map((entry) => entry.route)).size, collectionCards.length);
 });

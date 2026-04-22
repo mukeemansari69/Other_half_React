@@ -77,6 +77,46 @@ const PRODUCT_MARKETING_PRICING = {
 
 const roundStorePrice = (value) => Number((Number(value) || 0).toFixed(2));
 
+const MOJIBAKE_REPLACEMENTS = [
+  ["â€™", "'"],
+  ["â€œ", '"'],
+  ["â€", '"'],
+  ["â€”", "-"],
+  ["ðŸš€", ""],
+  ["âŒ", ""],
+  ["Â©", "Copyright "],
+];
+
+const sanitizeTextValue = (value) => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  const sanitizedValue = MOJIBAKE_REPLACEMENTS.reduce(
+    (currentValue, [searchValue, replacementValue]) =>
+      currentValue.split(searchValue).join(replacementValue),
+    value
+  );
+
+  return sanitizedValue.replace(/\s{2,}/g, " ").trim();
+};
+
+const sanitizeStructuredCopy = (value) => {
+  if (Array.isArray(value)) {
+    return value.map(sanitizeStructuredCopy);
+  }
+
+  if (value && typeof value === "object") {
+    Object.keys(value).forEach((key) => {
+      value[key] = sanitizeStructuredCopy(value[key]);
+    });
+
+    return value;
+  }
+
+  return sanitizeTextValue(value);
+};
+
 const getPlanIntervalCountInMonths = (plan) => {
   const cadence = getCadenceDetails({
     planId: plan?.id,
@@ -1161,6 +1201,10 @@ export const dailyDuoProductData = {
 
   initialVisibleTags: 5,
 };
+
+sanitizeStructuredCopy(everydayProductData);
+sanitizeStructuredCopy(dogDentalProductData);
+sanitizeStructuredCopy(dailyDuoProductData);
 
 applyIndiaStorefront(everydayProductData);
 applyIndiaStorefront(dogDentalProductData);

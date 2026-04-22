@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import "/public/Default/css/ourCollection.css";
+import WishlistButton from "../Components/WishlistButton.jsx";
 import { LoadingButton } from "../Components/LoadingControl.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { collectionCards } from "../../shared/storeCatalog.js";
@@ -21,6 +22,9 @@ const products = collectionCards.map((item) => ({
   subscribeTitle: item.displayDiscountLabel
     ? `Subscribe & Save ${item.displayDiscountLabel}`
     : "Subscribe & Save",
+  isOutOfStock:
+    item.availability?.status === "out_of_stock" ||
+    item.defaultSelection?.inStock === false,
 }));
 
 const OurCollection = () => {
@@ -69,9 +73,18 @@ const OurCollection = () => {
               key={item.productId}
               className="ourCollection-card group cursor-pointer block"
             >
+              <WishlistButton
+                productId={item.productId}
+                className="absolute right-4 top-4 z-10"
+              />
               <span className={`ourCollection-tag ${item.tagColor}`}>
                 {item.tag}
               </span>
+              {item.isOutOfStock ? (
+                <span className="absolute left-4 top-14 rounded-full bg-[#FFF1EE] px-3 py-1 text-xs font-semibold text-[#A13A2C]">
+                  Out of stock
+                </span>
+              ) : null}
 
               <div className="ourCollection-imageWrapper">
                 <img
@@ -139,11 +152,30 @@ const OurCollection = () => {
 
               <LoadingButton
                 className="ourCollection-btn"
-                onClick={(event) => handleAddToCart(event, item)}
+                onClick={(event) => {
+                  if (item.isOutOfStock) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    navigate(item.route);
+                    return;
+                  }
+
+                  handleAddToCart(event, item);
+                }}
                 lockOnClick
-                loadingText={hasItem(item.cartId) ? "Opening cart..." : "Adding..."}
+                loadingText={
+                  item.isOutOfStock
+                    ? "Opening..."
+                    : hasItem(item.cartId)
+                      ? "Opening cart..."
+                      : "Adding..."
+                }
               >
-                {hasItem(item.cartId) ? "GO TO CART" : "+ ADD TO CART"}
+                {item.isOutOfStock
+                  ? "VIEW DETAILS"
+                  : hasItem(item.cartId)
+                    ? "GO TO CART"
+                    : "+ ADD TO CART"}
               </LoadingButton>
             </NavLink>
           ))}

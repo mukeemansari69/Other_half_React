@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   BadgeCheck,
+  BellRing,
   Factory,
   FlaskConical,
   Minus,
@@ -16,11 +17,14 @@ import { Link, useNavigate } from "react-router-dom";
 import "/public/Product/css/ProductBanner.css";
 import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
 import { LoadingButton } from "../Components/LoadingControl.jsx";
+import WishlistButton from "../Components/WishlistButton.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
+import { apiRequest } from "../lib/api.js";
 import { isDeliveryAddressComplete } from "../lib/deliveryAddress.js";
 import { startRazorpayCheckout } from "../lib/startRazorpayCheckout.js";
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
+import { collectionCards } from "../../shared/storeCatalog.js";
 import { getCadenceDetails } from "../../shared/subscriptionUtils.js";
 import {
   MADE_IN_LABEL,
@@ -321,7 +325,7 @@ const defaultProductBannerData = {
       title: "INGREDIENTS",
       content: [
         "Bovine colostrum, spirulina, turmeric, glucosamine, MSM, probiotics, pumpkin, and more.",
-        "Replace this with real admin-fed ingredients when backend data is connected.",
+        "Made with carefully selected ingredients chosen to support everyday dog wellness.",
       ],
     },
   ],
@@ -361,6 +365,14 @@ const formatPlanPerDayLabel = (price, plan) => {
     maximumFractionDigits: perDayPrice < 100 ? 2 : 0,
   })}/day)`;
 };
+
+const getFirstAvailablePlanId = (size) =>
+  size?.plans.find((plan) => plan.inStock !== false)?.id || size?.plans[0]?.id || "";
+
+const getFirstAvailableSizeId = (sizes = []) =>
+  sizes.find((size) => size?.plans?.some((plan) => plan.inStock !== false))?.id ||
+  sizes[0]?.id ||
+  "";
 
 const RatingStars = ({ rating }) => (
   <div
@@ -436,10 +448,10 @@ const ProductBanner = ({
   const product = productData;
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSizeId, setSelectedSizeId] = useState(
-    product.sizes[0]?.id ?? "",
+    getFirstAvailableSizeId(product.sizes),
   );
   const [selectedPlanId, setSelectedPlanId] = useState(
-    product.sizes[0]?.plans[0]?.id ?? "",
+    getFirstAvailablePlanId(product.sizes[0]),
   );
   const [showAllTags, setShowAllTags] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -452,9 +464,18 @@ const ProductBanner = ({
   const [checkoutStatus, setCheckoutStatus] = useState({ type: "", message: "" });
   const [checkingOut, setCheckingOut] = useState(false);
   const [showLoginDrawer, setShowLoginDrawer] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState(user?.email || "");
+  const [notifySubmitting, setNotifySubmitting] = useState(false);
+  const [notifyStatus, setNotifyStatus] = useState({ type: "", message: "" });
   const bundleSuggestions = useMemo(() => {
     return product.bundleSuggestions ?? [];
   }, [product.bundleSuggestions]);
+
+  useEffect(() => {
+    if (user?.email && !notifyEmail) {
+      setNotifyEmail(user.email);
+    }
+  }, [notifyEmail, user?.email]);
 
   useEffect(() => {
     if (bundleSuggestions.length <= 1) {
@@ -475,6 +496,15 @@ const ProductBanner = ({
   const selectedPlan =
     selectedSize.plans.find((plan) => plan.id === selectedPlanId) ??
     selectedSize.plans[0];
+  const productAvailability = product.availability || {};
+  const isSelectedPlanInStock = selectedPlan?.inStock !== false;
+  const isOutOfStock =
+    String(productAvailability.status || "").trim().toLowerCase() === "out_of_stock" ||
+    !isSelectedPlanInStock;
+  const outOfStockMessage =
+    selectedPlan?.outOfStockMessage ||
+    productAvailability.message ||
+    "This product is currently out of stock.";
   const selectedImage =
     product.gallery[selectedImageIndex] ?? product.gallery[0];
   const selectedCadence = useMemo(() => {
@@ -487,6 +517,41 @@ const ProductBanner = ({
     bundleSuggestions.length > 0
       ? bundleSuggestions[activeSuggestionIndex % bundleSuggestions.length]
       : null;
+  const relatedProducts = useMemo(() => {
+    const fallbackProducts = collectionCards.filter(
+      (item) => item.productId !== product.id
+    );
+    const preferredRelatedProductIds = [
+      ...new Set(
+        (Array.isArray(productAvailability.relatedProductIds)
+          ? productAvailability.relatedProductIds
+          : []
+        )
+          .map((item) => String(item || "").trim())
+          .filter(Boolean)
+      ),
+    ];
+
+    if (preferredRelatedProductIds.length === 0) {
+      return fallbackProducts.slice(0, 2);
+    }
+
+    const prioritizedProducts = preferredRelatedProductIds
+      .map((productId) =>
+        fallbackProducts.find((item) => item.productId === productId)
+      )
+      .filter(Boolean);
+    const prioritizedProductIds = new Set(
+      prioritizedProducts.map((item) => item.productId)
+    );
+
+    return [
+      ...prioritizedProducts,
+      ...fallbackProducts.filter(
+        (item) => !prioritizedProductIds.has(item.productId)
+      ),
+    ].slice(0, 2);
+  }, [product.id, productAvailability.relatedProductIds]);
   const reviewProduct = resolveReviewProduct({ productId: product.id, productName: product.name });
   const reviewSectionHref = reviewProduct?.reviewSectionHref || product.review.href;
   const visibleTags = showAllTags
@@ -617,7 +682,8 @@ const ProductBanner = ({
   const handleSizeChange = (sizeId) => {
     const nextSize = product.sizes.find((size) => size.id === sizeId);
     setSelectedSizeId(sizeId);
-    setSelectedPlanId(nextSize?.plans[0]?.id ?? "");
+    setSelectedPlanId(getFirstAvailablePlanId(nextSize));
+    setNotifyStatus({ type: "", message: "" });
   };
 
   const handleToggleBundle = (bundleId) => {
@@ -629,6 +695,14 @@ const ProductBanner = ({
     );
   };
   const handleAddToCart = (source = "cart") => {
+    if (isOutOfStock) {
+      setCheckoutStatus({
+        type: "error",
+        message: outOfStockMessage,
+      });
+      return;
+    }
+
     addItem(checkoutLineItem);
 
     if (typeof onAddToCart === "function") {
@@ -648,6 +722,14 @@ const ProductBanner = ({
     authToken = token,
     authUser = user,
   } = {}) => {
+    if (isOutOfStock) {
+      setCheckoutStatus({
+        type: "error",
+        message: outOfStockMessage,
+      });
+      return;
+    }
+
     if (!skipAuthCheck && !authToken) {
       setCheckoutStatus({
         type: "error",
@@ -706,6 +788,37 @@ const ProductBanner = ({
       });
     } finally {
       setCheckingOut(false);
+    }
+  };
+
+  const handleNotifyMeSubmit = async (event) => {
+    event.preventDefault();
+    setNotifySubmitting(true);
+    setNotifyStatus({ type: "", message: "" });
+
+    try {
+      const response = await apiRequest("/newsletter/subscribe", {
+        method: "POST",
+        body: {
+          email: notifyEmail,
+          source: `restock-${product.id}`,
+        },
+      });
+
+      setNotifyStatus({
+        type: "success",
+        message:
+          response.message ||
+          "Thanks. We'll send you a restock alert as soon as this is available.",
+      });
+      setNotifyEmail("");
+    } catch (error) {
+      setNotifyStatus({
+        type: "error",
+        message: error.message || "We could not save your restock alert right now.",
+      });
+    } finally {
+      setNotifySubmitting(false);
     }
   };
 
@@ -987,6 +1100,11 @@ const ProductBanner = ({
                               <p className="mt-1 text-xs leading-[1.4] text-[#555555] sm:text-sm">
                                 {plan.deliveryLabel}
                               </p>
+                              {plan.inStock === false ? (
+                                <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#A13A2C]">
+                                  Sold out
+                                </p>
+                              ) : null}
                             </div>
                           </div>
                         </div>
@@ -1049,9 +1167,18 @@ const ProductBanner = ({
                 </div>
 
                 <div className="space-y-3">
+                  <WishlistButton productId={product.id} className="w-full justify-center" />
                   <LoadingButton
                     type="button"
                     onClick={() => {
+                      if (isOutOfStock) {
+                        setCheckoutStatus({
+                          type: "error",
+                          message: outOfStockMessage,
+                        });
+                        return;
+                      }
+
                       if (isInCart) {
                         navigate(product.cta.cartHref || "/cart");
                         return;
@@ -1060,26 +1187,130 @@ const ProductBanner = ({
                       handleAddToCart("cart");
                     }}
                     lockOnClick
-                    loadingText={isInCart ? "Opening cart..." : "Adding to cart..."}
+                    loadingText={
+                      isOutOfStock
+                        ? "Unavailable"
+                        : isInCart
+                          ? "Opening cart..."
+                          : "Adding to cart..."
+                    }
+                    disabled={isOutOfStock}
                     className={`product-banner-cta flex w-full items-center justify-center rounded-full px-5 py-4 text-center text-lg font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)] sm:text-2xl 
-    ${isInCart ? "bg-[#0F4A12]" : "bg-[#E8754C]"}`}
+    ${
+      isOutOfStock
+        ? "bg-[#B8B0A1]"
+        : isInCart
+          ? "bg-[#0F4A12]"
+          : "bg-[#E8754C]"
+    }`}
                   >
-                    {isInCart
-                      ? "Go to Cart"
-                      : `${product.cta.addToCartLabel} | ${formatCurrency(totalPrice)}`}
+                    {isOutOfStock
+                      ? "Currently Out of Stock"
+                      : isInCart
+                        ? "Go to Cart"
+                        : `${product.cta.addToCartLabel} | ${formatCurrency(totalPrice)}`}
                   </LoadingButton>
-                  <LoadingButton
-                    type="button"
-                    onClick={() => {
-                      void handleDirectCheckout();
-                    }}
-                    loading={checkingOut}
-                    loadingText={`Opening ${PAYMENT_PROVIDER}...`}
-                    disabled={checkingOut}
-                    className="product-banner-cta flex w-full items-center justify-center rounded-full bg-[#4E3CE2] px-5 py-4 text-center text-base font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)]"
-                  >
-                    {product.cta.shopPayLabel}
-                  </LoadingButton>
+                  {isOutOfStock ? (
+                    <div className="space-y-4 rounded-[24px] border border-[#F0D6C9] bg-[#FFF8F4] p-4">
+                      <div className="flex items-start gap-3">
+                        <span className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#FFF1EE] text-[#A13A2C]">
+                          <BellRing size={18} />
+                        </span>
+                        <div className="space-y-1">
+                          <h4 className="text-base font-semibold text-[#1A1A1A] sm:text-lg">
+                            {productAvailability.notifyTitle || "Notify me when available"}
+                          </h4>
+                          <p className="text-sm leading-6 text-[#5F5B4F]">
+                            {outOfStockMessage}
+                          </p>
+                          <p className="text-sm leading-6 text-[#5F5B4F]">
+                            {productAvailability.notifyDescription ||
+                              "Leave your email and we'll send you a restock alert as soon as it is back."}
+                          </p>
+                        </div>
+                      </div>
+
+                      <form className="space-y-3" onSubmit={handleNotifyMeSubmit}>
+                        <input
+                          type="email"
+                          value={notifyEmail}
+                          onChange={(event) => setNotifyEmail(event.target.value)}
+                          placeholder="Email address"
+                          required
+                          className="w-full rounded-full border border-[#E4D7C8] bg-white px-4 py-3 text-sm text-[#1A1A1A] outline-none transition focus:border-[#0F4A12]"
+                        />
+                        <LoadingButton
+                          type="submit"
+                          loading={notifySubmitting}
+                          loadingText="Saving alert..."
+                          disabled={notifySubmitting}
+                          className="product-banner-cta flex w-full items-center justify-center rounded-full bg-[#0F4A12] px-5 py-4 text-center text-base font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)]"
+                        >
+                          Notify Me When Available
+                        </LoadingButton>
+                      </form>
+
+                      {notifyStatus.message ? (
+                        <div
+                          className={`rounded-2xl px-4 py-3 text-sm ${
+                            notifyStatus.type === "success"
+                              ? "bg-[#EEF6E7] text-[#0F4A12]"
+                              : "bg-[#FFF1EE] text-[#A13A2C]"
+                          }`}
+                        >
+                          {notifyStatus.message}
+                        </div>
+                      ) : null}
+
+                      {relatedProducts.length > 0 ? (
+                        <div className="space-y-3">
+                          <h5 className="text-sm font-semibold uppercase tracking-[0.16em] text-[#6A6458]">
+                            You may also like
+                          </h5>
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            {relatedProducts.map((item) => (
+                              <Link
+                                key={item.productId}
+                                to={item.route}
+                                className="rounded-[20px] border border-[#E4D7C8] bg-white p-3 transition hover:border-[#0F4A12]"
+                              >
+                                <div className="overflow-hidden rounded-[16px] bg-[#FFFDF2]">
+                                  <img
+                                    src={item.image}
+                                    alt={item.title}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="h-32 w-full object-contain p-3"
+                                  />
+                                </div>
+                                <div className="mt-3 space-y-1">
+                                  <p className="text-sm font-semibold text-[#1A1A1A]">
+                                    {item.title}
+                                  </p>
+                                  <p className="text-xs text-[#5F5B4F]">
+                                    {formatStoreCurrency(item.displayPrice)}
+                                  </p>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <LoadingButton
+                      type="button"
+                      onClick={() => {
+                        void handleDirectCheckout();
+                      }}
+                      loading={checkingOut}
+                      loadingText={`Opening ${PAYMENT_PROVIDER}...`}
+                      disabled={checkingOut}
+                      className="product-banner-cta flex w-full items-center justify-center rounded-full bg-[#4E3CE2] px-5 py-4 text-center text-base font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)]"
+                    >
+                      {product.cta.shopPayLabel}
+                    </LoadingButton>
+                  )}
 
                   {checkoutStatus.message ? (
                     <div
@@ -1100,7 +1331,7 @@ const ProductBanner = ({
                   ))}
                 </div>
 
-                {activeSuggestion ? (
+                {!isOutOfStock && activeSuggestion ? (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between gap-3">
                       <h3 className="text-lg font-bold leading-tight text-[#1A1A1A] sm:text-xl">

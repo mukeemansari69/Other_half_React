@@ -5,11 +5,54 @@ import {
 } from "../src/productData.js";
 import { getCadenceDetails } from "./subscriptionUtils.js";
 
+const DEFAULT_AVAILABILITY = Object.freeze({
+  status: "in_stock",
+  message: "In stock and ready to ship.",
+  notifyTitle: "Notify me when available",
+  notifyDescription:
+    "Leave your email and we'll send you a restock alert as soon as it is back.",
+  relatedProductIds: [],
+});
+
 const normalizeCatalogValue = (value = "") =>
   String(value)
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
+
+const normalizeAvailability = (availability = {}) => {
+  const status =
+    String(availability?.status || DEFAULT_AVAILABILITY.status).trim().toLowerCase() ===
+    "out_of_stock"
+      ? "out_of_stock"
+      : "in_stock";
+
+  return {
+    status,
+    message: String(
+      availability?.message ||
+        (status === "out_of_stock"
+          ? "This product is currently out of stock."
+          : DEFAULT_AVAILABILITY.message)
+    ).trim(),
+    notifyTitle: String(
+      availability?.notifyTitle || DEFAULT_AVAILABILITY.notifyTitle
+    ).trim(),
+    notifyDescription: String(
+      availability?.notifyDescription || DEFAULT_AVAILABILITY.notifyDescription
+    ).trim(),
+    relatedProductIds: [
+      ...new Set(
+        (Array.isArray(availability?.relatedProductIds)
+          ? availability.relatedProductIds
+          : []
+        )
+          .map((item) => String(item || "").trim())
+          .filter(Boolean)
+      ),
+    ],
+  };
+};
 
 const collectionOverrides = {
   "everyday-one": {
@@ -72,6 +115,7 @@ const rawProducts = [
 
 const buildProductCatalogEntry = (product) => {
   const overrides = collectionOverrides[product.id];
+  const availability = normalizeAvailability(product.availability);
   const sizes = Array.isArray(product.sizes)
     ? product.sizes.map((size) => ({
         id: size.id,
@@ -95,6 +139,8 @@ const buildProductCatalogEntry = (product) => {
                 price: Number(plan.price || 0),
                 compareAtPrice: Number(plan.compareAtPrice || 0),
                 savingsAmount: Number(plan.savingsAmount || 0),
+                inStock: plan.inStock !== false,
+                outOfStockMessage: String(plan.outOfStockMessage || "").trim(),
                 billingIntervalUnit: cadence.intervalUnit,
                 billingIntervalCount: cadence.intervalCount,
                 deliveryCadence: cadence.cadenceLabel,
@@ -103,8 +149,10 @@ const buildProductCatalogEntry = (product) => {
           : [],
       }))
     : [];
-  const defaultSize = sizes[0] || null;
-  const defaultPlan = defaultSize?.plans[0] || null;
+  const defaultSize =
+    sizes.find((size) => size.plans.some((plan) => plan.inStock !== false)) || sizes[0] || null;
+  const defaultPlan =
+    defaultSize?.plans.find((plan) => plan.inStock !== false) || defaultSize?.plans[0] || null;
   const defaultPurchaseType = product.subscription?.enabledByDefault
     ? "subscription"
     : "one-time";
@@ -136,6 +184,7 @@ const buildProductCatalogEntry = (product) => {
           badgeLabel: bundle.badgeLabel || "",
         }))
       : [],
+    availability,
     subscription: {
       title: product.subscription?.title || "Subscribe & Save",
       description: product.subscription?.description || "",
@@ -151,6 +200,8 @@ const buildProductCatalogEntry = (product) => {
       deliveryCadence: defaultPlan?.deliveryCadence || "",
       billingIntervalUnit: defaultPlan?.billingIntervalUnit || "month",
       billingIntervalCount: defaultPlan?.billingIntervalCount || 1,
+      inStock: defaultPlan?.inStock !== false,
+      outOfStockMessage: defaultPlan?.outOfStockMessage || "",
       purchaseType: defaultPurchaseType,
     },
     pricing: {
@@ -189,6 +240,7 @@ export const collectionCards = storeCatalog.map((entry) => {
     reviews: entry.reviews,
     badges: entry.badges,
     description: entry.collectionDescription,
+    availability: entry.availability,
     defaultSelection: {
       ...entry.defaultSelection,
       sizeId: defaultSize?.id || "",
@@ -200,6 +252,8 @@ export const collectionCards = storeCatalog.map((entry) => {
       deliveryCadence: defaultPlan?.deliveryCadence || "",
       billingIntervalUnit: defaultPlan?.billingIntervalUnit || "month",
       billingIntervalCount: defaultPlan?.billingIntervalCount || 1,
+      inStock: defaultPlan?.inStock !== false,
+      outOfStockMessage: defaultPlan?.outOfStockMessage || "",
     },
     startingPrice: Number(defaultPlan?.price || 0),
     startingCompareAtPrice: Number(defaultPlan?.compareAtPrice || 0),
