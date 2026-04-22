@@ -9,6 +9,7 @@ import {
 import { NavLink } from "react-router-dom";
 
 import { apiRequest } from "../lib/api.js";
+import { LoadingButton } from "./LoadingControl.jsx";
 import "/public/Home/css/footer.css";
 
 const quickLinksPrimary = [
@@ -100,14 +101,16 @@ const NewsletterSignup = ({ source, compact = false }) => {
             placeholder="Email address"
             className="w-full h-full px-[16px] bg-transparent outline-none text-[14px]"
           />
-          <button
+          <LoadingButton
             type="submit"
             className="absolute right-0 w-[50px] h-[50px] bg-[#0F4A12] flex items-center justify-center"
+            loading={submitting}
+            spinnerClassName="h-[13px] w-[13px] border-white"
             disabled={submitting}
             aria-label="Subscribe to newsletter"
           >
             <FaArrowRight className="text-white w-[13px] h-[15px]" />
-          </button>
+          </LoadingButton>
         </div>
       </form>
       <p className="text-[14px] font-normal leading-[1.4] text-[#1A1A1A]">

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 
 import "/public/Home/css/header.css";
+import { LoadingButton } from "./LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 
@@ -331,13 +332,15 @@ export default function Header() {
             </Link>
 
             {isAuthenticated ? (
-              <button
+              <LoadingButton
                 type="button"
                 className="hidden lg:flex items-center justify-center rounded-full border border-[#D9D4C8] px-[14px] py-[6px] text-sm font-semibold text-[#1A1A1A] h-[40px]"
+                lockOnClick
+                loadingText="Signing out..."
                 onClick={logout}
               >
                 Sign out
-              </button>
+              </LoadingButton>
             ) : null}
 
             <button
@@ -489,16 +492,18 @@ export default function Header() {
                 {accountLabel}
               </NavLink>
               {isAuthenticated ? (
-                <button
+                <LoadingButton
                   type="button"
                   className="header-mobile-drawer__quiz"
+                  lockOnClick
+                  loadingText="Signing out..."
                   onClick={() => {
                     logout();
                     closeMenu();
                   }}
                 >
                   Sign out
-                </button>
+                </LoadingButton>
               ) : null}
             </div>
           </div>

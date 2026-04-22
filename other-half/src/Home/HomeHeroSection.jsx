@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import "/public/Home/css/HomeHeroSection.css";
+import { LoadingLink } from "../Components/LoadingControl.jsx";
 
 export default function HomeHeroSection() {
   return (
@@ -20,13 +20,13 @@ export default function HomeHeroSection() {
 
           <div className="flex gap-[12px] justify-center lg:justify-start flex-wrap">
             
-            <Link to="/ai-pet-health" className="btn-primary">
+            <LoadingLink to="/ai-pet-health" className="btn-primary" loadingText="Opening...">
               Talk to AI About Your Dog
-            </Link>
+            </LoadingLink>
 
-            <Link to="/collection" className="btn-secondary">
+            <LoadingLink to="/collection" className="btn-secondary" loadingText="Opening...">
               Shop Now
-            </Link>
+            </LoadingLink>
 
           </div>
         </div>

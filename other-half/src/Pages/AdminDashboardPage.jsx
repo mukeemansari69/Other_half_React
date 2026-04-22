@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { LoadingButton } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
 import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
@@ -303,9 +304,15 @@ const AdminDashboardPage = () => {
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#EBF466]">Admin control room</p>
               <h1 className="mt-4 text-4xl font-semibold leading-tight md:text-5xl">{user?.name}, click any card for full data.</h1>
             </div>
-            <button type="button" className="rounded-full border border-white/14 px-5 py-3 text-sm font-semibold text-white" onClick={logout}>
+            <LoadingButton
+              type="button"
+              className="rounded-full border border-white/14 px-5 py-3 text-sm font-semibold text-white"
+              lockOnClick
+              loadingText="Signing out..."
+              onClick={logout}
+            >
               Sign out
-            </button>
+            </LoadingButton>
           </div>
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {cards.map((card) => {

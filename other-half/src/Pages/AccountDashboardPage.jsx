@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import DeliveryAddressFields from "../Components/DeliveryAddressFields.jsx";
+import { LoadingButton, LoadingLink } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
 import {
@@ -375,25 +376,29 @@ const AccountDashboardPage = () => {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link
+              <LoadingLink
                 to="/quiz"
                 className="rounded-full bg-[#EBF466] px-5 py-3 text-sm font-semibold text-[#163B1D]"
+                loadingText="Opening..."
               >
                 Retake care quiz
-              </Link>
-              <Link
+              </LoadingLink>
+              <LoadingLink
                 to="/contact"
                 className="rounded-full border border-white/16 px-5 py-3 text-sm font-semibold text-white"
+                loadingText="Opening..."
               >
                 Contact support
-              </Link>
-              <button
+              </LoadingLink>
+              <LoadingButton
                 type="button"
                 className="rounded-full border border-white/16 px-5 py-3 text-sm font-semibold text-white"
+                lockOnClick
+                loadingText="Signing out..."
                 onClick={logout}
               >
                 Sign out
-              </button>
+              </LoadingButton>
             </div>
           </div>
 
@@ -461,12 +466,13 @@ const AccountDashboardPage = () => {
               </div>
             </div>
 
-            <Link
+            <LoadingLink
               to="/manage-subscription"
               className="mt-6 inline-flex rounded-full border border-[#D6D0C1] px-5 py-3 text-sm font-semibold text-[#1A1A1A]"
+              loadingText="Opening..."
             >
               View subscription help
-            </Link>
+            </LoadingLink>
           </div>
         </section>
 
@@ -572,13 +578,15 @@ const AccountDashboardPage = () => {
                 </div>
               ) : null}
 
-              <button
+              <LoadingButton
                 type="submit"
                 className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                loading={saving}
+                loadingText="Saving changes..."
                 disabled={saving}
               >
-                {saving ? "Saving changes..." : "Save profile"}
-              </button>
+                Save profile
+              </LoadingButton>
             </form>
           </article>
 
@@ -591,12 +599,13 @@ const AccountDashboardPage = () => {
                   </p>
                   <h2 className="mt-4 text-3xl font-semibold text-[#1A1A1A]">Recent conversations about {dogName}</h2>
                 </div>
-                <Link
+                <LoadingLink
                   to="/contact"
                   className="rounded-full border border-[#D6D0C1] px-5 py-3 text-sm font-semibold text-[#1A1A1A]"
+                  loadingText="Opening..."
                 >
                   Ask for help
-                </Link>
+                </LoadingLink>
               </div>
 
               <div className="mt-8 space-y-4">
@@ -647,12 +656,13 @@ const AccountDashboardPage = () => {
                     Saved care matches
                   </h2>
                 </div>
-                <Link
+                <LoadingLink
                   to="/quiz"
                   className="rounded-full border border-[#D6D0C1] px-5 py-3 text-sm font-semibold text-[#1A1A1A]"
+                  loadingText="Opening..."
                 >
                   Retake quiz
-                </Link>
+                </LoadingLink>
               </div>
 
               <div className="mt-8 grid gap-4">

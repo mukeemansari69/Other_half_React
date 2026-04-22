@@ -15,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import "/public/Product/css/ProductBanner.css";
 import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
+import { LoadingButton } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { isDeliveryAddressComplete } from "../lib/deliveryAddress.js";
@@ -1048,7 +1049,7 @@ const ProductBanner = ({
                 </div>
 
                 <div className="space-y-3">
-                  <button
+                  <LoadingButton
                     type="button"
                     onClick={() => {
                       if (isInCart) {
@@ -1058,25 +1059,27 @@ const ProductBanner = ({
 
                       handleAddToCart("cart");
                     }}
+                    lockOnClick
+                    loadingText={isInCart ? "Opening cart..." : "Adding to cart..."}
                     className={`product-banner-cta flex w-full items-center justify-center rounded-full px-5 py-4 text-center text-lg font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)] sm:text-2xl 
     ${isInCart ? "bg-[#0F4A12]" : "bg-[#E8754C]"}`}
                   >
                     {isInCart
                       ? "Go to Cart"
                       : `${product.cta.addToCartLabel} | ${formatCurrency(totalPrice)}`}
-                  </button>
-                  <button
+                  </LoadingButton>
+                  <LoadingButton
                     type="button"
                     onClick={() => {
                       void handleDirectCheckout();
                     }}
+                    loading={checkingOut}
+                    loadingText={`Opening ${PAYMENT_PROVIDER}...`}
                     disabled={checkingOut}
                     className="product-banner-cta flex w-full items-center justify-center rounded-full bg-[#4E3CE2] px-5 py-4 text-center text-base font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)]"
                   >
-                    {checkingOut
-                      ? `Opening ${PAYMENT_PROVIDER}...`
-                      : product.cta.shopPayLabel}
-                  </button>
+                    {product.cta.shopPayLabel}
+                  </LoadingButton>
 
                   {checkoutStatus.message ? (
                     <div

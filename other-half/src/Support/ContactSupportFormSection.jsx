@@ -11,6 +11,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 
+import { LoadingButton } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
 
@@ -669,14 +670,16 @@ const ContactSupportFormSection = () => {
           ) : null}
 
           <div className="support-contact-form__actions">
-            <button
+            <LoadingButton
               type="submit"
               className="support-button support-button--primary support-contact-form__submit"
+              loading={submitting}
+              loadingText="Sending request..."
               disabled={submitting}
             >
               <Send size={16} />
-              <span>{submitting ? "Sending request..." : "Send request"}</span>
-            </button>
+              <span>Send request</span>
+            </LoadingButton>
 
             <button
               type="button"

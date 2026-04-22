@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import "/public/Default/css/ourCollection.css";
+import { LoadingButton } from "../Components/LoadingControl.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { collectionCards } from "../../shared/storeCatalog.js";
 import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
@@ -136,12 +137,14 @@ const OurCollection = () => {
                 </div>
               </div>
 
-              <button
+              <LoadingButton
                 className="ourCollection-btn"
                 onClick={(event) => handleAddToCart(event, item)}
+                lockOnClick
+                loadingText={hasItem(item.cartId) ? "Opening cart..." : "Adding..."}
               >
                 {hasItem(item.cartId) ? "GO TO CART" : "+ ADD TO CART"}
-              </button>
+              </LoadingButton>
             </NavLink>
           ))}
         </div>

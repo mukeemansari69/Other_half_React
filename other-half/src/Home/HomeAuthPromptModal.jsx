@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import AuthConnectionNotice from "../Components/AuthConnectionNotice.jsx";
+import { LoadingButton } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useApiConnectionStatus } from "../hooks/useApiConnectionStatus.js";
 import "./homeAuthPromptModal.css";
@@ -423,14 +424,16 @@ const HomeAuthPromptModal = () => {
                     </div>
                   ) : null}
 
-                  <button
+                  <LoadingButton
                     type="submit"
                     disabled={submitting}
+                    loading={submitting}
+                    loadingText="Signing in..."
                     className="home-auth-modal__action flex w-full items-center justify-center gap-2 rounded-full px-6 py-3"
                   >
-                    <span>{submitting ? "Signing in..." : "Sign in to dashboard"}</span>
+                    <span>Sign in to dashboard</span>
                     <ArrowRight size={16} />
-                  </button>
+                  </LoadingButton>
                 </form>
               ) : (
                 <form className="mt-5 space-y-4 sm:mt-6" onSubmit={handleRegisterSubmit}>
@@ -524,14 +527,16 @@ const HomeAuthPromptModal = () => {
                     </div>
                   ) : null}
 
-                  <button
+                  <LoadingButton
                     type="submit"
                     disabled={submitting}
+                    loading={submitting}
+                    loadingText="Creating account..."
                     className="home-auth-modal__action flex w-full items-center justify-center gap-2 rounded-full px-6 py-3"
                   >
-                    <span>{submitting ? "Creating account..." : activePanelCopy.buttonLabel}</span>
+                    <span>{activePanelCopy.buttonLabel}</span>
                     <ArrowRight size={16} />
-                  </button>
+                  </LoadingButton>
                 </form>
               )}
 

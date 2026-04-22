@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { ArrowRight, LockKeyhole, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { LoadingButton } from "./LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const INITIAL_FORM_STATE = {
@@ -162,14 +163,16 @@ const CheckoutLoginDrawer = ({
               </div>
             ) : null}
 
-            <button
+            <LoadingButton
               type="submit"
               disabled={submitting}
+              loading={submitting}
+              loadingText="Signing in..."
               className="flex w-full items-center justify-center gap-2 rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <span>{submitting ? "Signing in..." : "Sign in to continue"}</span>
+              <span>Sign in to continue</span>
               <ArrowRight size={16} />
-            </button>
+            </LoadingButton>
           </form>
 
           <div className="mt-6 rounded-[24px] border border-[#E7DECC] bg-white px-4 py-4 text-sm leading-6 text-[#5F5B4F]">

@@ -1,7 +1,8 @@
 import { Star } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
+import { LoadingButton, LoadingLink } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
 
@@ -421,13 +422,15 @@ const ReviewPage = () => {
                 </div>
               ) : null}
 
-              <button
+              <LoadingButton
                 type="submit"
                 className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                loading={submitting}
+                loadingText="Submitting review..."
                 disabled={submitting || eligibleProducts.length === 0}
               >
-                {submitting ? "Submitting review..." : "Submit review"}
-              </button>
+                Submit review
+              </LoadingButton>
             </form>
 
             {submittedReview ? (
@@ -442,18 +445,20 @@ const ReviewPage = () => {
                   Your review is now part of the pack feedback shown across the site.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Link
+                  <LoadingLink
                     to={submittedReview.productRoute}
                     className="rounded-full bg-[#0F4A12] px-5 py-3 text-sm font-semibold text-white"
+                    loadingText="Opening..."
                   >
                     Open product page
-                  </Link>
-                  <Link
+                  </LoadingLink>
+                  <LoadingLink
                     to={`/?reviewsProduct=${submittedReview.productId}#reviews`}
                     className="rounded-full border border-[#D6D0C1] px-5 py-3 text-sm font-semibold text-[#1A1A1A]"
+                    loadingText="Opening..."
                   >
                     See all reviews
-                  </Link>
+                  </LoadingLink>
                 </div>
               </div>
             ) : null}

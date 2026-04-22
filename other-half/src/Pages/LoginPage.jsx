@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthConnectionNotice from "../Components/AuthConnectionNotice.jsx";
 import AuthHeroPanel from "../Components/AuthHeroPanel.jsx";
 import AuthNotice from "../Components/AuthNotice.jsx";
+import { LoadingButton } from "../Components/LoadingControl.jsx";
 import AuthSocialButtons from "../Components/AuthSocialButtons.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useApiConnectionStatus } from "../hooks/useApiConnectionStatus.js";
@@ -237,13 +238,15 @@ const LoginPage = () => {
 
               <AuthNotice type={status.type || "neutral"} message={status.message} />
 
-              <button
+              <LoadingButton
                 type="submit"
                 className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                loading={submitting}
+                loadingText="Signing in..."
                 disabled={submitting}
               >
-                {submitting ? "Signing in..." : "Sign in with email"}
-              </button>
+                Sign in with email
+              </LoadingButton>
             </form>
           ) : (
             <div className="space-y-5">
@@ -273,13 +276,15 @@ const LoginPage = () => {
 
                   <AuthNotice type={status.type || "neutral"} message={status.message} />
 
-                  <button
+                  <LoadingButton
                     type="submit"
                     className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                    loading={submitting}
+                    loadingText="Sending OTP..."
                     disabled={submitting || !canUsePhoneOtp}
                   >
-                    {submitting ? "Sending OTP..." : "Send OTP"}
-                  </button>
+                    Send OTP
+                  </LoadingButton>
                 </form>
               ) : (
                 <form className="space-y-5" onSubmit={handleVerifyPhoneOtp}>
@@ -326,13 +331,15 @@ const LoginPage = () => {
                     >
                       Change number
                     </button>
-                    <button
+                    <LoadingButton
                       type="submit"
                       className="rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                      loading={submitting}
+                      loadingText="Verifying..."
                       disabled={submitting}
                     >
-                      {submitting ? "Verifying..." : "Verify OTP"}
-                    </button>
+                      Verify OTP
+                    </LoadingButton>
                   </div>
                 </form>
               )}

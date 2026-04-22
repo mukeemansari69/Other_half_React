@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
 import DeliveryAddressFields from "../Components/DeliveryAddressFields.jsx";
+import { LoadingButton, LoadingLink } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { startRazorpayCheckout, toCheckoutItemPayload } from "../lib/startRazorpayCheckout.js";
@@ -180,12 +181,13 @@ const CartPage = () => {
             Add a product to your cart, and we will keep it here until you are ready
             to checkout.
           </p>
-          <Link
+          <LoadingLink
             to="/collection"
             className="mt-8 inline-flex rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white"
+            loadingText="Opening..."
           >
             Browse collection
-          </Link>
+          </LoadingLink>
         </div>
       </main>
     );
@@ -204,13 +206,15 @@ const CartPage = () => {
                 {cartCount} item{cartCount > 1 ? "s" : ""} in your cart
               </h1>
             </div>
-            <button
+            <LoadingButton
               type="button"
               className="rounded-full border border-[#D9D1BF] px-4 py-2 text-sm font-semibold text-[#1A1A1A]"
+              lockOnClick
+              loadingText="Clearing..."
               onClick={clearCart}
             >
               Clear cart
-            </button>
+            </LoadingButton>
           </div>
 
           <div className="mt-8 space-y-4">
@@ -370,16 +374,16 @@ const CartPage = () => {
             </div>
           </div>
 
-          <button
+          <LoadingButton
             type="button"
             onClick={handleCheckout}
+            loading={checkingOut}
+            loadingText={`Opening ${PAYMENT_PROVIDER}...`}
             disabled={checkingOut}
             className="mt-6 w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {checkingOut
-              ? `Opening ${PAYMENT_PROVIDER}...`
-              : `Proceed to ${PAYMENT_PROVIDER} checkout`}
-          </button>
+            {`Proceed to ${PAYMENT_PROVIDER} checkout`}
+          </LoadingButton>
 
           {status.message ? (
             <div

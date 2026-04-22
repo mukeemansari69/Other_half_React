@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { apiRequest } from "../lib/api.js";
+import { LoadingButton, LoadingLink } from "../Components/LoadingControl.jsx";
 
 const promptSuggestions = [
   "My 8-year-old Labrador has stiff joints and struggles with stairs.",
@@ -161,19 +162,21 @@ const AIPetHealthPage = () => {
                   </div>
 
                   <div className="mt-8 flex flex-wrap gap-3">
-                    <Link
+                    <LoadingLink
                       to="/collection"
                       className="inline-flex items-center gap-2 rounded-full bg-[#0F4A12] px-6 py-3 font-[Poppins] text-[15px] font-semibold text-[#EBF466] transition hover:bg-[#1A1A1A]"
+                      loadingText="Opening..."
                     >
                       Shop daily support
                       <ArrowRight size={16} />
-                    </Link>
-                    <Link
+                    </LoadingLink>
+                    <LoadingLink
                       to="/science"
                       className="inline-flex items-center gap-2 rounded-full border border-[#0F4A12] bg-transparent px-6 py-3 font-[Poppins] text-[15px] font-semibold text-[#0F4A12] transition hover:bg-white"
+                      loadingText="Opening..."
                     >
                       Learn the science
-                    </Link>
+                    </LoadingLink>
                   </div>
                 </div>
               </div>
@@ -228,23 +231,18 @@ const AIPetHealthPage = () => {
                       </div>
                     ) : null}
 
-                    <button
+                    <LoadingButton
                       type="submit"
                       disabled={submitting}
+                      loading={submitting}
+                      loadingText="Generating your dog's care plan..."
                       className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0F4A12] px-6 py-4 font-[Poppins] text-[15px] font-semibold text-[#EBF466] transition hover:bg-[#1A1A1A] disabled:cursor-not-allowed disabled:opacity-70"
                     >
-                      {submitting ? (
-                        <>
-                          <LoaderCircle size={18} className="animate-spin" />
-                          Generating your dog&apos;s care plan...
-                        </>
-                      ) : (
-                        <>
-                          Talk to AI About Your Dog
-                          <ArrowRight size={16} />
-                        </>
-                      )}
-                    </button>
+                      <>
+                        Talk to AI About Your Dog
+                        <ArrowRight size={16} />
+                      </>
+                    </LoadingButton>
                   </form>
 
                   <div className="mt-7">
@@ -446,13 +444,14 @@ const AIPetHealthPage = () => {
                         <p className="mt-3 font-[Poppins] text-[14px] leading-[1.8] text-[#545042]">
                           {product.reason}
                         </p>
-                        <Link
+                        <LoadingLink
                           to={product.route}
                           className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#0F4A12] px-4 py-2.5 font-[Poppins] text-[13px] font-semibold text-[#EBF466] transition hover:bg-[#1A1A1A]"
+                          loadingText="Opening..."
                         >
                           View product
                           <ArrowRight size={15} />
-                        </Link>
+                        </LoadingLink>
                       </article>
                     ))}
                   </div>

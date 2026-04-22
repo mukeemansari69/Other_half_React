@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import AuthHeroPanel from "../Components/AuthHeroPanel.jsx";
+import { LoadingButton } from "../Components/LoadingControl.jsx";
 import AuthNotice from "../Components/AuthNotice.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useAuthConfig } from "../hooks/useAuthConfig.js";
@@ -179,21 +180,25 @@ const VerifyEmailPage = () => {
             </AuthNotice>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <button
+              <LoadingButton
                 type="button"
                 onClick={handleResend}
                 className="rounded-full border border-[#D9D1BF] px-6 py-3 text-sm font-semibold text-[#1A1A1A] disabled:cursor-not-allowed disabled:opacity-60"
+                loading={resending}
+                loadingText="Sending..."
                 disabled={resending}
               >
-                {resending ? "Sending..." : "Resend code"}
-              </button>
-              <button
+                Resend code
+              </LoadingButton>
+              <LoadingButton
                 type="submit"
                 className="rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                loading={submitting}
+                loadingText="Verifying..."
                 disabled={submitting}
               >
-                {submitting ? "Verifying..." : "Verify email"}
-              </button>
+                Verify email
+              </LoadingButton>
             </div>
           </form>
 

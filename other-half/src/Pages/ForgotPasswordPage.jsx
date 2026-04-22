@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import AuthHeroPanel from "../Components/AuthHeroPanel.jsx";
+import { LoadingButton } from "../Components/LoadingControl.jsx";
 import AuthNotice from "../Components/AuthNotice.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useAuthConfig } from "../hooks/useAuthConfig.js";
@@ -170,13 +171,15 @@ const ForgotPasswordPage = () => {
 
               <AuthNotice type={status.type || "neutral"} message={status.message} />
 
-              <button
+              <LoadingButton
                 type="submit"
                 className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                loading={submitting}
+                loadingText="Sending code..."
                 disabled={submitting}
               >
-                {submitting ? "Sending code..." : "Send reset OTP"}
-              </button>
+                Send reset OTP
+              </LoadingButton>
             </form>
           ) : (
             <form className="mt-8 space-y-5" onSubmit={handleResetPassword}>
@@ -250,13 +253,15 @@ const ForgotPasswordPage = () => {
                 >
                   Request again
                 </button>
-                <button
+                <LoadingButton
                   type="submit"
                   className="rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
+                  loading={submitting}
+                  loadingText="Resetting..."
                   disabled={submitting}
                 >
-                  {submitting ? "Resetting..." : "Reset password"}
-                </button>
+                  Reset password
+                </LoadingButton>
               </div>
             </form>
           )}

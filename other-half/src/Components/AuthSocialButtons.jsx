@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 
 import { buildApiUrl } from "../lib/api.js";
+import { LoadingButton } from "./LoadingControl.jsx";
 
 const socialProviders = [
   {
@@ -24,12 +26,14 @@ const AuthSocialButtons = ({
   title = "Or use a connected account",
 }) => {
   const enabledProviders = socialProviders.filter((provider) => social?.[provider.key]?.enabled);
+  const [pendingProvider, setPendingProvider] = useState("");
 
   if (enabledProviders.length === 0) {
     return null;
   }
 
   const handleSocialLogin = (provider) => {
+    setPendingProvider(provider);
     window.location.assign(
       buildApiUrl(`/auth/social/${provider}/start?redirectTo=${encodeURIComponent(redirectTo)}`)
     );
@@ -45,16 +49,18 @@ const AuthSocialButtons = ({
           const Icon = provider.icon;
 
           return (
-            <button
+            <LoadingButton
               key={provider.key}
               type="button"
               onClick={() => handleSocialLogin(provider.key)}
-              disabled={disabled}
+              loading={pendingProvider === provider.key}
+              loadingText="Redirecting..."
+              disabled={disabled || Boolean(pendingProvider)}
               className={`flex items-center justify-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${provider.className}`}
             >
               <Icon size={16} />
               <span>{provider.label}</span>
-            </button>
+            </LoadingButton>
           );
         })}
       </div>
