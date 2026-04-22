@@ -20,7 +20,12 @@ export default function HomeHeroSection() {
 
           <div className="flex gap-[12px] justify-center lg:justify-start flex-wrap">
             
-            <LoadingLink to="/ai-pet-health" className="btn-primary" loadingText="Opening...">
+            <LoadingLink
+              to="/ai-pet-health#describe-your-dog"
+              state={{ focusDescription: true }}
+              className="btn-primary"
+              loadingText="Opening..."
+            >
               Talk to AI About Your Dog
             </LoadingLink>
 

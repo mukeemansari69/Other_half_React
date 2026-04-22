@@ -1,5 +1,5 @@
-import { createElement, useState } from "react";
-import { Link } from "react-router-dom";
+import { createElement, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   AlertTriangle,
   ArrowRight,
@@ -63,12 +63,47 @@ const ResponseSection = ({ title, icon, children }) => (
 );
 
 const AIPetHealthPage = () => {
+  const location = useLocation();
+  const descriptionRef = useRef(null);
   const [description, setDescription] = useState("");
   const [response, setResponse] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
 
   const trimmedDescription = description.trim();
+  const shouldFocusDescription =
+    location.hash === "#describe-your-dog" || Boolean(location.state?.focusDescription);
+
+  useEffect(() => {
+    if (!shouldFocusDescription) {
+      return undefined;
+    }
+
+    const focusDescriptionField = () => {
+      const textarea = descriptionRef.current;
+
+      if (!textarea) {
+        return;
+      }
+
+      textarea.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      textarea.focus({ preventScroll: true });
+
+      const caretPosition = textarea.value.length;
+      textarea.setSelectionRange(caretPosition, caretPosition);
+    };
+
+    const animationFrameId = window.requestAnimationFrame(focusDescriptionField);
+    const timeoutId = window.setTimeout(focusDescriptionField, 220);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [shouldFocusDescription]);
 
   const handleSuggestionClick = (value) => {
     setDescription(value);
@@ -203,6 +238,9 @@ const AIPetHealthPage = () => {
                         Describe your dog&apos;s problem...
                       </span>
                       <textarea
+                        id="describe-your-dog"
+                        ref={descriptionRef}
+                        autoFocus={shouldFocusDescription}
                         value={description}
                         onChange={(event) => setDescription(event.target.value)}
                         maxLength={2200}
