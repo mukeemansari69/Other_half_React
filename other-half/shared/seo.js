@@ -56,6 +56,56 @@ const PRODUCT_DATA_TO_ROUTE = new Map(
   ])
 );
 
+const normalizeSeoText = (value = "") =>
+  String(value)
+    .replace(/\s+/g, " ")
+    .trim();
+
+const trimSeoText = (value = "", maxLength = 160) => {
+  const normalizedValue = normalizeSeoText(value);
+
+  if (normalizedValue.length <= maxLength) {
+    return normalizedValue;
+  }
+
+  return `${normalizedValue.slice(0, maxLength - 1).trimEnd()}...`;
+};
+
+const buildProductSeoTitle = (product) => `${product.name} | ${SITE_NAME}`;
+
+const buildProductSeoDescription = (product, fallbackDescription = "") =>
+  trimSeoText(
+    fallbackDescription ||
+      product?.description ||
+      `Shop ${product?.name || "dog wellness products"} from ${SITE_NAME}.`
+  );
+
+const buildProductSeoConfig = (routePath) => {
+  const productConfig = PRODUCT_ROUTE_CONFIG[routePath];
+  const product = productConfig?.data;
+
+  if (!productConfig || !product) {
+    return null;
+  }
+
+  return {
+    title: buildProductSeoTitle(product),
+    description: buildProductSeoDescription(product, productConfig.description),
+    imagePath: productConfig.imagePath,
+    pageType: "Product",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Collection", path: "/collection" },
+      { name: product.name, path: routePath },
+    ],
+  };
+};
+
+const collectionSeoHighlights = collectionCards
+  .map((item) => item.title)
+  .filter(Boolean)
+  .slice(0, 3);
+
 const PUBLIC_ROUTE_CONFIG = {
   "/": {
     title: "PetPlus | Dog Wellness Supplements in India",
@@ -66,9 +116,12 @@ const PUBLIC_ROUTE_CONFIG = {
     breadcrumbs: [{ name: "Home", path: "/" }],
   },
   "/collection": {
-    title: "Shop Dog Supplements & Bundles | PetPlus",
-    description:
-      "Explore PetPlus dog supplements, dental support, and bundles with daily wellness formulas built for Indian dog parents.",
+    title: `Shop ${collectionSeoHighlights.slice(0, 2).join(" & ")} | ${SITE_NAME}`,
+    description: trimSeoText(
+      `Explore the ${SITE_NAME} collection with ${collectionSeoHighlights.join(
+        ", "
+      )}, plus daily wellness support built for Indian dog parents.`
+    ),
     imagePath: collectionCards[0]?.image || DEFAULT_OG_IMAGE_PATH,
     pageType: "CollectionPage",
     breadcrumbs: [
@@ -76,39 +129,9 @@ const PUBLIC_ROUTE_CONFIG = {
       { name: "Collection", path: "/collection" },
     ],
   },
-  "/product": {
-    title: "Everyday Daily Multivitamin for Dogs | PetPlus",
-    description: PRODUCT_ROUTE_CONFIG["/product"].description,
-    imagePath: PRODUCT_ROUTE_CONFIG["/product"].imagePath,
-    pageType: "Product",
-    breadcrumbs: [
-      { name: "Home", path: "/" },
-      { name: "Collection", path: "/collection" },
-      { name: "Everyday Daily Multivitamin", path: "/product" },
-    ],
-  },
-  "/doggie-dental": {
-    title: "Doggie Dental Powder for Dogs | PetPlus",
-    description: PRODUCT_ROUTE_CONFIG["/doggie-dental"].description,
-    imagePath: PRODUCT_ROUTE_CONFIG["/doggie-dental"].imagePath,
-    pageType: "Product",
-    breadcrumbs: [
-      { name: "Home", path: "/" },
-      { name: "Collection", path: "/collection" },
-      { name: "Doggie Dental Powder", path: "/doggie-dental" },
-    ],
-  },
-  "/daily-duo": {
-    title: "Daily Duo Bundle for Dogs | PetPlus",
-    description: PRODUCT_ROUTE_CONFIG["/daily-duo"].description,
-    imagePath: PRODUCT_ROUTE_CONFIG["/daily-duo"].imagePath,
-    pageType: "Product",
-    breadcrumbs: [
-      { name: "Home", path: "/" },
-      { name: "Collection", path: "/collection" },
-      { name: "Daily Duo Bundle", path: "/daily-duo" },
-    ],
-  },
+  "/product": buildProductSeoConfig("/product"),
+  "/doggie-dental": buildProductSeoConfig("/doggie-dental"),
+  "/daily-duo": buildProductSeoConfig("/daily-duo"),
   "/science": {
     title: "Dog Wellness Science & Ingredient Education | PetPlus",
     description:
@@ -208,6 +231,61 @@ const PUBLIC_ROUTE_CONFIG = {
       { name: "Contact", path: "/contact" },
     ],
   },
+  "/glossary": {
+    title: "Dog Supplement Ingredient Glossary | PetPlus",
+    description:
+      "Understand dog supplement ingredients, actives, and wellness terms used across PetPlus products and educational content.",
+    imagePath: "/Glossary/images/banner.jpg",
+    pageType: "WebPage",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Glossary", path: "/glossary" },
+    ],
+  },
+  "/terms": {
+    title: "Terms and Conditions | PetPlus",
+    description:
+      "Review the PetPlus terms covering orders, pricing, subscriptions, shipping, checkout, and use of the website.",
+    imagePath: DEFAULT_OG_IMAGE_PATH,
+    pageType: "WebPage",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Terms and Conditions", path: "/terms" },
+    ],
+  },
+  "/refund-policy": {
+    title: "Refund Policy | PetPlus",
+    description:
+      "Read the PetPlus refund policy for damaged orders, delivery issues, replacement reviews, and refund eligibility.",
+    imagePath: DEFAULT_OG_IMAGE_PATH,
+    pageType: "WebPage",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Refund Policy", path: "/refund-policy" },
+    ],
+  },
+  "/privacy-policy": {
+    title: "Privacy Policy | PetPlus",
+    description:
+      "See how PetPlus collects, uses, stores, and protects customer, order, subscription, and support information.",
+    imagePath: DEFAULT_OG_IMAGE_PATH,
+    pageType: "WebPage",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Privacy Policy", path: "/privacy-policy" },
+    ],
+  },
+  "/subscription-policy": {
+    title: "Subscription Policy | PetPlus",
+    description:
+      "Understand recurring billing, renewals, plan changes, cancellations, and discount rules for PetPlus subscriptions.",
+    imagePath: DEFAULT_OG_IMAGE_PATH,
+    pageType: "WebPage",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Subscription Policy", path: "/subscription-policy" },
+    ],
+  },
 };
 
 const NON_INDEXABLE_ROUTE_CONFIG = {
@@ -256,6 +334,36 @@ const NON_INDEXABLE_ROUTE_CONFIG = {
   "/quizdesktop": {
     title: "Quiz Desktop Experience | PetPlus",
     description: "Internal desktop quiz experience for PetPlus.",
+    robots: NOINDEX_ROBOTS,
+    imagePath: DEFAULT_OG_IMAGE_PATH,
+    pageType: "WebPage",
+  },
+  "/manage-subscription": {
+    title: "Manage Subscription | PetPlus",
+    description:
+      "Open the PetPlus subscription management page to review cadence, billing, address, or renewal details.",
+    robots: NOINDEX_ROBOTS,
+    imagePath: DEFAULT_OG_IMAGE_PATH,
+    pageType: "WebPage",
+  },
+  "/forgot-password": {
+    title: "Reset Password | PetPlus",
+    description: "Reset your PetPlus password with a secure one-time verification flow.",
+    robots: NOINDEX_ROBOTS,
+    imagePath: DEFAULT_OG_IMAGE_PATH,
+    pageType: "WebPage",
+  },
+  "/verify-email": {
+    title: "Verify Email | PetPlus",
+    description:
+      "Verify your PetPlus email address with the latest one-time code or verification link.",
+    robots: NOINDEX_ROBOTS,
+    imagePath: DEFAULT_OG_IMAGE_PATH,
+    pageType: "WebPage",
+  },
+  "/auth/callback": {
+    title: "Signing You In | PetPlus",
+    description: "Completing secure PetPlus sign-in.",
     robots: NOINDEX_ROBOTS,
     imagePath: DEFAULT_OG_IMAGE_PATH,
     pageType: "WebPage",

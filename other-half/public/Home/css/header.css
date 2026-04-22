@@ -81,6 +81,14 @@
   color: #0f4a12;
 }
 
+.header-icon-button.is-bumping {
+  animation: headerCartBump 0.65s ease;
+}
+
+.header-cart-count.is-bumping {
+  animation: headerCartBadgePulse 0.65s ease;
+}
+
 .header-search-panel {
   position: absolute;
   top: 0%;
@@ -471,11 +479,40 @@
   .header-nav-link::after,
   .header-quiz-button,
   .header-icon-button,
+  .header-cart-count,
   .header-search-panel,
   .header-search-result-card,
   .header-mobile-backdrop,
   .header-mobile-drawer,
   .header-mobile-link {
     transition: none !important;
+    animation: none !important;
+  }
+}
+
+@keyframes headerCartBump {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes headerCartBadgePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(229, 92, 42, 0.32);
+  }
+  40% {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 10px rgba(229, 92, 42, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(229, 92, 42, 0);
   }
 }

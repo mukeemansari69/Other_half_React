@@ -2,30 +2,35 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import "/public/Default/css/ourCollection.css";
+import BreadcrumbTrail from "../Components/BreadcrumbTrail.jsx";
 import WishlistButton from "../Components/WishlistButton.jsx";
 import { LoadingButton } from "../Components/LoadingControl.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { collectionCards } from "../../shared/storeCatalog.js";
 import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
 
-const products = collectionCards.map((item) => ({
-  ...item,
-  price: formatStoreCurrency(item.displayPrice),
-  oldPrice: item.displayCompareAtPrice
-    ? formatStoreCurrency(item.displayCompareAtPrice)
-    : "",
-  discount: item.displayDiscountLabel || "",
-  cartId: `collection-${item.productId}`,
-  cartImage: item.image,
-  unitPrice: item.startingPrice,
-  cartDescription: `${item.defaultSelection.sizeLabel} (${item.defaultSelection.sizeWeight}) | ${item.defaultSelection.planLabel}`,
-  subscribeTitle: item.displayDiscountLabel
-    ? `Subscribe & Save ${item.displayDiscountLabel}`
-    : "Subscribe & Save",
-  isOutOfStock:
-    item.availability?.status === "out_of_stock" ||
-    item.defaultSelection?.inStock === false,
-}));
+const products = collectionCards.map((item) => {
+  const mrpValue = Number(item.displayCompareAtPrice || item.startingCompareAtPrice || 0);
+  const saleValue = Number(item.displayPrice || item.startingPrice || 0);
+  const hasDiscount = mrpValue > 0 && saleValue > 0 && mrpValue > saleValue;
+
+  return {
+    ...item,
+    price: formatStoreCurrency(saleValue),
+    oldPrice: hasDiscount ? formatStoreCurrency(mrpValue) : "",
+    discount: hasDiscount ? item.displayDiscountLabel || item.startingDiscountLabel || "" : "",
+    cartId: `collection-${item.productId}`,
+    cartImage: item.image,
+    unitPrice: item.startingPrice,
+    cartDescription: `${item.defaultSelection.sizeLabel} (${item.defaultSelection.sizeWeight}) | ${item.defaultSelection.planLabel}`,
+    subscribeTitle: hasDiscount
+      ? `Subscribe & Save ${item.displayDiscountLabel || item.startingDiscountLabel || ""}`
+      : "Subscribe & Save",
+    isOutOfStock:
+      item.availability?.status === "out_of_stock" ||
+      item.defaultSelection?.inStock === false,
+  };
+});
 
 const OurCollection = () => {
   const navigate = useNavigate();
@@ -64,6 +69,13 @@ const OurCollection = () => {
   return (
     <section className="ourCollection-container">
       <div className="ourCollection-inner">
+        <BreadcrumbTrail
+          className="ourCollection-breadcrumb"
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Collection" },
+          ]}
+        />
         <h2 className="ourCollection-heading">OUR COLLECTION</h2>
 
         <div className="ourCollection-grid">
@@ -131,10 +143,10 @@ const OurCollection = () => {
               <p className="ourCollection-desc">{item.description}</p>
 
               <div className="ourCollection-priceRow">
-                <span className="ourCollection-price">{item.price}</span>
                 {item.oldPrice ? (
-                  <span className="ourCollection-oldPrice">{item.oldPrice}</span>
+                  <span className="ourCollection-oldPrice">MRP {item.oldPrice}</span>
                 ) : null}
+                <span className="ourCollection-price">Now {item.price}</span>
                 {item.discount ? (
                   <span className="ourCollection-discount">{item.discount}</span>
                 ) : null}
@@ -145,7 +157,7 @@ const OurCollection = () => {
                 <div>
                   <p className="ourCollection-subscribeTitle">{item.subscribeTitle}</p>
                   <p className="ourCollection-subscribeText">
-                    Old price ke baad final discounted price shown hai.
+                    MRP and current subscription price are shown together for quick comparison.
                   </p>
                 </div>
               </div>

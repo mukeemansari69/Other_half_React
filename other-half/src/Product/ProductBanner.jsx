@@ -15,6 +15,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 import "/public/Product/css/ProductBanner.css";
+import BreadcrumbTrail from "../Components/BreadcrumbTrail.jsx";
 import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
 import { LoadingButton } from "../Components/LoadingControl.jsx";
 import WishlistButton from "../Components/WishlistButton.jsx";
@@ -580,8 +581,14 @@ const ProductBanner = ({
   const perProductDiscountedPrice = Number(
     product.pricing?.unitDiscountedPrice || 0
   );
+  const hasPerProductDiscount =
+    perProductCompareAtPrice > 0 &&
+    perProductDiscountedPrice > 0 &&
+    perProductCompareAtPrice > perProductDiscountedPrice;
   const perProductDisplayPrice = isSubscribed
-    ? perProductDiscountedPrice || perProductCompareAtPrice
+    ? hasPerProductDiscount
+      ? perProductDiscountedPrice
+      : perProductCompareAtPrice || perProductDiscountedPrice
     : perProductCompareAtPrice || perProductDiscountedPrice;
   const isActiveSuggestionAdded = activeSuggestion
     ? selectedBundleIds.includes(activeSuggestion.id)
@@ -825,39 +832,7 @@ const ProductBanner = ({
   return (
     <section className="product-banner-root">
       <div className="mx-auto flex w-full max-w-[1920px] flex-col gap-6 px-4 py-6 sm:px-6 lg:px-12 lg:py-8 xl:px-20">
-        <nav aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-1 text-sm font-normal leading-7 text-[#8F8F8F] sm:text-base">
-            {product.breadcrumb.map((item, index) => {
-              const isLastItem = index === product.breadcrumb.length - 1;
-              return (
-                <li
-                  key={`${item.label}-${index}`}
-                  className="flex items-center gap-1"
-                >
-                  {item.href && !isLastItem ? (
-                    <a
-                      href={item.href}
-                      className="transition-colors hover:text-[#0F4A12]"
-                    >
-                      {item.label}
-                    </a>
-                  ) : (
-                    <span
-                      className={
-                        isLastItem ? "font-semibold text-[#1A1A1A]" : ""
-                      }
-                    >
-                      {item.label}
-                    </span>
-                  )}
-                  {!isLastItem ? (
-                    <span className="text-[#B7B7B7]">&gt;</span>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
+        <BreadcrumbTrail items={product.breadcrumb} />
 
         <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] xl:gap-10">
           <div className="space-y-4 xl:sticky xl:top-24">
@@ -917,15 +892,19 @@ const ProductBanner = ({
 
               {perProductDisplayPrice ? (
                 <div className="flex flex-wrap items-center gap-3 text-sm">
-                  {isSubscribed && perProductCompareAtPrice ? (
+                  <span className="font-medium text-[#555555]">
+                    {isSubscribed ? "Per product" : "One-time price"}
+                  </span>
+                  {isSubscribed && hasPerProductDiscount ? (
                     <span className="text-[#8F8F8F] line-through">
-                      {formatCurrency(perProductCompareAtPrice)}
+                      MRP {formatCurrency(perProductCompareAtPrice)}
                     </span>
                   ) : null}
                   <span className="font-semibold text-[#1A1A1A]">
-                    Per product {formatCurrency(perProductDisplayPrice)}
+                    {isSubscribed && hasPerProductDiscount ? "Now " : ""}
+                    {formatCurrency(perProductDisplayPrice)}
                   </span>
-                  {product.pricing?.discountPercent ? (
+                  {isSubscribed && hasPerProductDiscount && product.pricing?.discountPercent ? (
                     <span className="inline-flex rounded-full bg-[#FFF4D9] px-3 py-1 text-xs font-semibold text-[#7A4C00]">
                       Subscribe & save {product.pricing.discountPercent}%
                     </span>
@@ -1052,13 +1031,15 @@ const ProductBanner = ({
               <div className="space-y-3">
                 {selectedSize.plans.map((plan) => {
                   const isSelected = plan.id === selectedPlan.id;
+                  const hasPlanDiscount =
+                    Number(plan.compareAtPrice || 0) > Number(plan.price || 0);
                   const displayPlanPrice = Number(
                     isSubscribed
                       ? plan.price || 0
                       : plan.compareAtPrice || plan.price || 0
                   );
                   const displayPlanCompareAtPrice =
-                    isSubscribed && plan.compareAtPrice
+                    isSubscribed && hasPlanDiscount
                       ? Number(plan.compareAtPrice || 0)
                       : null;
                   const displayPlanSavings = isSubscribed
@@ -1115,7 +1096,7 @@ const ProductBanner = ({
                             </p>
                             {isSubscribed ? (
                               <span className="inline-flex rounded-full bg-[#0F4A12] px-2 py-1 text-[10px] font-semibold leading-none text-[#EBF466]">
-                                {plan.offerLabel}
+                                {hasPlanDiscount ? plan.offerLabel : "Subscription"}
                               </span>
                             ) : (
                               <span className="inline-flex rounded-full bg-[#F4EFE5] px-2 py-1 text-[10px] font-semibold leading-none text-[#6A6458]">
@@ -1125,10 +1106,11 @@ const ProductBanner = ({
                           </div>
                           {displayPlanCompareAtPrice ? (
                             <p className="text-xs font-medium leading-none text-[#9E9E9E] line-through">
-                              {formatCurrency(displayPlanCompareAtPrice)}
+                              MRP {formatCurrency(displayPlanCompareAtPrice)}
                             </p>
                           ) : null}
                           <p className="text-lg font-semibold leading-none text-[#E55C2A] sm:text-xl">
+                            {displayPlanCompareAtPrice ? "Now " : ""}
                             {formatCurrency(displayPlanPrice)}
                           </p>
                           {displayPlanSavings ? (

@@ -77,6 +77,7 @@ const readStoredCart = () => {
 
 export const CartProvider = ({ children }) => {
   const [items, setItems] = useState(() => readStoredCart());
+  const [cartNotice, setCartNotice] = useState(null);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -116,6 +117,12 @@ export const CartProvider = ({ children }) => {
       };
       return nextItems;
     });
+
+    setCartNotice({
+      itemId: nextItem.id,
+      itemName: nextItem.name,
+      timestamp: Date.now(),
+    });
   };
 
   const removeItem = (itemId) => {
@@ -143,6 +150,10 @@ export const CartProvider = ({ children }) => {
     setItems([]);
   };
 
+  const dismissCartNotice = () => {
+    setCartNotice(null);
+  };
+
   const hasItem = (itemId) => {
     return items.some((item) => item.id === itemId);
   };
@@ -164,10 +175,12 @@ export const CartProvider = ({ children }) => {
         items,
         cartCount,
         subtotal,
+        cartNotice,
         addItem,
         removeItem,
         updateItemQuantity,
         clearCart,
+        dismissCartNotice,
         hasItem,
       }}
     >

@@ -158,10 +158,12 @@ export default function Header() {
   const location = useLocation();
   const { isAdmin, isAuthenticated, logout, user } = useAuth();
   const { cartCount } = useCart();
+  const previousCartCountRef = useRef(cartCount);
   const searchInputRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cartJustUpdated, setCartJustUpdated] = useState(false);
 
   const trimmedSearch = searchQuery.trim().toLowerCase();
   const accountPath = isAuthenticated ? (isAdmin ? "/admin" : "/account") : "/login";
@@ -222,6 +224,24 @@ export default function Header() {
       window.removeEventListener("keydown", handleEscape);
     };
   }, []);
+
+  useEffect(() => {
+    if (cartCount > previousCartCountRef.current) {
+      setCartJustUpdated(true);
+
+      const timer = window.setTimeout(() => {
+        setCartJustUpdated(false);
+      }, 650);
+
+      previousCartCountRef.current = cartCount;
+      return () => {
+        window.clearTimeout(timer);
+      };
+    }
+
+    previousCartCountRef.current = cartCount;
+    return undefined;
+  }, [cartCount]);
 
   const toggleMenu = () => {
     setMenuOpen((currentValue) => {
@@ -312,12 +332,21 @@ export default function Header() {
 
             <NavLink
               to="/cart"
-              className="w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded relative header-icon-button"
-              aria-label="Open cart"
+              className={`w-[40px] h-[40px] flex items-center justify-center p-[8px] rounded relative header-icon-button ${
+                cartJustUpdated ? "is-bumping" : ""
+              }`}
+              aria-label={
+                cartCount > 0 ? `Open cart with ${cartCount} item${cartCount > 1 ? "s" : ""}` : "Open cart"
+              }
             >
               <ShoppingCart size={20} />
               {cartCount > 0 ? (
-                <span className="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white w-4 h-4 flex items-center justify-center rounded-full">
+                <span
+                  aria-live="polite"
+                  className={`header-cart-count absolute -top-1 -right-1 text-[10px] bg-red-500 text-white w-4 h-4 flex items-center justify-center rounded-full ${
+                    cartJustUpdated ? "is-bumping" : ""
+                  }`}
+                >
                   {cartCount > 9 ? "9+" : cartCount}
                 </span>
               ) : null}

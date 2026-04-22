@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 
+import CartToast from "./Components/CartToast.jsx";
 import Footer from "./Components/Footer.jsx";
 import Header from "./Components/Header.jsx";
 import RouteMeta from "./Components/RouteMeta.jsx";
@@ -64,6 +65,7 @@ const App = () => {
         <CartProvider>
           <RouteMeta />
           <Header />
+          <CartToast />
           <Suspense fallback={<RouteLoadingState />}>
             <Routes>
               <Route path="/" element={<Home />} />

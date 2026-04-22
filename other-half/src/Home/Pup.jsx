@@ -77,8 +77,8 @@ export default function Pup() {
 
               <div className="pup-price-row">
                 <div>
-                  <span className="pup-price">{product.price}</span>
                   {product.old ? <span className="pup-old">{product.old}</span> : null}
+                  <span className="pup-price">{product.price}</span>
                 </div>
 
                 <button className="pup-arrow">+</button>

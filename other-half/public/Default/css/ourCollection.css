@@ -13,6 +13,10 @@
   margin: auto;
 }
 
+.ourCollection-breadcrumb {
+  margin-bottom: 20px;
+}
+
 /* HEADING */
 .ourCollection-heading {
   font-family: 'Luckiest Guy';
@@ -124,7 +128,8 @@
 .ourCollection-priceRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .ourCollection-price {

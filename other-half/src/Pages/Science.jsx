@@ -104,8 +104,14 @@ const products = [
 const getDisplayPrice = (product) => product?.pricing?.unitDiscountedPrice ?? 0;
 const getDisplayCompareAtPrice = (product) =>
   product?.pricing?.unitCompareAtPrice ?? 0;
+const hasDiscount = (product) =>
+  getDisplayCompareAtPrice(product) > 0 &&
+  getDisplayPrice(product) > 0 &&
+  getDisplayCompareAtPrice(product) > getDisplayPrice(product);
 const getDiscountLabel = (product) =>
-  product?.pricing?.discountPercent ? `${product.pricing.discountPercent}% OFF on subscription` : "";
+  hasDiscount(product) && product?.pricing?.discountPercent
+    ? `${product.pricing.discountPercent}% OFF on subscription`
+    : "";
 const getBenefits = (product) => (product?.benefits ?? []).slice(0, 4).map((item) => item.text);
 const getTags = (product) => (product?.tags ?? []).slice(0, 4);
 
@@ -181,14 +187,15 @@ const Science = () => {
 
                 <div className="science-product-card__price">
                   <p className="science-product-card__price-label">Per product</p>
-                  {getDisplayCompareAtPrice(item.product) ? (
+                  {hasDiscount(item.product) ? (
                     <p className="science-product-card__price-label">
                       <span className="line-through">
-                        {formatPrice(getDisplayCompareAtPrice(item.product))}
+                        MRP {formatPrice(getDisplayCompareAtPrice(item.product))}
                       </span>
                     </p>
                   ) : null}
                   <p className="science-product-card__price-value">
+                    {hasDiscount(item.product) ? "Now " : ""}
                     {formatPrice(getDisplayPrice(item.product))}
                   </p>
                   {getDiscountLabel(item.product) ? (
@@ -274,12 +281,13 @@ const Science = () => {
 
                       <div className="science-product-detail__cta">
                         <p className="science-product-detail__cta-label">Per Product Price</p>
-                        {getDisplayCompareAtPrice(item.product) ? (
+                        {hasDiscount(item.product) ? (
                           <p className="science-product-detail__cta-text">
-                            Old price {formatPrice(getDisplayCompareAtPrice(item.product))}
+                            MRP {formatPrice(getDisplayCompareAtPrice(item.product))}
                           </p>
                         ) : null}
                         <p className="science-product-detail__cta-price">
+                          {hasDiscount(item.product) ? "Now " : ""}
                           {formatPrice(getDisplayPrice(item.product))}
                         </p>
                         <p className="science-product-detail__cta-text">
