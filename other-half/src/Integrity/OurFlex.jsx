@@ -47,8 +47,8 @@ const OurFlex = () => {
           </p>
 
           <div className="ourFlex-buttons">
-           <NavLink
-  to="/quiz"
+<NavLink
+  to="/quiz#quiz-questions"
   className="ourFlex-btn ourFlex-btnPrimary inline-block text-center"
 >
   TAKE THE QUIZ

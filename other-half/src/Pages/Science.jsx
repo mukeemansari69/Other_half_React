@@ -319,7 +319,7 @@ const Science = () => {
               <ButtonLink to="/collection" dark={false}>
                 Visit collection
               </ButtonLink>
-              <ButtonLink to="/quiz">Take the quiz</ButtonLink>
+              <ButtonLink to="/quiz#quiz-questions">Take the quiz</ButtonLink>
             </div>
           </div>
         </div>

@@ -260,7 +260,11 @@ const ClinicalStudies = () => {
                 <ArrowRight size={18} />
               </Link>
 
-              <Link to="/quiz" className="clinical-secondary-button clinical-secondary-button--dark">
+              <Link
+                to="/quiz#quiz-questions"
+                state={{ focusQuestions: true }}
+                className="clinical-secondary-button clinical-secondary-button--dark"
+              >
                 Take the quiz
               </Link>
             </div>

@@ -46,7 +46,7 @@ const mobileSections = [
       },
       {
         label: "Take the Quiz",
-        to: "/quiz",
+        to: "/quiz#quiz-questions",
         description: "Find the best routine for your dog.",
       },
       {
@@ -282,7 +282,11 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center justify-end gap-[8px] header-actions">
-            <NavLink to="/quiz" className="hidden lg:flex items-center justify-center bg-[#1A1A1A] text-white text-sm px-[14px] py-[6px] rounded-full h-[40px] header-quiz-button">
+            <NavLink
+              to="/quiz#quiz-questions"
+              state={{ focusQuestions: true }}
+              className="hidden lg:flex items-center justify-center bg-[#1A1A1A] text-white text-sm px-[14px] py-[6px] rounded-full h-[40px] header-quiz-button"
+            >
               Take the Quiz
             </NavLink>
 
@@ -473,7 +477,12 @@ export default function Header() {
           </div>
 
           <div className="header-mobile-drawer__footer">
-            <NavLink to="/quiz" className="header-mobile-drawer__quiz" onClick={closeMenu}>
+            <NavLink
+              to="/quiz#quiz-questions"
+              state={{ focusQuestions: true }}
+              className="header-mobile-drawer__quiz"
+              onClick={closeMenu}
+            >
               Take the Quiz
             </NavLink>
             <div className="mt-3 grid gap-2">

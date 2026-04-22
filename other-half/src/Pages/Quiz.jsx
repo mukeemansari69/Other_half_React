@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Activity,
   ArrowRight,
@@ -352,16 +352,24 @@ const formatStepLabel = (step) => {
 };
 
 const Quiz = () => {
+  const location = useLocation();
   const { token, user } = useAuth();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [saveState, setSaveState] = useState({ type: "", message: "" });
+  const [highlightQuestions, setHighlightQuestions] = useState(false);
   const submittedSignatureRef = useRef("");
+  const questionCardRef = useRef(null);
+  const questionStageRef = useRef(null);
 
   const currentQuestion = quizData[step];
   const progress = (step / quizData.length) * 100;
   const profile = buildProfile(answers);
   const resultProfile = buildProfile(answers);
+  const shouldGuideQuestions =
+    step < quizData.length &&
+    step === 0 &&
+    (location.hash === "#quiz-questions" || Boolean(location.state?.focusQuestions));
 
   const handleAnswer = (option) => {
     setAnswers((currentAnswers) => [...currentAnswers, option]);
@@ -449,6 +457,36 @@ const Quiz = () => {
       isActive = false;
     };
   }, [answers, step, token, user]);
+
+  useEffect(() => {
+    if (!shouldGuideQuestions) {
+      setHighlightQuestions(false);
+      return undefined;
+    }
+
+    setHighlightQuestions(true);
+
+    const focusQuestions = () => {
+      const questionCard = questionCardRef.current;
+      const questionStage = questionStageRef.current;
+
+      questionCard?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      questionStage?.focus({ preventScroll: true });
+    };
+
+    const animationFrameId = window.requestAnimationFrame(focusQuestions);
+    const timeoutId = window.setTimeout(focusQuestions, 220);
+    const resetId = window.setTimeout(() => setHighlightQuestions(false), 5000);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(timeoutId);
+      window.clearTimeout(resetId);
+    };
+  }, [shouldGuideQuestions]);
 
   if (step >= quizData.length) {
     return (
@@ -651,7 +689,18 @@ const Quiz = () => {
 
       <section className="quiz-page__experience">
         <div className="quiz-page__shell quiz-page__layout">
-          <article className="quiz-page__card">
+          <article
+            id="quiz-questions"
+            ref={questionCardRef}
+            className={`quiz-page__card ${highlightQuestions ? "quiz-page__card--guided" : ""}`}
+          >
+            {highlightQuestions ? (
+              <div className="quiz-page__question-guide" aria-live="polite">
+                <Sparkles size={18} />
+                <span>Start here: answer these questions to find the best routine for your dog.</span>
+              </div>
+            ) : null}
+
             <div className="quiz-page__progress-top">
               <span className="quiz-page__progress-kicker">
                 Step {formatStepLabel(step)} of {formatStepLabel(quizData.length)}
@@ -668,7 +717,14 @@ const Quiz = () => {
               />
             </div>
 
-            <div key={currentQuestion.id} className="quiz-page__question-stage">
+            <div
+              key={currentQuestion.id}
+              ref={questionStageRef}
+              tabIndex={-1}
+              className={`quiz-page__question-stage ${
+                highlightQuestions ? "quiz-page__question-stage--guided" : ""
+              }`}
+            >
               <span className="quiz-page__question-kicker">{currentQuestion.eyebrow}</span>
               <h2 className="quiz-page__question">{currentQuestion.question}</h2>
               <p className="quiz-page__question-helper">{currentQuestion.helper}</p>

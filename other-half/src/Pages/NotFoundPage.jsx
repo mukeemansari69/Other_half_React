@@ -77,7 +77,7 @@ const recoveryCards = [
   {
     title: "Take The Quiz",
     text: "Answer a few quick questions and find a routine that fits your dog's size, goals, and everyday rhythm.",
-    to: "/quiz",
+    to: "/quiz#quiz-questions",
     image: "/Home/images/q4.png",
     imageAlt: "Dog routine quiz illustration",
     kicker: "Find the fit",

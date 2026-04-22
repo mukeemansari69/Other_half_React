@@ -15,7 +15,7 @@ import "/public/Home/css/footer.css";
 const quickLinksPrimary = [
   { label: "Home", to: "/" },
   { label: "Shop All", to: "/collection" },
-  { label: "Take the Quiz", to: "/quiz" },
+  { label: "Take the Quiz", to: "/quiz#quiz-questions" },
   { label: "About Us", to: "/our-story" },
   { label: "Science", to: "/science" },
   { label: "FAQ", to: "/faq" },
