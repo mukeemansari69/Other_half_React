@@ -5,6 +5,7 @@ import CartToast from "./Components/CartToast.jsx";
 import Footer from "./Components/Footer.jsx";
 import Header from "./Components/Header.jsx";
 import RouteMeta from "./Components/RouteMeta.jsx";
+import WhatsAppSupportButton from "./Components/WhatsAppSupportButton.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { GuestOnlyRoute, ProtectedRoute } from "./Routes/RouteGuard.jsx";
@@ -66,6 +67,7 @@ const App = () => {
           <RouteMeta />
           <Header />
           <CartToast />
+          <WhatsAppSupportButton />
           <Suspense fallback={<RouteLoadingState />}>
             <Routes>
               <Route path="/" element={<Home />} />

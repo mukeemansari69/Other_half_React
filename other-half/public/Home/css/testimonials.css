@@ -12,7 +12,21 @@
   gap: 48px;
 }
 
+.testimonial-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.testimonial-header__copy {
+  flex: 1;
+  min-width: min(100%, 320px);
+}
+
 .testimonial-heading {
+  margin: 0;
   font-family: "Luckiest Guy", cursive;
   font-size: 48px;
   line-height: 125%;
@@ -28,6 +42,33 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.testimonial-description {
+  max-width: 840px;
+  margin: 16px auto 0;
+  text-align: center;
+  color: #5E5E5E;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.testimonial-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: #0F4A12;
+  color: #EBF466;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
   text-transform: uppercase;
 }
 
@@ -123,6 +164,15 @@
 
   .testimonial-heading {
     font-size: 34px;
+  }
+
+  .testimonial-description {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .testimonial-cta {
+    width: 100%;
   }
 
   .testimonial-kicker {

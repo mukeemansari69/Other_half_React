@@ -7,9 +7,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 import DeliveryAddressFields from "../Components/DeliveryAddressFields.jsx";
+import EmptyStateCard from "../Components/EmptyStateCard.jsx";
 import { LoadingButton, LoadingLink } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { apiRequest } from "../lib/api.js";
@@ -638,10 +638,18 @@ const AccountDashboardPage = () => {
                     </article>
                   ))
                 ) : (
-                  <p className="rounded-[28px] bg-[#FBF8EF] px-5 py-6 text-sm leading-6 text-[#5C584D]">
-                    You have not needed help yet. If anything feels off with an order,
-                    delivery, or plan, send a request and it will appear here.
-                  </p>
+                  <EmptyStateCard
+                    icon={MessagesSquare}
+                    eyebrow="Support history"
+                    title="No support requests yet"
+                    description={`That is a good sign. If anything feels unclear about ${dogName}'s order, subscription, or ingredients, your next message will appear here.`}
+                    chips={["Orders", "Subscriptions", "Ingredients"]}
+                    primaryAction={{
+                      to: "/contact",
+                      label: "Ask for help",
+                      loadingText: "Opening support...",
+                    }}
+                  />
                 )}
               </div>
             </article>
@@ -688,10 +696,23 @@ const AccountDashboardPage = () => {
                     </article>
                   ))
                 ) : (
-                  <p className="rounded-[28px] bg-[#FBF8EF] px-5 py-6 text-sm leading-6 text-[#5C584D]">
-                    Complete the quiz while logged in and we will save the result here so you
-                    can revisit what fits {dogName} best.
-                  </p>
+                  <EmptyStateCard
+                    icon={Sparkles}
+                    eyebrow="Saved quiz results"
+                    title={`No saved quiz match for ${dogName} yet`}
+                    description="Complete the wellness quiz while logged in and we will save the latest recommendation here so you can revisit it any time."
+                    chips={["Immunity", "Digestion", "Dental", "Daily routine"]}
+                    primaryAction={{
+                      to: "/quiz",
+                      label: "Start the quiz",
+                      loadingText: "Opening quiz...",
+                    }}
+                    secondaryAction={{
+                      to: "/collection",
+                      label: "Browse collection",
+                      loadingText: "Opening collection...",
+                    }}
+                  />
                 )}
               </div>
             </article>

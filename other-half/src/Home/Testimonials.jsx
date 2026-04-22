@@ -5,6 +5,7 @@ import { Autoplay } from "swiper/modules";
 
 import "swiper/css";
 import "/public/Home/css/testimonials.css";
+import { LoadingLink } from "../Components/LoadingControl.jsx";
 import { apiRequest } from "../lib/api.js";
 import testimonialsData from "../testimonialsData.js";
 import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
@@ -36,14 +37,24 @@ const mapApiReviewToCard = (review) => ({
   description: review.description,
 });
 
-export default function Testimonials({ items = testimonialsData }) {
+export default function Testimonials({
+  items = testimonialsData,
+  reviewProductId: reviewProductIdOverride = "",
+  heading = null,
+  kicker = null,
+  description = "",
+  ctaLabel = "",
+  ctaTo = "",
+  sectionId = "reviews",
+}) {
   const location = useLocation();
   const sectionRef = useRef(null);
   const [apiReviews, setApiReviews] = useState([]);
-  const reviewProductId = useMemo(() => {
+  const reviewProductIdFromUrl = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
     return searchParams.get("reviewsProduct") || "";
   }, [location.search]);
+  const reviewProductId = reviewProductIdOverride || reviewProductIdFromUrl;
 
   useEffect(() => {
     let isActive = true;
@@ -91,6 +102,19 @@ export default function Testimonials({ items = testimonialsData }) {
     ? resolveReviewProduct({ productId: reviewProductId })
     : null;
   const shouldScrollToReviews = location.hash === "#reviews";
+  const headingContent = heading || (
+    <>
+      LOVED BY PET PARENTS,
+      <br />
+      TRUSTED BY OVER 4 MILLION FURRY TAILS
+    </>
+  );
+  const kickerContent =
+    kicker !== null
+      ? kicker
+      : reviewProduct
+        ? `Showing pack reviews for ${reviewProduct.productName}`
+        : "";
 
   useLayoutEffect(() => {
     if (!shouldScrollToReviews) {
@@ -128,20 +152,32 @@ export default function Testimonials({ items = testimonialsData }) {
   }, [displayItems.length, reviewProductId, shouldScrollToReviews]);
 
   return (
-    <section ref={sectionRef} id="reviews" className="testimonial-section w-full">
+    <section ref={sectionRef} id={sectionId} className="testimonial-section w-full">
       <div className="max-w-[1920px] mx-auto">
         <div className="testimonial-container">
-          {reviewProduct ? (
-            <p className="testimonial-kicker">
-              Showing pack reviews for {reviewProduct.productName}
-            </p>
-          ) : null}
+          <div className="testimonial-header">
+            <div className="testimonial-header__copy">
+              {kickerContent ? (
+                <p className="testimonial-kicker">{kickerContent}</p>
+              ) : null}
 
-          <h2 className="testimonial-heading">
-            LOVED BY PET PARENTS,
-            <br />
-            TRUSTED BY OVER 4 MILLION FURRY TAILS
-          </h2>
+              <h2 className="testimonial-heading">{headingContent}</h2>
+
+              {description ? (
+                <p className="testimonial-description">{description}</p>
+              ) : null}
+            </div>
+
+            {ctaLabel && ctaTo ? (
+              <LoadingLink
+                to={ctaTo}
+                className="testimonial-cta"
+                loadingText="Opening..."
+              >
+                {ctaLabel}
+              </LoadingLink>
+            ) : null}
+          </div>
 
           <Swiper
             className="testimonial-swiper"

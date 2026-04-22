@@ -1,5 +1,6 @@
 import "/public/Home/css/HomeHeroSection.css";
 import { LoadingLink } from "../Components/LoadingControl.jsx";
+import HomeSearchSpotlight from "./HomeSearchSpotlight.jsx";
 
 export default function HomeHeroSection() {
   return (
@@ -34,6 +35,8 @@ export default function HomeHeroSection() {
             </LoadingLink>
 
           </div>
+
+          <HomeSearchSpotlight />
         </div>
       </div>
     </section>

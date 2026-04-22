@@ -24,7 +24,6 @@ import { useCart } from "../context/CartContext.jsx";
 import { apiRequest } from "../lib/api.js";
 import { isDeliveryAddressComplete } from "../lib/deliveryAddress.js";
 import { startRazorpayCheckout } from "../lib/startRazorpayCheckout.js";
-import { resolveReviewProduct } from "../../shared/reviewProductCatalog.js";
 import { collectionCards } from "../../shared/storeCatalog.js";
 import { getCadenceDetails } from "../../shared/subscriptionUtils.js";
 import {
@@ -553,8 +552,7 @@ const ProductBanner = ({
       ),
     ].slice(0, 2);
   }, [product.id, productAvailability.relatedProductIds]);
-  const reviewProduct = resolveReviewProduct({ productId: product.id, productName: product.name });
-  const reviewSectionHref = reviewProduct?.reviewSectionHref || product.review.href;
+  const reviewSectionHref = product.review?.href || "#reviews";
   const visibleTags = showAllTags
     ? product.tags
     : product.tags.slice(0, product.initialVisibleTags);

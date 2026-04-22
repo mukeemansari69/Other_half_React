@@ -1,9 +1,10 @@
 import { MapPin, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import CheckoutLoginDrawer from "../Components/CheckoutLoginDrawer.jsx";
 import DeliveryAddressFields from "../Components/DeliveryAddressFields.jsx";
+import EmptyStateCard from "../Components/EmptyStateCard.jsx";
 import { LoadingButton, LoadingLink } from "../Components/LoadingControl.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
@@ -170,24 +171,51 @@ const CartPage = () => {
   if (items.length === 0) {
     return (
       <main className="bg-[#FBF8EF] px-6 py-12 md:px-10 lg:px-16">
-        <div className="mx-auto max-w-4xl rounded-[32px] border border-[#E6DFCF] bg-white p-10 text-center shadow-[0_24px_80px_rgba(34,30,18,0.08)]">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EEF6E7] text-[#0F4A12]">
-            <ShoppingCart size={24} />
-          </div>
-          <h1 className="mt-6 text-3xl font-semibold text-[#1A1A1A]">
-            Your cart is empty
-          </h1>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#5F5B4F]">
-            Add a product to your cart, and we will keep it here until you are ready
-            to checkout.
-          </p>
-          <LoadingLink
-            to="/collection"
-            className="mt-8 inline-flex rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white"
-            loadingText="Opening..."
+        <div className="mx-auto max-w-5xl">
+          <EmptyStateCard
+            icon={ShoppingCart}
+            eyebrow="Cart check"
+            title="Your cart is waiting for its first scoop"
+            description="Pick a routine for joints, digestion, immunity, or dental care and we will keep it here until you are ready to checkout."
+            chips={["Daily wellness", "Dental care", "Digestive support", "Quiz picks"]}
+            primaryAction={{
+              to: "/collection",
+              label: "Browse products",
+              loadingText: "Opening collection...",
+            }}
+            secondaryAction={{
+              to: "/quiz#quiz-questions",
+              label: "Take the quiz",
+              loadingText: "Opening quiz...",
+            }}
           >
-            Browse collection
-          </LoadingLink>
+            <div className="mt-6 grid gap-3 md:grid-cols-3">
+              {[
+                {
+                  title: "Daily wellness stacks",
+                  text: "Shop scoopable routines built for repeat daily use.",
+                },
+                {
+                  title: "No-brush dental support",
+                  text: "Find simpler oral-care options for breath and plaque support.",
+                },
+                {
+                  title: "Guided picks",
+                  text: "Use the quiz if you want the collection narrowed down for you.",
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-[24px] border border-[#E6DFCF] bg-[#FBF8EF] p-4"
+                >
+                  <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#0F4A12]">
+                    {item.title}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-[#5F5B4F]">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </EmptyStateCard>
         </div>
       </main>
     );
