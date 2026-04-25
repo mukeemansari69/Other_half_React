@@ -16,7 +16,7 @@ const WhatsAppSupportButton = () => {
       <Link
         to="/contact"
         aria-label="Contact PetPlus support"
-        className="fixed bottom-24 left-4 z-[85] inline-flex items-center gap-3 rounded-full border border-[#CDE3BF] bg-white px-4 py-3 text-[#1A1A1A] shadow-[0_24px_80px_rgba(34,30,18,0.16)] transition hover:-translate-y-0.5 md:bottom-6 md:left-6"
+        className="fixed bottom-24 right-4 z-[85] inline-flex items-center gap-3 rounded-full border border-[#CDE3BF] bg-white px-4 py-3 text-[#1A1A1A] shadow-[0_24px_80px_rgba(34,30,18,0.16)] transition hover:-translate-y-0.5 md:bottom-6 md:right-6"
       >
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0F4A12] text-white">
           <FaWhatsapp size={24} />
@@ -37,7 +37,7 @@ const WhatsAppSupportButton = () => {
       target="_blank"
       rel="noreferrer"
       aria-label="Chat with PetPlus on WhatsApp"
-      className="fixed bottom-24 left-4 z-[85] inline-flex items-center gap-3 rounded-full border border-[#CDE3BF] bg-white px-4 py-3 text-[#1A1A1A] shadow-[0_24px_80px_rgba(34,30,18,0.16)] transition hover:-translate-y-0.5 md:bottom-6 md:left-6"
+      className="fixed bottom-24 right-4 z-[85] inline-flex items-center gap-3 rounded-full border border-[#CDE3BF] bg-white px-4 py-3 text-[#1A1A1A] shadow-[0_24px_80px_rgba(34,30,18,0.16)] transition hover:-translate-y-0.5 md:bottom-6 md:right-6"
     >
       <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#1FAF38] text-white">
         <FaWhatsapp size={24} />
