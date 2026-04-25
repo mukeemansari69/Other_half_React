@@ -25,12 +25,12 @@ export default function Starter() {
         <div className="md:w-[609px] w-full flex flex-col gap-6 md:gap-8 items-start mt-6 md:mt-0">
           
           {/* Heading */}
-          <h1
+          <h2
             className="text-[34px] md:text-[48px] leading-[125%] w-full text-center md:text-left"
             style={{ fontFamily: "'Luckiest Guy', cursive", fontWeight: 400 }}
           >
             THE STARTER DUO
-          </h1>
+          </h2>
 
           {/* Rating */}
           <div className="flex items-center gap-3 w-full justify-center md:justify-start">

@@ -438,6 +438,67 @@ const AccordionItem = ({ item, isOpen, onToggle }) => (
   </div>
 );
 
+const ProductSeoGuide = ({ product }) => {
+  const faqItems = Array.isArray(product.faq) ? product.faq : [];
+  const benefitText = (product.benefits || [])
+    .map((benefit) => benefit.text)
+    .filter(Boolean)
+    .join(", ");
+  const ingredientText = (product.tags || []).slice(0, 8).join(", ");
+
+  if (faqItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <section
+      className="rounded-[28px] border border-[#E4D7C8] bg-white p-5 shadow-[0_18px_60px_rgba(34,30,18,0.06)] sm:p-6"
+      aria-labelledby={`${product.id}-faq-heading`}
+    >
+      <div className="space-y-3">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#0F4A12]">
+          Dog wellness guide
+        </p>
+        <h2
+          id={`${product.id}-faq-heading`}
+          className="text-2xl font-semibold leading-tight text-[#1A1A1A] sm:text-3xl"
+        >
+          Questions dog parents ask before choosing {product.name}
+        </h2>
+        <p className="text-sm leading-7 text-[#4F4A42] sm:text-base">
+          {product.name} is part of the PetPlus pet wellness products range for
+          Indian dog parents who want practical daily support. It is commonly
+          chosen for {benefitText.toLowerCase()}. Key wellness terms connected
+          with this product include {ingredientText}. Use it consistently with a
+          balanced diet, clean water, regular activity, and routine vet care.
+        </p>
+        <div className="flex flex-wrap gap-3 pt-1 text-sm font-semibold">
+          <Link to="/collection" className="text-[#0F4A12] underline-offset-4 hover:underline">
+            Shop all dog supplements
+          </Link>
+          <Link to="/science" className="text-[#0F4A12] underline-offset-4 hover:underline">
+            Read ingredient science
+          </Link>
+          <Link to="/blog" className="text-[#0F4A12] underline-offset-4 hover:underline">
+            Visit dog care blog
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-4">
+        {faqItems.map((item) => (
+          <article key={item.question} className="rounded-[20px] bg-[#FAF9F5] p-4">
+            <h3 className="text-base font-semibold leading-6 text-[#1A1A1A]">
+              {item.question}
+            </h3>
+            <p className="mt-2 text-sm leading-7 text-[#4F4A42]">{item.answer}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 const ProductBanner = ({
   productData = defaultProductBannerData,
   onAddToCart,
@@ -1402,6 +1463,8 @@ const ProductBanner = ({
                 />
               ))}
             </div>
+
+            <ProductSeoGuide product={product} />
           </div>
         </div>
       </div>

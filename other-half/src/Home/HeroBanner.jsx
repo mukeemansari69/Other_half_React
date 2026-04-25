@@ -24,7 +24,7 @@ const heroSlides = [
   {
     id: "science",
     label: "Science banner",
-    render: () => <ScienceHero />,
+    render: () => <ScienceHero isolated />,
   },
 ];
 

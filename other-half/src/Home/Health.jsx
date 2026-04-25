@@ -34,7 +34,7 @@ const Health = () => {
         health-section"
       >
         <div className="flex flex-col gap-8 max-w-[673px] text-center lg:text-left mobile-gap">
-          <h1
+          <h2
             className="
             font-[Luckiest_Guy]
             text-[32px]
@@ -45,7 +45,7 @@ const Health = () => {
             "
           >
             THEIR HEALTH GLOWS. YOUR LIFE FLOWS WITH PetPlus!
-          </h1>
+          </h2>
 
           <div className="lg:hidden flex justify-center mobile-stack">
             <ImageStack images={images} index={index} />

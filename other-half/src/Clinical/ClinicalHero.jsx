@@ -140,6 +140,7 @@ export default function ClinicalHero({ isolated = false }) {
   };
 
   const activeDogState = dogStates[dogMode];
+  const HeroHeading = isolated ? "h2" : "h1";
   const heroMarkup = (
     <section className="clinical-hero clinical-section clinical-section--hero">
       <div className="clinical-banner">
@@ -147,9 +148,9 @@ export default function ClinicalHero({ isolated = false }) {
           <div className="grid clinical-hero__layout">
             <div className="clinical-hero__content">
               <span className="clinical-chip">AI BARK CHECK</span>
-              <h1 className="clinical-hero__title">
+              <HeroHeading className="clinical-hero__title">
                Your Dog’s Behavior Speaks — Our AI Helps You Understand It.
-              </h1>
+              </HeroHeading>
               <p className="clinical-hero__text">
                 Not every bark, pause, or habit is random. Our AI analyzes your dog’s behavior to uncover hidden health signals — and turns them into a clear, personalized care plan.
                 <br />

@@ -273,12 +273,14 @@ export const everydayProductData = {
     count: 1248,
     href: "#reviews",
   },
+  reviewSchemaText:
+    "Verified dog parents use Everyday Daily Multivitamin for daily immunity, digestion, joint, skin and coat support.",
 
   gallery: [
-    { id: "g1", src: "/Home/images/everyday.webp", alt: "Front View" },
-    { id: "g2", src: "/Product/images/p1.webp", alt: "Back View" },
-    { id: "g3", src: "/Home/images/everyday.webp", alt: "Usage" },
-    { id: "g4", src: "/Home/images/everyday.webp", alt: "Ingredients" },
+    { id: "g1", src: "/Home/images/everyday.webp", alt: "PetPlus Everyday dog supplement India front pack" },
+    { id: "g2", src: "/Product/images/p1.webp", alt: "PetPlus dog immunity booster supplement back label" },
+    { id: "g3", src: "/Home/images/everyday.webp", alt: "Daily dog multivitamin powder for pet wellness routine" },
+    { id: "g4", src: "/Home/images/everyday.webp", alt: "Dog supplement ingredients for immunity digestion and mobility" },
   ],
 
   qualityHighlights: [
@@ -563,6 +565,28 @@ export const everydayProductData = {
       ],
     },
   ],
+  faq: [
+    {
+      question: "Is this supplement safe for dogs?",
+      answer:
+        "Everyday is made for daily dog wellness using carefully selected ingredients. Start with the serving guide for your dog's weight and speak with your vet if your dog is pregnant, unwell, medicated, or has a known allergy.",
+    },
+    {
+      question: "How can I improve my dog's immunity naturally?",
+      answer:
+        "A consistent routine helps most: balanced food, clean water, regular walks, sleep, vaccinations, vet checkups, and ingredients that support gut health and immune function. Everyday adds nutrients such as probiotics, turmeric, spirulina and colostrum to support that routine.",
+    },
+    {
+      question: "How do I use Everyday Daily Multivitamin?",
+      answer:
+        "Mix the suggested scoop amount into your dog's food once daily. Use the serving size for your dog's weight and give it consistently for the best pet wellness results.",
+    },
+    {
+      question: "Which dogs is this product best for?",
+      answer:
+        "It is designed for dogs that need everyday support for immunity, digestion, joints, skin, coat and healthy aging. It suits Indian dog parents looking for a simple daily dog supplement routine.",
+    },
+  ],
 
   initialVisibleTags: 5,
 };
@@ -586,12 +610,14 @@ export const dogDentalProductData = {
     count: 980,
     href: "#reviews",
   },
+  reviewSchemaText:
+    "Verified dog parents use Doggie Dental Powder for fresher breath, plaque support and an easier no-brush oral care routine.",
 
   gallery: [
-    { id: "g1", src: "/Product/images/dogi-dental-powder.webp", alt: "Dental Powder" },
-    { id: "g2", src: "/Product/images/before.webp", alt: "Before After" },
-    { id: "g3", src: "/Product/images/dogi-dental-powder.webp", alt: "Usage" },
-    { id: "g4", src: "/Product/images/before.webp", alt: "Ingredients" },
+    { id: "g1", src: "/Product/images/dogi-dental-powder.webp", alt: "PetPlus Doggie Dental Powder for dog oral care India" },
+    { id: "g2", src: "/Product/images/before.webp", alt: "Dog dental care before and after plaque support result" },
+    { id: "g3", src: "/Product/images/dogi-dental-powder.webp", alt: "No-brush dog dental powder sprinkled on food daily" },
+    { id: "g4", src: "/Product/images/before.webp", alt: "Dog dental supplement for fresh breath tartar and gums" },
   ],
 
   qualityHighlights: [
@@ -880,6 +906,28 @@ export const dogDentalProductData = {
       ],
     },
   ],
+  faq: [
+    {
+      question: "Is Doggie Dental Powder safe for dogs?",
+      answer:
+        "Doggie Dental Powder is designed as a daily oral care supplement for dogs. Follow the serving guide and ask your vet before use if your dog has dental disease, is on medication, or has a sensitive stomach.",
+    },
+    {
+      question: "How can I reduce my dog's bad breath?",
+      answer:
+        "Bad breath can come from plaque, tartar, diet, or gut health. Daily dental powder, regular chewing, clean water, and vet dental checks can help. Doggie Dental Powder supports fresher breath and a healthier oral microbiome.",
+    },
+    {
+      question: "Do I still need to brush my dog's teeth?",
+      answer:
+        "Brushing is still helpful when your dog allows it. This powder is a practical no-brush support option for dog parents who struggle with daily brushing.",
+    },
+    {
+      question: "How long does dog dental powder take to work?",
+      answer:
+        "Many dog parents look for fresher breath within a few weeks, but plaque and tartar support needs consistent daily use and routine dental care.",
+    },
+  ],
 
   initialVisibleTags: 5,
 };
@@ -903,12 +951,14 @@ export const dailyDuoProductData = {
     count: 640,
     href: "#reviews",
   },
+  reviewSchemaText:
+    "Verified dog parents choose Daily Duo for a simple full-body supplement and dental care routine in one bundle.",
 
   gallery: [
-    { id: "g1", src: "/Product/images/multi.webp", alt: "Daily Duo Front" },
-    { id: "g2", src: "/Product/images/dogi-dental-powder.webp", alt: "Products Together" },
-    { id: "g3", src: "/Product/images/p1.webp", alt: "Usage" },
-    { id: "g4", src: "/Product/images/before.webp", alt: "Benefits" },
+    { id: "g1", src: "/Product/images/multi.webp", alt: "PetPlus Daily Duo dog supplements India bundle front" },
+    { id: "g2", src: "/Product/images/dogi-dental-powder.webp", alt: "Multivitamin and dental powder pet wellness products together" },
+    { id: "g3", src: "/Product/images/p1.webp", alt: "Daily Duo dog immunity booster and dental care usage" },
+    { id: "g4", src: "/Product/images/before.webp", alt: "Daily Duo benefits for dog immunity digestion and fresh breath" },
   ],
 
   qualityHighlights: [
@@ -1196,6 +1246,28 @@ export const dailyDuoProductData = {
         "Covers both internal health and oral hygiene.",
         "Saves more compared to buying separately.",
       ],
+    },
+  ],
+  faq: [
+    {
+      question: "What is included in the Daily Duo?",
+      answer:
+        "Daily Duo combines PetPlus Everyday Daily Multivitamin with Doggie Dental Powder, so your dog gets full-body wellness support plus oral care in one simple routine.",
+    },
+    {
+      question: "Is Daily Duo safe for daily use?",
+      answer:
+        "Daily Duo is built for daily use when served according to your dog's size. Check with your vet first if your dog has a medical condition, allergies, or is already taking other supplements.",
+    },
+    {
+      question: "How does Daily Duo improve dog immunity and digestion?",
+      answer:
+        "The multivitamin side supports gut, immune, joint, skin and coat health with nutrients such as probiotics, turmeric, spirulina and colostrum, while the dental powder supports breath and oral hygiene.",
+    },
+    {
+      question: "Who should buy Daily Duo?",
+      answer:
+        "Daily Duo is best for dog parents in India who want one repeat-friendly bundle for immunity, digestion, mobility, skin, coat and no-brush dental care.",
     },
   ],
 

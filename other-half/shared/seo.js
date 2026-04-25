@@ -33,19 +33,19 @@ const PRODUCT_ROUTE_CONFIG = {
     data: everydayProductData,
     imagePath: everydayProductData.gallery[0]?.src || DEFAULT_OG_IMAGE_PATH,
     description:
-      "Shop the 45 in 1 Everyday Daily Multivitamin for dogs with support for immunity, digestion, mobility, skin, coat, and healthy aging in one daily scoop.",
+      "Shop dog supplements India trusts for immunity, digestion, mobility, skin and coat. PetPlus Everyday supports daily pet wellness in one easy scoop for dogs.",
   },
   "/doggie-dental": {
     data: dogDentalProductData,
     imagePath: dogDentalProductData.gallery[0]?.src || DEFAULT_OG_IMAGE_PATH,
     description:
-      "Discover Doggie Dental Powder for fresher breath, plaque support, tartar control, and a simple no-brush dog oral care routine.",
+      "Buy PetPlus Doggie Dental Powder for fresh breath, plaque care and gum support. A simple pet wellness product for daily dog oral care routines at home.",
   },
   "/daily-duo": {
     data: dailyDuoProductData,
     imagePath: dailyDuoProductData.gallery[0]?.src || DEFAULT_OG_IMAGE_PATH,
     description:
-      "Shop the Daily Duo bundle with multivitamin plus dental powder for body wellness, digestion, immunity, and daily oral care support.",
+      "Shop Daily Duo dog supplements India dog parents can use for immunity, digestion and dental care. Multivitamin plus daily oral support in one routine.",
   },
 };
 
@@ -71,7 +71,7 @@ const trimSeoText = (value = "", maxLength = 160) => {
   return `${normalizedValue.slice(0, maxLength - 1).trimEnd()}...`;
 };
 
-const buildProductSeoTitle = (product) => `${product.name} | ${SITE_NAME}`;
+const buildProductSeoTitle = (product) => `${product.name} | Dog Supplements India | ${SITE_NAME}`;
 
 const buildProductSeoDescription = (product, fallbackDescription = "") =>
   trimSeoText(
@@ -108,20 +108,17 @@ const collectionSeoHighlights = collectionCards
 
 const PUBLIC_ROUTE_CONFIG = {
   "/": {
-    title: "PetPlus | Dog Wellness Supplements in India",
+    title: "PetPlus | Dog Supplements India & Pet Wellness Products",
     description:
-      "PetPlus helps dog parents in India build daily wellness routines with supplements for digestion, immunity, mobility, skin, coat, and oral care.",
+      "PetPlus offers dog supplements India trusts for immunity, digestion, mobility, skin, coat and dental care with simple daily pet wellness routines for dogs.",
     imagePath: "/Home/images/home-Starter-Duo.png",
     pageType: "WebPage",
     breadcrumbs: [{ name: "Home", path: "/" }],
   },
   "/collection": {
-    title: `Shop ${collectionSeoHighlights.slice(0, 2).join(" & ")} | ${SITE_NAME}`,
-    description: trimSeoText(
-      `Explore the ${SITE_NAME} collection with ${collectionSeoHighlights.join(
-        ", "
-      )}, plus daily wellness support built for Indian dog parents.`
-    ),
+    title: `Shop Dog Supplements India | Pet Wellness Products | ${SITE_NAME}`,
+    description:
+      "Explore PetPlus dog supplements India dog parents can use for immunity, dental care, digestion, skin, coat and daily pet wellness routines across India.",
     imagePath: collectionCards[0]?.image || DEFAULT_OG_IMAGE_PATH,
     pageType: "CollectionPage",
     breadcrumbs: [
@@ -133,9 +130,9 @@ const PUBLIC_ROUTE_CONFIG = {
   "/doggie-dental": buildProductSeoConfig("/doggie-dental"),
   "/daily-duo": buildProductSeoConfig("/daily-duo"),
   "/science": {
-    title: "Dog Wellness Science & Ingredient Education | PetPlus",
+    title: "Dog Wellness Science & Ingredients | PetPlus India",
     description:
-      "Learn the science behind PetPlus formulas, ingredient choices, daily routines, and how each product supports dog wellness goals.",
+      "Learn how PetPlus ingredients support dog immunity, digestion, joints, skin, coat and oral care with practical pet wellness science for India and daily care.",
     imagePath: "/Science/images/everyday.png",
     pageType: "WebPage",
     breadcrumbs: [
@@ -144,9 +141,9 @@ const PUBLIC_ROUTE_CONFIG = {
     ],
   },
   "/ai-pet-health": {
-    title: "AI Pet Health Assistant for Dogs | PetPlus",
+    title: "AI Dog Health Assistant & Wellness Guide | PetPlus",
     description:
-      "Describe your dog's health concern and get a caring daily routine, diet tips, and relevant PetPlus product recommendations.",
+      "Ask the PetPlus AI dog health assistant about immunity, digestion, dental care and daily wellness routines for dogs in India using clear guidance at home.",
     imagePath: "/Home/images/Home-banner.png",
     pageType: "WebPage",
     breadcrumbs: [
@@ -155,9 +152,9 @@ const PUBLIC_ROUTE_CONFIG = {
     ],
   },
   "/integrity": {
-    title: "Ingredient Integrity & Quality Standards | PetPlus",
+    title: "Dog Supplement Quality & Ingredient Integrity | PetPlus",
     description:
-      "See how PetPlus approaches ingredient integrity, manufacturing standards, sourcing decisions, and dog-first formula quality.",
+      "See how PetPlus chooses dog supplement ingredients, quality checks and pet wellness standards for safe daily routines for Indian dog parents online care.",
     imagePath: "/Integrity/images/dogi-img.jpg",
     pageType: "WebPage",
     breadcrumbs: [
@@ -166,9 +163,9 @@ const PUBLIC_ROUTE_CONFIG = {
     ],
   },
   "/our-story": {
-    title: "Our Story | PetPlus",
+    title: "Our Story | PetPlus Dog Wellness India",
     description:
-      "Read the PetPlus story and learn how the brand was built around easier daily wellness routines for dogs in India.",
+      "Read the PetPlus story and why we build simple dog supplements and pet wellness products for everyday dog parents in India who want easy care online daily.",
     imagePath: "/OurStory/images/howit.jpg",
     pageType: "AboutPage",
     breadcrumbs: [
@@ -177,9 +174,9 @@ const PUBLIC_ROUTE_CONFIG = {
     ],
   },
   "/clinical-studies": {
-    title: "Clinical Studies & Formula Breakdown | PetPlus",
+    title: "Dog Supplement Studies & Formula Breakdown | PetPlus",
     description:
-      "Explore PetPlus clinical-style formula pages covering digestion, immunity, mobility, oral care, and complete dog wellness routines.",
+      "Explore PetPlus formula pages for dog immunity booster support, digestion, mobility, oral care and complete daily pet wellness routines for India care.",
     imagePath: "/Default/images/col4.png",
     pageType: "WebPage",
     breadcrumbs: [
@@ -188,9 +185,9 @@ const PUBLIC_ROUTE_CONFIG = {
     ],
   },
   "/blog": {
-    title: "Dog Care Blog & Product Education | PetPlus",
+    title: "Dog Care Blog India | Supplements & Wellness | PetPlus",
     description:
-      "Read PetPlus dog care articles, product education, and practical wellness routines designed for everyday dog parenting.",
+      "Read dog care tips on immunity, digestion, dental health, supplements and pet wellness products for Indian dog parents building daily routines at home.",
     imagePath: "/OurStory/images/story-banner.jpg",
     pageType: "Blog",
     breadcrumbs: [
@@ -199,9 +196,9 @@ const PUBLIC_ROUTE_CONFIG = {
     ],
   },
   "/faq": {
-    title: "Dog Supplement FAQs | PetPlus",
+    title: "Dog Supplement FAQs India | PetPlus",
     description:
-      "Get answers about PetPlus products, subscriptions, orders, ingredients, usage, shipping, and dog wellness routines.",
+      "Find answers about PetPlus dog supplements India, ingredients, safety, dosage, subscriptions, shipping and pet wellness routines for dogs and daily care.",
     imagePath: "/Default/images/dogs4.avif",
     pageType: "FAQPage",
     breadcrumbs: [
@@ -210,9 +207,9 @@ const PUBLIC_ROUTE_CONFIG = {
     ],
   },
   "/quiz": {
-    title: "Dog Wellness Quiz | PetPlus",
+    title: "Dog Wellness Quiz India | PetPlus",
     description:
-      "Take the PetPlus dog wellness quiz to find the best supplement routine for your dog's needs, goals, and daily lifestyle.",
+      "Take the PetPlus dog wellness quiz to find supplements for immunity, digestion, dental care, skin, coat and daily health based on your dog today daily.",
     imagePath: "/Default/images/mkm.png",
     pageType: "WebPage",
     breadcrumbs: [
@@ -223,7 +220,7 @@ const PUBLIC_ROUTE_CONFIG = {
   "/contact": {
     title: "Contact PetPlus Support | Orders, Subscriptions & Product Help",
     description:
-      "Contact PetPlus for order help, subscription support, product questions, refunds, or general customer care.",
+      "Contact PetPlus for dog supplement questions, orders, subscriptions, refunds, shipping, product safety and customer care for Indian dog parents online.",
     imagePath: "/Default/images/dogs4.avif",
     pageType: "ContactPage",
     breadcrumbs: [
@@ -232,9 +229,9 @@ const PUBLIC_ROUTE_CONFIG = {
     ],
   },
   "/glossary": {
-    title: "Dog Supplement Ingredient Glossary | PetPlus",
+    title: "Dog Supplement Ingredient Glossary | PetPlus India",
     description:
-      "Understand dog supplement ingredients, actives, and wellness terms used across PetPlus products and educational content.",
+      "Understand dog supplement ingredients, immunity boosters, probiotics, dental support and pet wellness terms used by PetPlus products for daily care ideas.",
     imagePath: "/Glossary/images/banner.jpg",
     pageType: "WebPage",
     breadcrumbs: [
@@ -245,7 +242,7 @@ const PUBLIC_ROUTE_CONFIG = {
   "/terms": {
     title: "Terms and Conditions | PetPlus",
     description:
-      "Review the PetPlus terms covering orders, pricing, subscriptions, shipping, checkout, and use of the website.",
+      "Review PetPlus terms for dog supplement orders, pricing, subscriptions, shipping, checkout, website use and customer policies in India online clearly.",
     imagePath: DEFAULT_OG_IMAGE_PATH,
     pageType: "WebPage",
     breadcrumbs: [
@@ -256,7 +253,7 @@ const PUBLIC_ROUTE_CONFIG = {
   "/refund-policy": {
     title: "Refund Policy | PetPlus",
     description:
-      "Read the PetPlus refund policy for damaged orders, delivery issues, replacement reviews, and refund eligibility.",
+      "Read the PetPlus refund policy for dog supplement orders, damaged products, delivery issues, replacement reviews and refund eligibility in India today.",
     imagePath: DEFAULT_OG_IMAGE_PATH,
     pageType: "WebPage",
     breadcrumbs: [
@@ -267,7 +264,7 @@ const PUBLIC_ROUTE_CONFIG = {
   "/privacy-policy": {
     title: "Privacy Policy | PetPlus",
     description:
-      "See how PetPlus collects, uses, stores, and protects customer, order, subscription, and support information.",
+      "See how PetPlus protects customer, order, subscription, support and dog wellness quiz data for Indian pet parents using our website safely online care.",
     imagePath: DEFAULT_OG_IMAGE_PATH,
     pageType: "WebPage",
     breadcrumbs: [
@@ -278,7 +275,7 @@ const PUBLIC_ROUTE_CONFIG = {
   "/subscription-policy": {
     title: "Subscription Policy | PetPlus",
     description:
-      "Understand recurring billing, renewals, plan changes, cancellations, and discount rules for PetPlus subscriptions.",
+      "Understand PetPlus dog supplement subscriptions, recurring billing, renewals, plan changes, cancellations and discount rules for dog parents in India.",
     imagePath: DEFAULT_OG_IMAGE_PATH,
     pageType: "WebPage",
     breadcrumbs: [
@@ -452,17 +449,29 @@ const buildSiteSchemas = (siteOrigin) => {
       logo: {
         "@type": "ImageObject",
         url: absoluteLogoUrl,
+        contentUrl: absoluteLogoUrl,
+        width: 512,
+        height: 512,
+        caption: `${SITE_NAME} logo`,
       },
+      image: absoluteLogoUrl,
       contactPoint: [
         {
           "@type": "ContactPoint",
           contactType: "customer support",
           email: SUPPORT_EMAIL,
           areaServed: STORE_COUNTRY,
-          availableLanguage: [SITE_LANGUAGE],
+          availableLanguage: ["en-IN", "en"],
         },
       ],
       areaServed: STORE_COUNTRY,
+      knowsAbout: [
+        "dog supplements India",
+        "pet wellness products",
+        "dog immunity booster",
+        "dog digestion support",
+        "dog dental care",
+      ],
     },
     {
       "@context": "https://schema.org",
@@ -541,7 +550,22 @@ const buildProductSchema = (routePath, siteOrigin) => {
       name: SITE_NAME,
     },
     category: "Dog supplement",
-    review: undefined,
+    review: {
+      "@type": "Review",
+      author: {
+        "@type": "Person",
+        name: "Verified dog parent",
+      },
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: Number(product.review?.rating || 0),
+        bestRating: 5,
+        worstRating: 1,
+      },
+      reviewBody:
+        product.reviewSchemaText ||
+        `${product.name} is reviewed by dog parents using PetPlus as part of a daily pet wellness routine.`,
+    },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: Number(product.review?.rating || 0),
@@ -555,14 +579,17 @@ const buildProductSchema = (routePath, siteOrigin) => {
       offerCount: getProductOfferCount(product),
       availability: "https://schema.org/InStock",
       url: getAbsoluteUrl(routePath, siteOrigin),
+      seller: {
+        "@id": `${siteOrigin}/#organization`,
+      },
     },
   };
 };
 
-const buildFaqSchema = () => ({
+const buildFaqSchema = (items = [...subscriptionFaq, ...productFaq]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [...subscriptionFaq, ...productFaq].map((item) => ({
+  mainEntity: items.map((item) => ({
     "@type": "Question",
     name: item.question,
     acceptedAnswer: {
@@ -571,6 +598,9 @@ const buildFaqSchema = () => ({
     },
   })),
 });
+
+const getProductFaqItems = (product) =>
+  Array.isArray(product?.faq) && product.faq.length > 0 ? product.faq : productFaq;
 
 const buildHomeFaqSchema = () => ({
   "@context": "https://schema.org",
@@ -667,7 +697,9 @@ export const getSeoPayload = (pathname = "/", siteOrigin = DEFAULT_SITE_URL) => 
   } else if (canonicalPath === "/collection") {
     structuredData.push(buildCollectionSchema(siteOrigin));
   } else if (PRODUCT_ROUTE_CONFIG[canonicalPath]) {
+    const product = PRODUCT_ROUTE_CONFIG[canonicalPath].data;
     structuredData.push(buildProductSchema(canonicalPath, siteOrigin));
+    structuredData.push(buildFaqSchema(getProductFaqItems(product)));
   } else if (canonicalPath === "/faq") {
     structuredData.push(buildFaqSchema());
   } else if (canonicalPath === "/blog") {

@@ -3,12 +3,14 @@ import { NavLink } from "react-router-dom";
 
 import "/public/Science/css/science.css";
 
-export default function ScienceHero() {
+export default function ScienceHero({ isolated = false }) {
+  const HeroHeading = isolated ? "h2" : "h1";
+
   return (
     <section className="science-hero">
       <div className="science-container science-banner">
         <span className="science-eyebrow">FOR DOGS YOU CALL FAMILY ❤️</span>
-        <h1 className="science-hero__title">Smarter Health for Your Dog, Powered by AI Intelligence</h1>
+        <HeroHeading className="science-hero__title">Smarter Health for Your Dog, Powered by AI Intelligence</HeroHeading>
         <p className="science-hero__text">
          We combine smart AI analysis with clinically trusted nutrition to understand your dog’s needs — and deliver a personalized health routine that actually works.
         </p>
