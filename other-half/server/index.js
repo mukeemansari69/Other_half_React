@@ -992,7 +992,7 @@ app.post(
 
 app.post(
   "/api/payments/create-order",
-  requireAuth,
+  optionalAuth,
   asyncHandler(async (req, res) => {
     const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
     const items = rawItems
@@ -1178,7 +1178,7 @@ app.post(
 
 app.post(
   "/api/payments/razorpay/verify-payment",
-  requireAuth,
+  optionalAuth,
   asyncHandler(async (req, res) => {
     const { keyId, keySecret, isConfigured } = getRazorpayConfig();
 

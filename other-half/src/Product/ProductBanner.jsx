@@ -413,6 +413,28 @@ const GuaranteeCard = ({ item }) => {
   );
 };
 
+const PurchaseTrustStrip = ({ product, selectedPlan, reviewCount }) => {
+  const planStockLabel =
+    selectedPlan?.badgeLabel === "Best Value" ? "Only 5 left at this price" : "Limited stock";
+
+  return (
+    <div className="grid gap-2 rounded-[22px] border border-[#DDE8D4] bg-[#F6FBF0] p-3 text-sm text-[#1A1A1A] sm:grid-cols-3">
+      <div className="flex items-center gap-2">
+        <BadgeCheck size={18} className="text-[#0F4A12]" />
+        <span className="font-semibold">{planStockLabel}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <Star size={18} className="fill-[#358248] text-[#358248]" />
+        <span>{reviewCount}+ reviews</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <ShieldCheck size={18} className="text-[#0F4A12]" />
+        <span>{product.guaranteeBadges?.[1]?.title || "Refund support"}</span>
+      </div>
+    </div>
+  );
+};
+
 const AccordionItem = ({ item, isOpen, onToggle }) => (
   <div className="overflow-hidden rounded-2xl bg-[#FAF9F5]">
     <button
@@ -744,6 +766,11 @@ const ProductBanner = ({
     isSubscribed && activeSuggestion?.compareAtPrice
       ? Number(activeSuggestion.compareAtPrice || 0)
       : null;
+  const primaryCtaLabel = isOutOfStock
+    ? "Currently Out of Stock"
+    : isInCart
+      ? "Go to Cart"
+      : `${product.cta.addToCartLabel} | ${formatCurrency(totalPrice)}`;
 
   const handleSizeChange = (sizeId) => {
     const nextSize = product.sizes.find((size) => size.id === sizeId);
@@ -796,15 +823,6 @@ const ProductBanner = ({
       return;
     }
 
-    if (!skipAuthCheck && !authToken) {
-      setCheckoutStatus({
-        type: "error",
-        message: "Please login first to continue with Razorpay payment.",
-      });
-      setShowLoginDrawer(true);
-      return;
-    }
-
     if (!isDeliveryAddressComplete(authUser?.deliveryAddress)) {
       if (!hasItem(cartVariantId)) {
         addItem(checkoutLineItem);
@@ -813,7 +831,9 @@ const ProductBanner = ({
       navigate("/cart", {
         state: {
           needsAddress: true,
-          message: "Please add your delivery address in cart before completing checkout.",
+          message: authToken
+            ? "Please add your delivery address before payment."
+            : "Guest checkout is ready. Add your delivery address, then continue to payment.",
         },
       });
       return;
@@ -970,6 +990,12 @@ const ProductBanner = ({
                   ) : null}
                 </div>
               ) : null}
+
+              <PurchaseTrustStrip
+                product={product}
+                selectedPlan={selectedPlan}
+                reviewCount={product.review.count}
+              />
 
               <div className="flex flex-wrap gap-2">
                 {visibleTags.map((tag) => (
@@ -1236,7 +1262,7 @@ const ProductBanner = ({
                           : "Adding to cart..."
                     }
                     disabled={isOutOfStock}
-                    className={`product-banner-cta flex w-full items-center justify-center rounded-full px-5 py-4 text-center text-lg font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)] sm:text-2xl 
+                    className={`product-banner-cta flex min-h-[56px] w-full items-center justify-center rounded-full px-5 py-4 text-center text-lg font-bold leading-6 text-white shadow-[0_16px_36px_rgba(232,117,76,0.24)] sm:text-2xl 
     ${
       isOutOfStock
         ? "bg-[#B8B0A1]"
@@ -1245,11 +1271,7 @@ const ProductBanner = ({
           : "bg-[#E8754C]"
     }`}
                   >
-                    {isOutOfStock
-                      ? "Currently Out of Stock"
-                      : isInCart
-                        ? "Go to Cart"
-                        : `${product.cta.addToCartLabel} | ${formatCurrency(totalPrice)}`}
+                    {primaryCtaLabel}
                   </LoadingButton>
                   {isOutOfStock ? (
                     <div className="space-y-4 rounded-[24px] border border-[#F0D6C9] bg-[#FFF8F4] p-4">
@@ -1347,11 +1369,17 @@ const ProductBanner = ({
                       loading={checkingOut}
                       loadingText={`Opening ${PAYMENT_PROVIDER}...`}
                       disabled={checkingOut}
-                      className="product-banner-cta flex w-full items-center justify-center rounded-full bg-[#4E3CE2] px-5 py-4 text-center text-base font-semibold leading-6 text-white shadow-[0_1px_2px_0_rgba(105,81,255,0.05)]"
+                      className="product-banner-cta flex min-h-[52px] w-full items-center justify-center rounded-full bg-[#111827] px-5 py-4 text-center text-base font-bold leading-6 text-white shadow-[0_16px_36px_rgba(17,24,39,0.2)]"
                     >
                       {product.cta.shopPayLabel}
                     </LoadingButton>
                   )}
+
+                  <div className="grid gap-2 rounded-[22px] bg-[#FBF8EF] p-4 text-xs leading-5 text-[#5F5B4F] sm:grid-cols-3">
+                    <span>Secure {PAYMENT_PROVIDER} payment</span>
+                    <span>Guest checkout available</span>
+                    <span>Refund policy support</span>
+                  </div>
 
                   {checkoutStatus.message ? (
                     <div
@@ -1465,9 +1493,67 @@ const ProductBanner = ({
             </div>
 
             <ProductSeoGuide product={product} />
+
+            {!isOutOfStock ? (
+              <div className="rounded-[28px] border border-[#E4D7C8] bg-[#FFFDF2] p-5">
+                <h2 className="text-xl font-semibold text-[#1A1A1A]">
+                  Ready to start this routine?
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-[#5F5B4F]">
+                  Your selected {selectedSize.name} plan is ready. Finish in three simple steps: address, review, and payment.
+                </p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <LoadingButton
+                    type="button"
+                    onClick={() =>
+                      isInCart
+                        ? navigate(product.cta.cartHref || "/cart")
+                        : handleAddToCart("details-repeat")
+                    }
+                    lockOnClick
+                    loadingText={isInCart ? "Opening cart..." : "Adding..."}
+                    className="product-banner-cta flex min-h-[52px] items-center justify-center rounded-full bg-[#E8754C] px-5 py-4 text-center text-base font-bold text-white"
+                  >
+                    {primaryCtaLabel}
+                  </LoadingButton>
+                  <LoadingButton
+                    type="button"
+                    onClick={() => {
+                      void handleDirectCheckout();
+                    }}
+                    loading={checkingOut}
+                    loadingText={`Opening ${PAYMENT_PROVIDER}...`}
+                    className="product-banner-cta flex min-h-[52px] items-center justify-center rounded-full bg-[#111827] px-5 py-4 text-center text-base font-bold text-white"
+                  >
+                    Buy Now
+                  </LoadingButton>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
+      {!isOutOfStock ? (
+        <div className="product-banner-mobile-sticky md:hidden">
+          <div>
+            <p className="text-xs font-semibold text-[#5F5B4F]">Total</p>
+            <p className="text-base font-bold text-[#1A1A1A]">
+              {formatCurrency(totalPrice)}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              isInCart
+                ? navigate(product.cta.cartHref || "/cart")
+                : handleAddToCart("mobile-sticky")
+            }
+            className="min-h-[48px] rounded-full bg-[#E8754C] px-5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(232,117,76,0.26)]"
+          >
+            {isInCart ? "Go to Cart" : "Add to Cart"}
+          </button>
+        </div>
+      ) : null}
       <CheckoutLoginDrawer
         isOpen={showLoginDrawer}
         onClose={() => setShowLoginDrawer(false)}
@@ -1484,7 +1570,7 @@ const ProductBanner = ({
           });
         }}
         title="Please login"
-        message="Razorpay payment on the product page is available only after sign in."
+        message="You can continue as a guest from cart, or login if you want this order saved to your account."
       />
     </section>
   );

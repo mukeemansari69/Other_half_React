@@ -9,6 +9,7 @@ const DeliveryAddressFields = ({
   onChange,
   disabled = false,
   showAddressType = true,
+  showOptionalFields = true,
   className = "",
 }) => {
   const renderError = (fieldName) =>
@@ -69,29 +70,33 @@ const DeliveryAddressFields = ({
         {renderError("line1")}
       </label>
 
-      <label className="block">
-        <span className="text-sm font-medium text-[#353126]">Address line 2</span>
-        <input
-          type="text"
-          value={address.line2 || ""}
-          onChange={(event) => onChange("line2", event.target.value)}
-          disabled={disabled}
-          className={inputClassName}
-        />
-        {renderError("line2")}
-      </label>
+      {showOptionalFields ? (
+        <>
+          <label className="block">
+            <span className="text-sm font-medium text-[#353126]">Address line 2</span>
+            <input
+              type="text"
+              value={address.line2 || ""}
+              onChange={(event) => onChange("line2", event.target.value)}
+              disabled={disabled}
+              className={inputClassName}
+            />
+            {renderError("line2")}
+          </label>
 
-      <label className="block">
-        <span className="text-sm font-medium text-[#353126]">Landmark</span>
-        <input
-          type="text"
-          value={address.landmark || ""}
-          onChange={(event) => onChange("landmark", event.target.value)}
-          disabled={disabled}
-          className={inputClassName}
-        />
-        {renderError("landmark")}
-      </label>
+          <label className="block">
+            <span className="text-sm font-medium text-[#353126]">Landmark</span>
+            <input
+              type="text"
+              value={address.landmark || ""}
+              onChange={(event) => onChange("landmark", event.target.value)}
+              disabled={disabled}
+              className={inputClassName}
+            />
+            {renderError("landmark")}
+          </label>
+        </>
+      ) : null}
 
       <label className="block">
         <span className="text-sm font-medium text-[#353126]">City</span>

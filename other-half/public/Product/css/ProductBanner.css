@@ -195,6 +195,23 @@
   transform: translateY(-1px);
 }
 
+.product-banner-mobile-sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid rgba(15, 74, 18, 0.12);
+  background: rgba(255, 255, 255, 0.96);
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  box-shadow: 0 -18px 44px rgba(34, 30, 18, 0.12);
+  backdrop-filter: blur(16px);
+}
+
 .product-banner-cta:focus-visible,
 .product-banner-thumb:focus-visible,
 .product-banner-size-card:focus-visible,
@@ -285,6 +302,10 @@
 }
 
 @media (max-width: 767px) {
+  .product-banner-root {
+    padding-bottom: 5.25rem;
+  }
+
   .product-banner-main-media {
     border-radius: 1.25rem;
   }
@@ -296,6 +317,10 @@
   .product-banner-highlight-icon {
     width: 2.35rem;
     height: 2.35rem;
+  }
+
+  .product-banner-benefit-pill {
+    border-radius: 1.25rem;
   }
 }
 @media (max-width :480px){

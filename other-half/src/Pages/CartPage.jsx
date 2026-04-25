@@ -119,15 +119,6 @@ const CartPage = () => {
       return;
     }
 
-    if (!skipAuthCheck && !authToken) {
-      setStatus({
-        type: "error",
-        message: "Please login first to continue with Razorpay checkout.",
-      });
-      setShowLoginDrawer(true);
-      return;
-    }
-
     const resolvedDeliveryAddress = isDeliveryAddressComplete(deliveryAddress)
       ? normalizeDeliveryAddress(deliveryAddress)
       : normalizeDeliveryAddress(authUser?.deliveryAddress);
@@ -300,6 +291,8 @@ const CartPage = () => {
                 address={deliveryAddress}
                 errors={addressErrors}
                 onChange={handleAddressFieldChange}
+                showAddressType={false}
+                showOptionalFields={false}
                 className="mt-5"
               />
             </section>
@@ -380,6 +373,26 @@ const CartPage = () => {
           </p>
           <h2 className="mt-2 text-3xl font-semibold text-[#1A1A1A]">Checkout</h2>
 
+          <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-[#5F5B4F]">
+            {[
+              ["1", "Address"],
+              ["2", "Review"],
+              ["3", PAYMENT_PROVIDER],
+            ].map(([step, label], index) => (
+              <div
+                key={step}
+                className={`rounded-2xl border px-2 py-3 ${
+                  index === 2
+                    ? "border-[#0F4A12] bg-[#0F4A12] text-white"
+                    : "border-[#E6DFCF] bg-[#FBF8EF]"
+                }`}
+              >
+                <span className="block text-sm">{step}</span>
+                {label}
+              </div>
+            ))}
+          </div>
+
           <div className="mt-6 space-y-3 text-sm text-[#5F5B4F]">
             <div className="flex items-center justify-between">
               <span>Subtotal</span>
@@ -408,7 +421,7 @@ const CartPage = () => {
             loading={checkingOut}
             loadingText={`Opening ${PAYMENT_PROVIDER}...`}
             disabled={checkingOut}
-            className="mt-6 w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-6 min-h-[52px] w-full rounded-full bg-[#0F4A12] px-6 py-4 text-base font-bold text-white shadow-[0_16px_36px_rgba(15,74,18,0.22)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {`Proceed to ${PAYMENT_PROVIDER} checkout`}
           </LoadingButton>
@@ -427,7 +440,7 @@ const CartPage = () => {
 
           <div className="mt-4 rounded-2xl bg-[#FBF8EF] px-4 py-4 text-xs leading-5 text-[#7A7468]">
             <p>
-              Secure payment powered by {PAYMENT_PROVIDER}. {getShippingRuleText()}
+              Guest checkout is available. Secure payment powered by {PAYMENT_PROVIDER}. {getShippingRuleText()}
             </p>
             <p className="mt-2">
               Orders above {formatStoreCurrency(SHIPPING_THRESHOLD)} ship free.
@@ -453,7 +466,7 @@ const CartPage = () => {
           });
         }}
         title="Please login"
-        message="Razorpay checkout is available only for logged-in users."
+        message="You can continue as a guest, or login if you want this order saved to your account."
       />
     </main>
   );
