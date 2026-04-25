@@ -4,6 +4,13 @@ const UNREACHABLE_SERVER_MESSAGE =
 let resolvedApiBaseUrl = "";
 
 const normalizeBaseUrl = (value = "") => value.trim().replace(/\/$/, "");
+const isBrowserSecureContext = () =>
+  typeof window !== "undefined" && window.location.protocol === "https:";
+const isLocalHost = (hostname = "") => ["localhost", "127.0.0.1"].includes(hostname);
+const canUseInsecureLocalApi = (hostname = "") =>
+  typeof window !== "undefined" &&
+  !isBrowserSecureContext() &&
+  (isLocalHost(window.location.hostname) || isLocalHost(hostname));
 
 const isLikelyHtmlResponse = (payload) => {
   return (
@@ -25,7 +32,10 @@ export const getApiBaseCandidates = () => {
   };
 
   addCandidate("/api");
-  addCandidate(import.meta.env.VITE_API_BASE_URL || "");
+  const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";
+  if (!isBrowserSecureContext() || !configuredApiBaseUrl.startsWith("http://")) {
+    addCandidate(configuredApiBaseUrl);
+  }
 
   if (typeof window !== "undefined") {
     const { hostname, protocol } = window.location;
@@ -34,12 +44,16 @@ export const getApiBaseCandidates = () => {
 
     if (hostname) {
       addCandidate(`${browserProtocol}//${hostname}:4000/api`);
-      addCandidate(`http://${hostname}:4000/api`);
+      if (canUseInsecureLocalApi(hostname)) {
+        addCandidate(`http://${hostname}:4000/api`);
+      }
     }
 
     localHosts.forEach((host) => {
       addCandidate(`${browserProtocol}//${host}:4000/api`);
-      addCandidate(`http://${host}:4000/api`);
+      if (canUseInsecureLocalApi(host)) {
+        addCandidate(`http://${host}:4000/api`);
+      }
     });
   }
 

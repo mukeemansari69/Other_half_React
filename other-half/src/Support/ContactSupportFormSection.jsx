@@ -19,6 +19,8 @@ const MAX_FILE_COUNT = 5;
 const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024;
 const emailPattern = /\S+@\S+\.\S+/;
 const phonePattern = /^[+]?[\d\s\-()]{7,}$/;
+const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "";
+const RECAPTCHA_ACTION = "support_request";
 
 const buildInitialFormState = (user = null) => ({
   team: "support",
@@ -32,6 +34,7 @@ const buildInitialFormState = (user = null) => ({
   priority: "standard",
   preferredContact: "email",
   message: "",
+  website: "",
   consent: false,
 });
 
@@ -174,6 +177,21 @@ const createMailtoUrl = ({ recipient, subject, formState, files }) => {
   )}`;
 };
 
+const getRecaptchaToken = () => {
+  if (!recaptchaSiteKey || typeof window === "undefined" || !window.grecaptcha) {
+    return Promise.resolve("");
+  }
+
+  return new Promise((resolve) => {
+    window.grecaptcha.ready(() => {
+      window.grecaptcha
+        .execute(recaptchaSiteKey, { action: RECAPTCHA_ACTION })
+        .then(resolve)
+        .catch(() => resolve(""));
+    });
+  });
+};
+
 const ContactSupportFormSection = () => {
   const { token, user } = useAuth();
   const [formState, setFormState] = useState(() => buildInitialFormState(user));
@@ -212,6 +230,27 @@ const ContactSupportFormSection = () => {
       dogName: currentState.dogName || user.subscription?.dogProfile?.name || "",
     }));
   }, [user]);
+
+  useEffect(() => {
+    if (!recaptchaSiteKey || typeof document === "undefined") {
+      return;
+    }
+
+    const existingScript = document.querySelector("script[data-recaptcha-v3='true']");
+
+    if (existingScript) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(
+      recaptchaSiteKey
+    )}`;
+    script.async = true;
+    script.defer = true;
+    script.dataset.recaptchaV3 = "true";
+    document.head.appendChild(script);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -311,6 +350,7 @@ const ContactSupportFormSection = () => {
 
     try {
       const payload = new FormData();
+      const recaptchaToken = await getRecaptchaToken();
       payload.append("team", selectedTeam.label);
       payload.append("teamEmail", selectedTeam.email);
       payload.append("name", formState.name.trim());
@@ -323,6 +363,8 @@ const ContactSupportFormSection = () => {
       payload.append("priority", formState.priority);
       payload.append("preferredContact", formState.preferredContact);
       payload.append("message", formState.message.trim());
+      payload.append("website", formState.website.trim());
+      payload.append("recaptchaToken", recaptchaToken);
       attachments.forEach((file) => {
         payload.append("attachments", file);
       });
@@ -427,6 +469,18 @@ const ContactSupportFormSection = () => {
         </div>
 
         <form className="support-contact-form" onSubmit={handleSubmit}>
+          <label className="support-field" style={{ display: "none" }} aria-hidden="true">
+            <span className="support-field__label">Website</span>
+            <input
+              type="text"
+              value={formState.website}
+              onChange={(event) => updateField("website", event.target.value)}
+              className="support-field__control"
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </label>
+
           <div className="grid support-contact-form__grid">
             <label className={`support-field ${visibleErrors.name ? "support-field--error" : ""}`}>
               <span className="support-field__label">Full name</span>

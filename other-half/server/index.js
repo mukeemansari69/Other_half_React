@@ -61,6 +61,7 @@ import {
   getRobotsDirectiveForPath,
   isKnownRoute,
 } from "../shared/seo.js";
+import { securityHeaderValues } from "../shared/securityHeaders.js";
 import {
   hasCompleteDeliveryAddress,
   normalizeDeliveryAddress,
@@ -119,10 +120,58 @@ const allowedSupportCategories = new Set([
 ]);
 const allowedSupportPriorities = new Set(["low", "standard", "priority", "urgent"]);
 const allowedSupportContactMethods = new Set(["email", "phone"]);
+const RECAPTCHA_VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify";
+const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY?.trim() || "";
+const recaptchaMinimumScore = Number(process.env.RECAPTCHA_MINIMUM_SCORE || 0.5);
 
 const sanitizeSupportChoice = (value, allowedValues, fallback) => {
   const normalizedValue = String(value ?? "").trim().toLowerCase();
   return allowedValues.has(normalizedValue) ? normalizedValue : fallback;
+};
+
+const verifyRecaptchaToken = async (token, expectedAction) => {
+  if (!recaptchaSecretKey) {
+    return {
+      checked: false,
+      passed: true,
+      reason: "reCAPTCHA is not configured.",
+    };
+  }
+
+  if (!token) {
+    return {
+      checked: true,
+      passed: false,
+      reason: "Missing reCAPTCHA token.",
+    };
+  }
+
+  const params = new URLSearchParams({
+    secret: recaptchaSecretKey,
+    response: token,
+  });
+  const response = await fetch(RECAPTCHA_VERIFY_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: params,
+  });
+  const payload = await response.json();
+  const score = Number(payload.score ?? 0);
+  const actionMatches = !expectedAction || payload.action === expectedAction;
+  const passed =
+    Boolean(payload.success) &&
+    actionMatches &&
+    (!Number.isFinite(recaptchaMinimumScore) || score >= recaptchaMinimumScore);
+
+  return {
+    checked: true,
+    passed,
+    score,
+    action: payload.action || "",
+    reason: passed ? "" : "Spam protection could not verify this request.",
+  };
 };
 
 const apiLimiter = rateLimit({
@@ -861,10 +910,68 @@ app.use(createRequestLogger());
 app.use(compression());
 app.use(
   helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'self'"],
+        formAction: ["'self'"],
+        upgradeInsecureRequests: [],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://checkout.razorpay.com",
+          "https://www.google.com/recaptcha/",
+          "https://www.gstatic.com/recaptcha/",
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://www.pet-plus.co.in",
+          "https://pet-plus.co.in",
+          "https://images.unsplash.com",
+        ],
+        mediaSrc: ["'self'", "blob:", "https://www.pexels.com", "https://*.pexels.com"],
+        connectSrc: [
+          "'self'",
+          "https://www.pet-plus.co.in",
+          "https://pet-plus.co.in",
+          "https://api.razorpay.com",
+          "https://www.google.com/recaptcha/",
+        ],
+        frameSrc: [
+          "'self'",
+          "https://api.razorpay.com",
+          "https://checkout.razorpay.com",
+          "https://www.google.com/recaptcha/",
+        ],
+      },
+    },
     crossOriginEmbedderPolicy: false,
+    referrerPolicy: {
+      policy: securityHeaderValues.referrerPolicy,
+    },
+    frameguard: {
+      action: "sameorigin",
+    },
   })
 );
+app.use((req, res, next) => {
+  if (
+    isProduction &&
+    req.headers["x-forwarded-proto"] &&
+    String(req.headers["x-forwarded-proto"]).split(",")[0].trim() !== "https"
+  ) {
+    return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);
+  }
+
+  res.setHeader("Permissions-Policy", securityHeaderValues.permissionsPolicy);
+  next();
+});
 app.use(
   cors({
     origin(origin, callback) {
@@ -1796,6 +1903,28 @@ app.post(
   supportLimiter,
   supportUpload.array("attachments", 5),
   asyncHandler(async (req, res) => {
+    if (String(req.body.website || "").trim()) {
+      return res.status(400).json({
+        message: "The request could not be verified. Please refresh the page and try again.",
+      });
+    }
+
+    const recaptchaResult = await verifyRecaptchaToken(
+      String(req.body.recaptchaToken || "").trim(),
+      "support_request"
+    );
+
+    if (!recaptchaResult.passed) {
+      logWarn("support.recaptcha_failed", {
+        score: recaptchaResult.score,
+        action: recaptchaResult.action,
+      });
+
+      return res.status(400).json({
+        message: recaptchaResult.reason,
+      });
+    }
+
     const name = sanitizeTextInput(req.body.name, {
       fieldLabel: "Name",
       required: true,
