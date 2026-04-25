@@ -56,10 +56,10 @@ const defaultProductBannerData = {
   name: "45 in 1 Everyday Daily Multivitamin",
   review: { rating: 4.5, count: 50, href: "#reviews" },
   gallery: [
-    { id: "gallery-1", src: "/Product/images/Productimage.png", alt: "Product image 1" },
-    { id: "gallery-2", src: "/Home/images/EverydayProduct.png", alt: "Product image 2" },
-    { id: "gallery-3", src: "/Product/images/Productimage.png", alt: "Product image 3" },
-    { id: "gallery-4", src: "/Home/images/EverydayProduct.png", alt: "Product image 4" },
+    { id: "gallery-1", src: "/Product/images/Productimage.webp", alt: "Product image 1" },
+    { id: "gallery-2", src: "/Home/images/EverydayProduct.webp", alt: "Product image 2" },
+    { id: "gallery-3", src: "/Product/images/Productimage.webp", alt: "Product image 3" },
+    { id: "gallery-4", src: "/Home/images/EverydayProduct.webp", alt: "Product image 4" },
   ],
   qualityHighlights: [
     {
@@ -89,37 +89,37 @@ const defaultProductBannerData = {
   benefits: [
     {
       id: "mobility",
-      icon: "/Product/images/icon1.png",
+      icon: "/Product/images/icon1.webp",
       text: "Enhance Joint Mobility",
     },
     {
       id: "immunity",
-      icon: "/Product/images/immunity (1) 1.png",
+      icon: "/Product/images/immunity (1) 1.webp",
       text: "Immunity Boost",
     },
     {
       id: "allergies",
-      icon: "/Product/images/love 1.png",
+      icon: "/Product/images/love 1.webp",
       text: "Soothe Allergies",
     },
     {
       id: "coat",
-      icon: "/Product/images/allergies 1.png",
+      icon: "/Product/images/allergies 1.webp",
       text: "Nourish Skin & Coat",
     },
     {
       id: "digestion",
-      icon: "/Product/images/stomach 1.png",
+      icon: "/Product/images/stomach 1.webp",
       text: "Better Digestion",
     },
-    { id: "aging", icon: "/Product/images/dog 1.png", text: "Healthy Aging" },
+    { id: "aging", icon: "/Product/images/dog 1.webp", text: "Healthy Aging" },
   ],
   sizes: [
     {
       id: "small",
       name: "Small",
       weight: "0-25 lbs",
-      icon: "/Product/images/d1.png",
+      icon: "/Product/images/d1.webp",
       plans: [
         {
           id: "2m",
@@ -153,7 +153,7 @@ const defaultProductBannerData = {
       id: "medium",
       name: "Medium",
       weight: "25-75 lbs",
-      icon: "/Product/images/d2.png",
+      icon: "/Product/images/d2.webp",
       plans: [
         {
           id: "2m",
@@ -187,7 +187,7 @@ const defaultProductBannerData = {
       id: "large",
       name: "Large",
       weight: "75-100 lbs",
-      icon: "/Product/images/d3.png",
+      icon: "/Product/images/d3.webp",
       plans: [
         {
           id: "2m",
@@ -221,7 +221,7 @@ const defaultProductBannerData = {
       id: "xl",
       name: "XL",
       weight: "101+ lbs",
-      icon: "/Product/images/d4.png",
+      icon: "/Product/images/d4.webp",
       plans: [
         {
           id: "2m",
@@ -277,7 +277,7 @@ const defaultProductBannerData = {
   bundleSuggestions: [
     {
       id: "daily-duo",
-      image: "/Product/images/p1.png",
+      image: "/Product/images/p1.webp",
       title: "Upgrade to the Daily Duo",
       subtitle: "Delivered Every Two Month",
       compareAtPrice: 79.98,
@@ -286,7 +286,7 @@ const defaultProductBannerData = {
     },
     {
       id: "mobility-duo",
-      image: "/Product/images/p1.png",
+      image: "/Product/images/p1.webp",
       title: "Build the Mobility Duo",
       subtitle: "Support joints plus daily wellness",
       compareAtPrice: 86.98,
@@ -295,7 +295,7 @@ const defaultProductBannerData = {
     },
     {
       id: "immunity-pair",
-      image: "/Product/images/p1.png",
+      image: "/Product/images/p1.webp",
       title: "Add the Immunity Pair",
       subtitle: "Daily support with extra immune love",
       compareAtPrice: 84.98,

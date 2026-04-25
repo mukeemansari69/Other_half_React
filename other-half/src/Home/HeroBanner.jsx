@@ -1,13 +1,14 @@
-import { useRef, useState } from "react";
+import { Suspense, lazy, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { A11y, Autoplay } from "swiper/modules";
 
-import ClinicalHero from "../Clinical/ClinicalHero";
 import HomeHeroSection from "./HomeHeroSection";
-import ScienceHero from "../Science/ScienceHero";
 
 import "swiper/css";
 import "/public/Home/css/heroBanner.css";
+
+const ClinicalHero = lazy(() => import("../Clinical/ClinicalHero"));
+const ScienceHero = lazy(() => import("../Science/ScienceHero"));
 
 const heroSlides = [
   {
@@ -71,7 +72,7 @@ export default function HeroBanner() {
           {heroSlides.map((slide) => (
             <SwiperSlide key={slide.id}>
               <div className="home-hero-slider__slide">
-                {slide.render()}
+                <Suspense fallback={null}>{slide.render()}</Suspense>
               </div>
             </SwiperSlide>
           ))}

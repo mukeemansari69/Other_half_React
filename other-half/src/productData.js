@@ -275,10 +275,10 @@ export const everydayProductData = {
   },
 
   gallery: [
-    { id: "g1", src: "/Home/images/everyday.png", alt: "Front View" },
-    { id: "g2", src: "/Product/images/p1.png", alt: "Back View" },
-    { id: "g3", src: "/Home/images/everyday.png", alt: "Usage" },
-    { id: "g4", src: "/Home/images/everyday.png", alt: "Ingredients" },
+    { id: "g1", src: "/Home/images/everyday.webp", alt: "Front View" },
+    { id: "g2", src: "/Product/images/p1.webp", alt: "Back View" },
+    { id: "g3", src: "/Home/images/everyday.webp", alt: "Usage" },
+    { id: "g4", src: "/Home/images/everyday.webp", alt: "Ingredients" },
   ],
 
   qualityHighlights: [
@@ -316,32 +316,32 @@ export const everydayProductData = {
   benefits: [
     {
       id: "mobility",
-      icon: "/Product/images/icon1.png",
+      icon: "/Product/images/icon1.webp",
       text: "Joint Mobility Support",
     },
     {
       id: "immunity",
-      icon: "/Product/images/immunity (1) 1.png",
+      icon: "/Product/images/immunity (1) 1.webp",
       text: "Stronger Immunity",
     },
     {
       id: "allergies",
-      icon: "/Product/images/allergies 1.png",
+      icon: "/Product/images/allergies 1.webp",
       text: "Allergy Relief",
     },
     {
       id: "coat",
-      icon: "/Product/images/pl.jpg",
+      icon: "/Product/images/pl.webp",
       text: "Healthy Skin & Coat",
     },
     {
       id: "digestion",
-      icon: "/Product/images/stomach 1.png",
+      icon: "/Product/images/stomach 1.webp",
       text: "Better Digestion",
     },
     {
       id: "aging",
-      icon: "/Product/images/love 1.png",
+      icon: "/Product/images/love 1.webp",
       text: "Supports Healthy Aging",
     },
   ],
@@ -350,7 +350,7 @@ export const everydayProductData = {
       id: "small",
       name: "Small",
       weight: "0-25 lbs",
-      icon: "/Product/images/d1.png",
+      icon: "/Product/images/d1.webp",
       plans: [
         {
           id: "2m",
@@ -384,7 +384,7 @@ export const everydayProductData = {
       id: "medium",
       name: "Medium",
       weight: "25-75 lbs",
-      icon: "/Product/images/d2.png",
+      icon: "/Product/images/d2.webp",
       plans: [
         {
           id: "2m",
@@ -418,7 +418,7 @@ export const everydayProductData = {
       id: "large",
       name: "Large",
       weight: "75-100 lbs",
-      icon: "/Product/images/d3.png",
+      icon: "/Product/images/d3.webp",
       plans: [
         {
           id: "2m",
@@ -452,7 +452,7 @@ export const everydayProductData = {
       id: "xl",
       name: "XL",
       weight: "101+ lbs",
-      icon: "/Product/images/d4.png",
+      icon: "/Product/images/d4.webp",
       plans: [
         {
           id: "2m",
@@ -520,7 +520,7 @@ export const everydayProductData = {
   bundleSuggestions: [
     {
       id: "daily-duo",
-      image: "/Product/images/multi.png",
+      image: "/Product/images/multi.webp",
       title: "Daily Duo Pack",
       subtitle: "Multivitamin + Immunity Boost",
       compareAtPrice: 89.99,
@@ -529,7 +529,7 @@ export const everydayProductData = {
     },
     {
       id: "mobility-pack",
-      image: "/Default/images/col1.png",
+      image: "/Default/images/col1.webp",
       title: "Mobility Pack",
       subtitle: "Joint + Bone Support",
       compareAtPrice: 84.99,
@@ -588,10 +588,10 @@ export const dogDentalProductData = {
   },
 
   gallery: [
-    { id: "g1", src: "/Product/images/dogi-dental-powder.png", alt: "Dental Powder" },
-    { id: "g2", src: "/Product/images/before.png", alt: "Before After" },
-    { id: "g3", src: "/Product/images/dogi-dental-powder.png", alt: "Usage" },
-    { id: "g4", src: "/Product/images/before.png", alt: "Ingredients" },
+    { id: "g1", src: "/Product/images/dogi-dental-powder.webp", alt: "Dental Powder" },
+    { id: "g2", src: "/Product/images/before.webp", alt: "Before After" },
+    { id: "g3", src: "/Product/images/dogi-dental-powder.webp", alt: "Usage" },
+    { id: "g4", src: "/Product/images/before.webp", alt: "Ingredients" },
   ],
 
   qualityHighlights: [
@@ -629,32 +629,32 @@ export const dogDentalProductData = {
   benefits: [
     {
       id: "breath",
-      icon: "/Product/images/f.png",
+      icon: "/Product/images/f.webp",
       text: "Freshens Bad Breath",
     },
     {
       id: "plaque",
-      icon: "/Product/images/pl.jpg",
+      icon: "/Product/images/pl.webp",
       text: "Reduces Plaque Build-up",
     },
     {
       id: "tartar",
-      icon: "/Product/images/dog 1.png",
+      icon: "/Product/images/dog 1.webp",
       text: "Prevents Tartar",
     },
     {
       id: "gums",
-      icon: "/Product/images/allergies 1.png",
+      icon: "/Product/images/allergies 1.webp",
       text: "Supports Healthy Gums",
     },
     {
       id: "microbiome",
-      icon: "/Product/images/love 1.png",
+      icon: "/Product/images/love 1.webp",
       text: "Improves Oral Microbiome",
     },
     {
       id: "easy",
-      icon: "/Product/images/f.png",
+      icon: "/Product/images/f.webp",
       text: "No Brushing Needed",
     },
   ],
@@ -664,7 +664,7 @@ export const dogDentalProductData = {
     id: "small",
     name: "Small",
     weight: "0-25 lbs",
-    icon: "/Product/images/d1.png",
+    icon: "/Product/images/d1.webp",
     plans: [
       {
         id: "1m",
@@ -699,7 +699,7 @@ export const dogDentalProductData = {
     id: "medium",
     name: "Medium",
     weight: "25-75 lbs",
-    icon: "/Product/images/d2.png",
+    icon: "/Product/images/d2.webp",
     plans: [
       {
         id: "1m",
@@ -734,7 +734,7 @@ export const dogDentalProductData = {
     id: "large",
     name: "Large",
     weight: "75-100 lbs",
-    icon: "/Product/images/d3.png",
+    icon: "/Product/images/d3.webp",
     plans: [
       {
         id: "1m",
@@ -769,7 +769,7 @@ export const dogDentalProductData = {
     id: "xl",
     name: "XL",
     weight: "101+ lbs",
-    icon: "/Product/images/d4.png",
+    icon: "/Product/images/d4.webp",
     plans: [
       {
         id: "1m",
@@ -837,7 +837,7 @@ export const dogDentalProductData = {
   bundleSuggestions: [
     {
       id: "dental-duo",
-      image: "/Product/images/multi.png",
+      image: "/Product/images/multi.webp",
       title: "Dental Duo Pack",
       subtitle: "2x Dental Powder for long-term care",
       compareAtPrice: 69.98,
@@ -846,7 +846,7 @@ export const dogDentalProductData = {
     },
     {
       id: "complete-care",
-      image: "/Product/images/dogi-dental-powder.png",
+      image: "/Product/images/dogi-dental-powder.webp",
       title: "Complete Oral Care",
       subtitle: "Dental Powder + Multivitamin",
       compareAtPrice: 94.99,
@@ -905,10 +905,10 @@ export const dailyDuoProductData = {
   },
 
   gallery: [
-    { id: "g1", src: "/Product/images/multi.png", alt: "Daily Duo Front" },
-    { id: "g2", src: "/Product/images/dogi-dental-powder.png", alt: "Products Together" },
-    { id: "g3", src: "/Product/images/p1.png", alt: "Usage" },
-    { id: "g4", src: "/Product/images/before.png", alt: "Benefits" },
+    { id: "g1", src: "/Product/images/multi.webp", alt: "Daily Duo Front" },
+    { id: "g2", src: "/Product/images/dogi-dental-powder.webp", alt: "Products Together" },
+    { id: "g3", src: "/Product/images/p1.webp", alt: "Usage" },
+    { id: "g4", src: "/Product/images/before.webp", alt: "Benefits" },
   ],
 
   qualityHighlights: [
@@ -945,32 +945,32 @@ export const dailyDuoProductData = {
   benefits: [
     {
       id: "health",
-      icon: "/Product/images/icon1.png",
+      icon: "/Product/images/icon1.webp",
       text: "Complete Health Support",
     },
     {
       id: "dental",
-      icon: "/Product/images/pl.jpg",
+      icon: "/Product/images/pl.webp",
       text: "Cleaner Teeth & Breath",
     },
     {
       id: "immunity",
-      icon: "/Product/images/immunity (1) 1.png",
+      icon: "/Product/images/immunity (1) 1.webp",
       text: "Stronger Immunity",
     },
     {
       id: "gut",
-      icon: "/Product/images/stomach 1.png",
+      icon: "/Product/images/stomach 1.webp",
       text: "Improved Digestion",
     },
     {
       id: "coat",
-      icon: "/Product/images/allergies 1.png",
+      icon: "/Product/images/allergies 1.webp",
       text: "Healthy Skin & Coat",
     },
     {
       id: "easy",
-      icon: "/Product/images/love 1.png",
+      icon: "/Product/images/love 1.webp",
       text: "Simple Daily Routine",
     },
   ],
@@ -980,7 +980,7 @@ export const dailyDuoProductData = {
     id: "small",
     name: "Small",
     weight: "0-25 lbs",
-    icon: "/Product/images/d1.png",
+    icon: "/Product/images/d1.webp",
     plans: [
       {
         id: "1m",
@@ -1015,7 +1015,7 @@ export const dailyDuoProductData = {
     id: "medium",
     name: "Medium",
     weight: "25-75 lbs",
-    icon: "/Product/images/d2.png",
+    icon: "/Product/images/d2.webp",
     plans: [
       {
         id: "1m",
@@ -1050,7 +1050,7 @@ export const dailyDuoProductData = {
     id: "large",
     name: "Large",
     weight: "75-100 lbs",
-    icon: "/Product/images/d3.png",
+    icon: "/Product/images/d3.webp",
     plans: [
       {
         id: "1m",
@@ -1085,7 +1085,7 @@ export const dailyDuoProductData = {
     id: "xl",
     name: "XL",
     weight: "101+ lbs",
-    icon: "/Product/images/d4.png",
+    icon: "/Product/images/d4.webp",
     plans: [
       {
         id: "1m",
@@ -1154,7 +1154,7 @@ export const dailyDuoProductData = {
   bundleSuggestions: [
     {
       id: "extra-multivitamin",
-      image: "/Product/images/multi.png",
+      image: "/Product/images/multi.webp",
       title: "Add an Extra Multivitamin",
       subtitle: "Keep daily joint, gut, and immune support stocked",
       compareAtPrice: 54,
@@ -1163,7 +1163,7 @@ export const dailyDuoProductData = {
     },
     {
       id: "extra-dental",
-      image: "/Product/images/dogi-dental-powder.png",
+      image: "/Product/images/dogi-dental-powder.webp",
       title: "Add a Second Dental Powder",
       subtitle: "Extend fresh breath and plaque support",
       compareAtPrice: 39.99,

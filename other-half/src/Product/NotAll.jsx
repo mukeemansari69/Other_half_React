@@ -27,7 +27,7 @@ const NotAll = () => {
         {/* GREEN BACKGROUND BOX */}
         <div className="notall-center-box flex flex-col items-center">
           <img
-            src="/Product/images/logo.png"
+            src="/Product/images/logo.webp"
             alt="logo"
             loading="lazy"
             decoding="async"
@@ -48,7 +48,7 @@ Brands</div>
 
               {/* CENTER CHECK */}
               <img
-                src="/Product/images/right.png"
+                src="/Product/images/right.webp"
                 alt="check"
                 loading="lazy"
                 decoding="async"
@@ -57,7 +57,7 @@ Brands</div>
 
               {/* RIGHT CROSS */}
               <img
-                src="/Product/images/cross.png"
+                src="/Product/images/cross.webp"
                 alt="cross"
                 loading="lazy"
                 decoding="async"

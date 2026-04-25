@@ -6,12 +6,12 @@ import "/public/OurStory/css/OurMission.css";
 const OurMission = () => {
 
   const items = [
-    { icon: "/Home/images/q1.png", text: "Batch Tested" },
-    { icon: "/Home/images/q2.png", text: "No Artificial Colors or Flavors" },
-    { icon: "/Home/images/q3.png", text: "GMO, Hormone & Antibiotic free" },
-    { icon: "/Home/images/q4.png", text: "GMP/SQF Certified" },
-    { icon: "/Home/images/q5.png", text: "Made In USA" },
-    { icon: "/Home/images/q6.png", text: "In Line With FDA guidelines" },
+    { icon: "/Home/images/q1.webp", text: "Batch Tested" },
+    { icon: "/Home/images/q2.webp", text: "No Artificial Colors or Flavors" },
+    { icon: "/Home/images/q3.webp", text: "GMO, Hormone & Antibiotic free" },
+    { icon: "/Home/images/q4.webp", text: "GMP/SQF Certified" },
+    { icon: "/Home/images/q5.webp", text: "Made In USA" },
+    { icon: "/Home/images/q6.webp", text: "In Line With FDA guidelines" },
   ];
 
   return (

@@ -72,7 +72,7 @@ const formulaStudies = [
   {
     id: "everyday",
     route: "/product",
-    image: "/Default/images/col1.png",
+    image: "/Default/images/col1.webp",
     kicker: "Whole-body baseline",
     title: "Everyday Daily Multivitamin",
     summary:
@@ -84,7 +84,7 @@ const formulaStudies = [
   {
     id: "dental",
     route: "/doggie-dental",
-    image: "/Product/images/dogi-dental-powder.png",
+    image: "/Product/images/dogi-dental-powder.webp",
     kicker: "Oral care engine",
     title: "Doggie Dental Powder",
     summary:
@@ -96,7 +96,7 @@ const formulaStudies = [
   {
     id: "duo",
     route: "/daily-duo",
-    image: "/Default/images/col4.png",
+    image: "/Default/images/col4.webp",
     kicker: "Stacked routine",
     title: "Daily Duo Bundle",
     summary:

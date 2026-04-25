@@ -6,22 +6,22 @@ const features = [
   {
     title: "100% Human-Grade",
     text: "Yep, your dog’s supplements are made with ingredients you’d find in your own pantry.",
-    icon: "/Integrity/images/sf-1.png",
+    icon: "/Integrity/images/sf-1.webp",
   },
   {
     title: "No Fillers, Ever",
     text: "If it doesn’t serve your dog’s health, it’s cut. Ruthlessly.",
-    icon: "/Integrity/images/sf2.png",
+    icon: "/Integrity/images/sf2.webp",
   },
   {
     title: "Vet-Approved, Science-Obsessed",
     text: "Every product is built with vet input, not boardroom buzzwords.",
-    icon: "/Integrity/images/sf3.png",
+    icon: "/Integrity/images/sf3.webp",
   },
   {
     title: "No Fake Flavors, Colors, or Junk",
     text: "No ‘bacon dust.’ No ‘beef essence.’ Just real ingredients. The way it should be.",
-    icon: "/Integrity/images/sf4.png",
+    icon: "/Integrity/images/sf4.webp",
   },
 ];
 
@@ -31,14 +31,14 @@ const HighStandardsFeature = () => {
          {/* LEFT DOG */}
         <div className="highstandardsfeature-dog relative">
           <img
-            src="/Integrity/images/snooz-dog.png"
+            src="/Integrity/images/snooz-dog.webp"
             alt="dog"
             loading="lazy"
             decoding="async"
             className="highstandardsfeature-dogimg"
           />
           <img
-            src="/Integrity/images/snooz.png"
+            src="/Integrity/images/snooz.webp"
             alt="zzz"
             loading="lazy"
             decoding="async"

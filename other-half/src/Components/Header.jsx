@@ -287,8 +287,12 @@ export default function Header() {
         <div className="max-w-[1920px] mx-auto px-[20px] lg:px-[120px] py-[12px] flex items-center justify-between header-main__bar">
           <Link to="/" className="flex items-center w-[262px] header-logo" aria-label="PetPlus home">
             <img
-              src="/Home/images/PetPlus-Logo.png"
+              src="/Home/images/PetPlus-Logo.webp"
               alt="PetPlus logo"
+              width="40"
+              height="40"
+              decoding="async"
+              fetchPriority="high"
               className="w-[40px] h-[40px]"
             />
           </Link>
@@ -461,9 +465,10 @@ export default function Header() {
           <div className="header-mobile-drawer__top">
             <Link to="/" className="header-mobile-drawer__brand" onClick={closeMenu}>
               <img
-                src="/Home/images/PetPlus-Logo.png"
+                src="/Home/images/PetPlus-Logo.webp"
                 alt="PetPlus logo"
-                loading="lazy"
+                width="40"
+                height="40"
                 decoding="async"
               />
               <div>

@@ -1,6 +1,8 @@
 import React from "react";
          import { NavLink } from "react-router-dom";
+import { getImagePerformanceProps } from "../utils/imagePerformance.js";
 
+const starterDuoImage = getImagePerformanceProps("/Home/images/home-Starter-Duo.webp");
 
 export default function Starter() {
   return (
@@ -13,10 +15,8 @@ export default function Starter() {
         {/* ✅ DESKTOP IMAGE (same as before) */}
         <div className="hidden md:flex md:w-[1065px] w-full justify-center items-start">
           <img
-            src="/Home/images/home-Starter-Duo.png"
+            {...starterDuoImage}
             alt="Starter duo product"
-            loading="lazy"
-            decoding="async"
             className="max-w-full h-auto md:h-[738px] object-contain"
           />
         </div>
@@ -83,10 +83,8 @@ export default function Starter() {
           {/* ✅ MOBILE IMAGE (NEW - only mobile me show hogi) */}
           <div className="flex md:hidden w-full justify-center">
             <img
-              src="/Home/images/home-Starter-Duo.png"
+              {...starterDuoImage}
               alt="Starter duo product"
-              loading="lazy"
-              decoding="async"
               className="max-w-full h-auto object-contain"
             />
           </div>

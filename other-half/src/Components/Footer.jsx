@@ -137,7 +137,7 @@ const Footer = () => {
         <div className="w-full max-w-[1440px] flex justify-between items-start gap-[10px]">
           <div className="w-[130px] h-[155px] flex-shrink-0">
             <img
-              src="/Home/images/PetPlus-Logo.png"
+              src="/Home/images/PetPlus-Logo.webp"
               alt="PetPlus logo"
               loading="lazy"
               decoding="async"
@@ -190,7 +190,7 @@ const Footer = () => {
       <div className="flex lg:hidden flex-col pt-[24px] px-[16px] pb-[24px] gap-[29px] items-start">
         <div className="flex flex-col gap-[17px] w-full mobile-logo">
           <img
-            src="/Home/images/PetPlus-Logo.png"
+            src="/Home/images/PetPlus-Logo.webp"
             alt="PetPlus logo"
             loading="lazy"
             decoding="async"

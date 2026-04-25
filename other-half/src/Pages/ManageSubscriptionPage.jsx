@@ -18,7 +18,7 @@ const page = {
   title: "Manage Subscription",
   intro:
     "Your subscription is built to stay flexible. This page explains how to update delivery timing, change product quantity, switch payment details, skip an upcoming shipment, or pause service without losing control of your routine.",
-  image: "/Product/images/multi.png",
+  image: "/Product/images/multi.webp",
   imageAlt: "PetPlus Daily Duo product packaging",
   stats: [
     { label: "Updated", value: LAST_UPDATED },

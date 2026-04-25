@@ -4,7 +4,7 @@ const testimonialsData = [
     productId: "everyday-one",
     name: "Ayesha Khan",
     profile: "Golden Retriever mom | Using Everyday Daily Multivitamin",
-    image: "/Home/images/d1.jpg",
+    image: "/Home/images/d1.webp",
     rating: 5,
     title: "The energy shift felt real within weeks",
     description:
@@ -15,7 +15,7 @@ const testimonialsData = [
     productId: "daily-duo",
     name: "Rohan Mehta",
     profile: "Beagle parent | Daily Duo subscriber",
-    image: "/Home/images/d2.jpg",
+    image: "/Home/images/d2.webp",
     rating: 4,
     title: "A much easier routine for a busy dog parent",
     description:
@@ -26,7 +26,7 @@ const testimonialsData = [
     productId: "doggie-dental",
     name: "Sara Ali",
     profile: "Indie rescue parent | Doggie Dental Powder user",
-    image: "/Home/images/d3.jpg",
+    image: "/Home/images/d3.webp",
     rating: 5,
     title: "Finally found something my dog actually accepts",
     description:
@@ -37,7 +37,7 @@ const testimonialsData = [
     productId: "everyday-one",
     name: "Hamza Siddiqui",
     profile: "Labrador dad | Everyday customer",
-    image: "/Home/images/d4.jpg",
+    image: "/Home/images/d4.webp",
     rating: 5,
     title: "It feels like I am doing something better every day",
     description:

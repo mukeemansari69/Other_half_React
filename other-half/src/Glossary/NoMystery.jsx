@@ -11,7 +11,7 @@ const data = [
     points: [
       "Collagen supports joint elasticity, cartilage",
     ],
-    img: "/Glossary/images/rep.png",
+    img: "/Glossary/images/rep.webp",
       link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC12785756/",
   },
   {
@@ -19,7 +19,7 @@ const data = [
     title: "GlucosaGreen® (Vegetarian Glucosamine)",
     desc: "A plant-based glucosamine alternative derived via fermentation.",
     points: ["Supports cartilage repair and reduces joint inflammation — ideal for dogs with shellfish allergies.Supports cartilage repair and reduces joint inflammation — ideal for dogs with shellfish allergies.", "Point two"],
-    img: "/Glossary/images/gl.png",
+    img: "/Glossary/images/gl.webp",
       link: "https://pmc.ncbi.nlm.nih.gov/search/?term=GlucosaGreen%C2%AE+%28Vegetarian+Glucosamine",
   },
   {
@@ -27,7 +27,7 @@ const data = [
     title: "OptiMSM® (Methylsulfonylmethane)",
     desc: "A highly pure, bioavailable form of MSM — a natural sulfur compound.",
     points: ["Reduces joint pain and inflammation, supports connective tissue, and enhances mobility.", "Point two"],
-    img: "/Glossary/images/optiMSM.png",
+    img: "/Glossary/images/optiMSM.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/search/?term=OptiMSM%C2%AE+%28Methylsulfonylmethane%29&sort=relevance&size=10&display_snippets=show",
   },
   {
@@ -35,7 +35,7 @@ const data = [
     title: "Chondroitin (Bovine)",
     desc: "A key component of cartilage sourced from bovine tracheal tissue.",
     points: ["Helps retain water in the joints, supports elasticity, and slows cartilage breakdown.", "Point two"],
-    img: "/Glossary/images/optiMSM.png",
+    img: "/Glossary/images/optiMSM.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/search/?term=Chondroitin+%28Bovine%29&sort=relevance&size=10&display_snippets=show",
   },
    {
@@ -43,7 +43,7 @@ const data = [
     title: "Turmeric Root",
     desc: "A golden spice packed with curcumin, a powerful anti-inflammatory compound.",
     points: ["Helps reduce stiffness and chronic inflammation associated with arthritis and aging.", "Point two"],
-    img: "/Glossary/images/ter.png",
+    img: "/Glossary/images/ter.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/search/?term=Turmeric+Root&sort=relevance&size=10&display_snippets=show",
   },
    {
@@ -51,7 +51,7 @@ const data = [
     title: "Rephyll® (Black Pepper Extract)",
     desc: "A standardized black pepper extract containing piperine, which enhances nutrient absorption.",
     points: ["Enhances the absorption and bioavailability of other joint ingredients like turmeric and MSM.", "Point two"],
-    img: "/Glossary/images/rep.png",
+    img: "/Glossary/images/rep.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/search/?term=Rephyll%C2%AE+%28Black+Pepper+Extract%29&sort=relevance&size=10&display_snippets=show",
   },
    {
@@ -62,7 +62,7 @@ const data = [
       "Supports stress reduction and calming behavior",
       "Boosts immune system and overall vitality"
     ],
-    img: "/Glossary/images/As.jpg",
+    img: "/Glossary/images/As.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6979308/"
   },
   {
@@ -73,7 +73,7 @@ const data = [
       "Supports digestion and gut health",
       "Provides natural source of fiber and antioxidants"
     ],
-    img: "/Glossary/images/al.jpg",
+    img: "/Glossary/images/al.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6769890/"
   },
   {
@@ -84,7 +84,7 @@ const data = [
       "Promotes healthy skin and shiny coat",
       "Supports joint and heart health"
     ],
-    img: "/Glossary/images/an.jpg",
+    img: "/Glossary/images/an.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6722755/"
   },
 
@@ -108,7 +108,7 @@ const data = [
       "Improves digestion and stool quality",
       "Supports beneficial gut bacteria"
     ],
-    img: "/Glossary/images/bt.jpg",
+    img: "/Glossary/images/bt.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4494390/"
   },
 
@@ -121,7 +121,7 @@ const data = [
       "Supports muscle development and energy",
       "Ideal for dogs with food sensitivities"
     ],
-    img: "/Glossary/images/dk.jpg",
+    img: "/Glossary/images/dk.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC5753635/"
   },
   {
@@ -132,7 +132,7 @@ const data = [
       "Supports liver function and digestion",
       "Acts as a natural diuretic and antioxidant"
     ],
-    img: "/Glossary/images/dn.jpg",
+    img: "/Glossary/images/dn.webp",
     link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC5553762/"
   },
 

@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import "/public/Home/css/pup.css";
 import { collectionCards } from "../../shared/storeCatalog.js";
 import { formatStoreCurrency } from "../../shared/storefrontConfig.js";
+import { getImagePerformanceProps } from "../utils/imagePerformance.js";
 
 const products = collectionCards.slice(0, 3).map((product) => ({
   img: product.image,
@@ -29,7 +30,11 @@ export default function Pup() {
               key={product.title}
               className="pup-card cursor-pointer block"
             >
-              <img src={product.img} alt="" loading="lazy" decoding="async" className="pup-image" />
+              <img
+                {...getImagePerformanceProps(product.img)}
+                alt={product.title}
+                className="pup-image"
+              />
 
               <div className="pup-text">
                 <div className="flex justify-center flex-wrap gap-2">
@@ -57,7 +62,11 @@ export default function Pup() {
               key={product.title}
               className="pup-card-mobile cursor-pointer block"
             >
-              <img src={product.img} alt="" loading="lazy" decoding="async" className="pup-image-mobile" />
+              <img
+                {...getImagePerformanceProps(product.img)}
+                alt={product.title}
+                className="pup-image-mobile"
+              />
 
               <div className="pup-text-mobile">
                 <div className="flex justify-center flex-wrap gap-1">

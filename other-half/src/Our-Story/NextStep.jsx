@@ -18,7 +18,7 @@ const NextStep = () => {
 
             {/* Image (mobile placement) */}
             <div className="nextstep-image mobile-only">
-              <img src="/OurStory/images/nextstep.jpg" alt="dog" loading="lazy" decoding="async" />
+              <img src="/OurStory/images/nextstep.webp" alt="dog" loading="lazy" decoding="async" />
             </div>
 
             {/* Subtext */}
@@ -45,7 +45,7 @@ const NextStep = () => {
 
         {/* RIGHT IMAGE (desktop) */}
         <div className="nextstep-image desktop-only">
-          <img src="/OurStory/images/nextstep.jpg" alt="dog" loading="lazy" decoding="async" />
+          <img src="/OurStory/images/nextstep.webp" alt="dog" loading="lazy" decoding="async" />
         </div>
 
       </div>

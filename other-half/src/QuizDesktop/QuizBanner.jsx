@@ -10,10 +10,10 @@ const QuizBanner = () => {
         {/* Top avatars + text */}
         <div className="QuizBanner__reviews">
           <div className="QuizBanner__avatars">
-            <img src="/QuizDesktop/images/user1.jpg" alt="" loading="lazy" decoding="async" />
-            <img src="/QuizDesktop/images/user2.jpg" alt="" loading="lazy" decoding="async" />
-            <img src="/QuizDesktop/images/user3.jpg" alt="" loading="lazy" decoding="async" />
-            <img src="/QuizDesktop/images/user4.jpg" alt="" loading="lazy" decoding="async" />
+            <img src="/QuizDesktop/images/user1.webp" alt="" loading="lazy" decoding="async" />
+            <img src="/QuizDesktop/images/user2.webp" alt="" loading="lazy" decoding="async" />
+            <img src="/QuizDesktop/images/user3.webp" alt="" loading="lazy" decoding="async" />
+            <img src="/QuizDesktop/images/user4.webp" alt="" loading="lazy" decoding="async" />
           </div>
           <p className="QuizBanner__reviewText">
             Loved by 50000+ of pet parents.

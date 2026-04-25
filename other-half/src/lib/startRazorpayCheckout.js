@@ -53,7 +53,7 @@ export const startRazorpayCheckout = async ({
       order_id: order.gatewayOrderId,
       name: BRAND_NAME,
       description: `Order ${order.orderNumber}`,
-      image: "/Home/images/PetPlus-Logo.png",
+      image: "/Home/images/PetPlus-Logo.webp",
       prefill: {
         name:
           order.deliveryAddress?.fullName ||

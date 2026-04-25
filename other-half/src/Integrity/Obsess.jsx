@@ -70,7 +70,7 @@ const Obsess = () => {
       {/* IMAGE */}
       <div className="obsess-image-wrapper w-full md:w-1/2">
         <img
-          src="/Integrity/images/dogi-img.jpg"
+          src="/Integrity/images/dogi-img.webp"
           alt="product"
           loading="lazy"
           decoding="async"

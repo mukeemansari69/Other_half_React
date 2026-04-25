@@ -1,4 +1,5 @@
 import "./loadEnv.js";
+import compression from "compression";
 import cors from "cors";
 import express from "express";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
@@ -857,6 +858,7 @@ const isAllowedOrigin = (origin) => {
 };
 
 app.use(createRequestLogger());
+app.use(compression());
 app.use(
   helmet({
     contentSecurityPolicy: false,
@@ -2444,7 +2446,13 @@ if (fs.existsSync(DIST_INDEX)) {
       setHeaders: (res, filePath) => {
         const relativeFilePath = path.relative(DIST_DIR, filePath).replace(/\\/g, "/");
 
+        if (relativeFilePath.startsWith("assets/")) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          return;
+        }
+
         if (!relativeFilePath.endsWith("index.html")) {
+          res.setHeader("Cache-Control", "public, max-age=2592000");
           return;
         }
 

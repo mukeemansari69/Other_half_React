@@ -1,0 +1,668 @@
+{
+  "/Blog/images/blog-banner2.jpg": {
+    "src": "/Blog/images/blog-banner2.webp",
+    "width": 512,
+    "height": 288,
+    "bytes": 14854
+  },
+  "/Clinical/images/dog-barking.jpg": {
+    "src": "/Clinical/images/dog-barking.webp",
+    "width": 1400,
+    "height": 788,
+    "bytes": 67562
+  },
+  "/Clinical/images/dog-bowl-alt.jpg": {
+    "src": "/Clinical/images/dog-bowl-alt.webp",
+    "width": 1400,
+    "height": 1050,
+    "bytes": 60724
+  },
+  "/Clinical/images/dog-carry-alt.jpg": {
+    "src": "/Clinical/images/dog-carry-alt.webp",
+    "width": 1400,
+    "height": 933,
+    "bytes": 208772
+  },
+  "/Default/images/col1.png": {
+    "src": "/Default/images/col1.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 93466
+  },
+  "/Default/images/col2.png": {
+    "src": "/Default/images/col2.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 94942
+  },
+  "/Default/images/col3.png": {
+    "src": "/Default/images/col3.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 94942
+  },
+  "/Default/images/col4.png": {
+    "src": "/Default/images/col4.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 62812
+  },
+  "/Default/images/col5hov.png": {
+    "src": "/Default/images/col5hov.webp",
+    "width": 458,
+    "height": 360,
+    "bytes": 23368
+  },
+  "/Default/images/dog.jpg": {
+    "src": "/Default/images/dog.webp",
+    "width": 512,
+    "height": 320,
+    "bytes": 11166
+  },
+  "/Default/images/dogbanner.jpg": {
+    "src": "/Default/images/dogbanner.webp",
+    "width": 512,
+    "height": 243,
+    "bytes": 8534
+  },
+  "/Default/images/dogs3.jpg": {
+    "src": "/Default/images/dogs3.webp",
+    "width": 512,
+    "height": 341,
+    "bytes": 13196
+  },
+  "/Default/images/image.png": {
+    "src": "/Default/images/image.webp",
+    "width": 512,
+    "height": 288,
+    "bytes": 7566
+  },
+  "/Default/images/mkm.png": {
+    "src": "/Default/images/mkm.webp",
+    "width": 360,
+    "height": 360,
+    "bytes": 16322
+  },
+  "/Glossary/images/al.jpg": {
+    "src": "/Glossary/images/al.webp",
+    "width": 211,
+    "height": 239,
+    "bytes": 17008
+  },
+  "/Glossary/images/an.jpg": {
+    "src": "/Glossary/images/an.webp",
+    "width": 300,
+    "height": 168,
+    "bytes": 10986
+  },
+  "/Glossary/images/As.jpg": {
+    "src": "/Glossary/images/As.webp",
+    "width": 450,
+    "height": 450,
+    "bytes": 35378
+  },
+  "/Glossary/images/banner.jpg": {
+    "src": "/Glossary/images/banner.webp",
+    "width": 1400,
+    "height": 933,
+    "bytes": 95872
+  },
+  "/Glossary/images/bovine.png": {
+    "src": "/Glossary/images/bovine.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 15038
+  },
+  "/Glossary/images/bt.jpg": {
+    "src": "/Glossary/images/bt.webp",
+    "width": 225,
+    "height": 225,
+    "bytes": 17140
+  },
+  "/Glossary/images/Chondroitin.png": {
+    "src": "/Glossary/images/Chondroitin.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 19118
+  },
+  "/Glossary/images/dk.jpg": {
+    "src": "/Glossary/images/dk.webp",
+    "width": 225,
+    "height": 225,
+    "bytes": 7084
+  },
+  "/Glossary/images/dn.jpg": {
+    "src": "/Glossary/images/dn.webp",
+    "width": 275,
+    "height": 183,
+    "bytes": 12078
+  },
+  "/Glossary/images/gl.png": {
+    "src": "/Glossary/images/gl.webp",
+    "width": 1024,
+    "height": 683,
+    "bytes": 56974
+  },
+  "/Glossary/images/optiMSM.png": {
+    "src": "/Glossary/images/optiMSM.webp",
+    "width": 1024,
+    "height": 721,
+    "bytes": 133110
+  },
+  "/Glossary/images/rep.png": {
+    "src": "/Glossary/images/rep.webp",
+    "width": 1000,
+    "height": 1000,
+    "bytes": 97366
+  },
+  "/Glossary/images/ter.png": {
+    "src": "/Glossary/images/ter.webp",
+    "width": 1200,
+    "height": 800,
+    "bytes": 69126
+  },
+  "/Home/images/banner-img.png": {
+    "src": "/Home/images/banner-img.webp",
+    "width": 1400,
+    "height": 525,
+    "bytes": 25222
+  },
+  "/Home/images/d1.jpg": {
+    "src": "/Home/images/d1.webp",
+    "width": 1400,
+    "height": 600,
+    "bytes": 51360
+  },
+  "/Home/images/d2.jpg": {
+    "src": "/Home/images/d2.webp",
+    "width": 1000,
+    "height": 500,
+    "bytes": 28296
+  },
+  "/Home/images/d3.jpg": {
+    "src": "/Home/images/d3.webp",
+    "width": 1000,
+    "height": 481,
+    "bytes": 34874
+  },
+  "/Home/images/d4.jpg": {
+    "src": "/Home/images/d4.webp",
+    "width": 1000,
+    "height": 486,
+    "bytes": 68808
+  },
+  "/Home/images/d5.jpg": {
+    "src": "/Home/images/d5.webp",
+    "width": 1400,
+    "height": 700,
+    "bytes": 128474
+  },
+  "/Home/images/d6.jpg": {
+    "src": "/Home/images/d6.webp",
+    "width": 1400,
+    "height": 635,
+    "bytes": 67166
+  },
+  "/Home/images/Daily-Duo.png": {
+    "src": "/Home/images/Daily-Duo.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 62812
+  },
+  "/Home/images/DoggiDental.png": {
+    "src": "/Home/images/DoggiDental.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 94942
+  },
+  "/Home/images/everyday.png": {
+    "src": "/Home/images/everyday.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 93466
+  },
+  "/Home/images/EverydayProduct.png": {
+    "src": "/Home/images/EverydayProduct.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 93466
+  },
+  "/Home/images/f1.png": {
+    "src": "/Home/images/f1.webp",
+    "width": 89,
+    "height": 89,
+    "bytes": 1194
+  },
+  "/Home/images/f2.png": {
+    "src": "/Home/images/f2.webp",
+    "width": 89,
+    "height": 89,
+    "bytes": 1492
+  },
+  "/Home/images/f3.png": {
+    "src": "/Home/images/f3.webp",
+    "width": 89,
+    "height": 89,
+    "bytes": 1450
+  },
+  "/Home/images/Home-banner.png": {
+    "src": "/Home/images/Home-banner.webp",
+    "width": 1400,
+    "height": 534,
+    "bytes": 25428
+  },
+  "/Home/images/home-Starter-Duo.png": {
+    "src": "/Home/images/home-Starter-Duo.webp",
+    "width": 1065,
+    "height": 739,
+    "bytes": 39080
+  },
+  "/Home/images/logo2.png": {
+    "src": "/Home/images/logo2.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 16308
+  },
+  "/Home/images/mobile-banner.png": {
+    "src": "/Home/images/mobile-banner.webp",
+    "width": 1080,
+    "height": 1758,
+    "bytes": 31468
+  },
+  "/Home/images/p1.png": {
+    "src": "/Home/images/p1.webp",
+    "width": 367,
+    "height": 362,
+    "bytes": 21102
+  },
+  "/Home/images/p2.png": {
+    "src": "/Home/images/p2.webp",
+    "width": 442,
+    "height": 455,
+    "bytes": 25430
+  },
+  "/Home/images/p3.png": {
+    "src": "/Home/images/p3.webp",
+    "width": 479,
+    "height": 352,
+    "bytes": 23136
+  },
+  "/Home/images/PetPlus-Logo.png": {
+    "src": "/Home/images/PetPlus-Logo.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 16308
+  },
+  "/Home/images/q1.png": {
+    "src": "/Home/images/q1.webp",
+    "width": 101,
+    "height": 101,
+    "bytes": 1212
+  },
+  "/Home/images/q2.png": {
+    "src": "/Home/images/q2.webp",
+    "width": 101,
+    "height": 101,
+    "bytes": 1404
+  },
+  "/Home/images/q3.png": {
+    "src": "/Home/images/q3.webp",
+    "width": 101,
+    "height": 101,
+    "bytes": 1740
+  },
+  "/Home/images/q4.png": {
+    "src": "/Home/images/q4.webp",
+    "width": 103,
+    "height": 103,
+    "bytes": 1536
+  },
+  "/Home/images/q5.png": {
+    "src": "/Home/images/q5.webp",
+    "width": 103,
+    "height": 103,
+    "bytes": 1542
+  },
+  "/Home/images/q6.png": {
+    "src": "/Home/images/q6.webp",
+    "width": 103,
+    "height": 102,
+    "bytes": 1454
+  },
+  "/Home/images/save1.png": {
+    "src": "/Home/images/save1.webp",
+    "width": 28,
+    "height": 28,
+    "bytes": 236
+  },
+  "/Home/images/save2.png": {
+    "src": "/Home/images/save2.webp",
+    "width": 39,
+    "height": 39,
+    "bytes": 282
+  },
+  "/Home/images/save3.png": {
+    "src": "/Home/images/save3.webp",
+    "width": 30,
+    "height": 30,
+    "bytes": 240
+  },
+  "/Home/images/slider-5.png": {
+    "src": "/Home/images/slider-5.webp",
+    "width": 148,
+    "height": 36,
+    "bytes": 1602
+  },
+  "/Integrity/images/dogi-img.jpg": {
+    "src": "/Integrity/images/dogi-img.webp",
+    "width": 1224,
+    "height": 1632,
+    "bytes": 38420
+  },
+  "/Integrity/images/dogi.png": {
+    "src": "/Integrity/images/dogi.webp",
+    "width": 1400,
+    "height": 764,
+    "bytes": 37524
+  },
+  "/Integrity/images/formulate.png": {
+    "src": "/Integrity/images/formulate.webp",
+    "width": 42,
+    "height": 42,
+    "bytes": 698
+  },
+  "/Integrity/images/launchicon.png": {
+    "src": "/Integrity/images/launchicon.webp",
+    "width": 42,
+    "height": 42,
+    "bytes": 714
+  },
+  "/Integrity/images/no-filler.jpg": {
+    "src": "/Integrity/images/no-filler.webp",
+    "width": 1400,
+    "height": 934,
+    "bytes": 103694
+  },
+  "/Integrity/images/PetPlus-Logo.png": {
+    "src": "/Integrity/images/PetPlus-Logo.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 16308
+  },
+  "/Integrity/images/proud-icon.png": {
+    "src": "/Integrity/images/proud-icon.webp",
+    "width": 42,
+    "height": 42,
+    "bytes": 834
+  },
+  "/Integrity/images/searchicon.png": {
+    "src": "/Integrity/images/searchicon.webp",
+    "width": 42,
+    "height": 42,
+    "bytes": 724
+  },
+  "/Integrity/images/sf-1.png": {
+    "src": "/Integrity/images/sf-1.webp",
+    "width": 68,
+    "height": 68,
+    "bytes": 1114
+  },
+  "/Integrity/images/sf2.png": {
+    "src": "/Integrity/images/sf2.webp",
+    "width": 68,
+    "height": 68,
+    "bytes": 1154
+  },
+  "/Integrity/images/sf3.png": {
+    "src": "/Integrity/images/sf3.webp",
+    "width": 68,
+    "height": 68,
+    "bytes": 1298
+  },
+  "/Integrity/images/sf4.png": {
+    "src": "/Integrity/images/sf4.webp",
+    "width": 68,
+    "height": 68,
+    "bytes": 1298
+  },
+  "/Integrity/images/snooz-dog.png": {
+    "src": "/Integrity/images/snooz-dog.webp",
+    "width": 1400,
+    "height": 933,
+    "bytes": 36090
+  },
+  "/Integrity/images/snooz.png": {
+    "src": "/Integrity/images/snooz.webp",
+    "width": 64,
+    "height": 63,
+    "bytes": 680
+  },
+  "/OurStory/images/aj-patel.jpg": {
+    "src": "/OurStory/images/aj-patel.webp",
+    "width": 1400,
+    "height": 933,
+    "bytes": 46430
+  },
+  "/OurStory/images/howit.jpg": {
+    "src": "/OurStory/images/howit.webp",
+    "width": 1400,
+    "height": 933,
+    "bytes": 46430
+  },
+  "/OurStory/images/nextstep.jpg": {
+    "src": "/OurStory/images/nextstep.webp",
+    "width": 1400,
+    "height": 933,
+    "bytes": 56754
+  },
+  "/OurStory/images/PetPlus-Logo.png": {
+    "src": "/OurStory/images/PetPlus-Logo.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 16308
+  },
+  "/OurStory/images/random.png": {
+    "src": "/OurStory/images/random.webp",
+    "width": 512,
+    "height": 642,
+    "bytes": 22994
+  },
+  "/OurStory/images/small-dog.png": {
+    "src": "/OurStory/images/small-dog.webp",
+    "width": 1400,
+    "height": 915,
+    "bytes": 37650
+  },
+  "/OurStory/images/story-banner.jpg": {
+    "src": "/OurStory/images/story-banner.webp",
+    "width": 1400,
+    "height": 786,
+    "bytes": 39662
+  },
+  "/Product/images/allergies 1.png": {
+    "src": "/Product/images/allergies 1.webp",
+    "width": 23,
+    "height": 23,
+    "bytes": 406
+  },
+  "/Product/images/before.png": {
+    "src": "/Product/images/before.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 65668
+  },
+  "/Product/images/cross.png": {
+    "src": "/Product/images/cross.webp",
+    "width": 43,
+    "height": 43,
+    "bytes": 634
+  },
+  "/Product/images/d1.png": {
+    "src": "/Product/images/d1.webp",
+    "width": 33,
+    "height": 45,
+    "bytes": 568
+  },
+  "/Product/images/d2.png": {
+    "src": "/Product/images/d2.webp",
+    "width": 58,
+    "height": 60,
+    "bytes": 816
+  },
+  "/Product/images/d3.png": {
+    "src": "/Product/images/d3.webp",
+    "width": 84,
+    "height": 60,
+    "bytes": 994
+  },
+  "/Product/images/d4.png": {
+    "src": "/Product/images/d4.webp",
+    "width": 100,
+    "height": 74,
+    "bytes": 1108
+  },
+  "/Product/images/dog 1.png": {
+    "src": "/Product/images/dog 1.webp",
+    "width": 24,
+    "height": 24,
+    "bytes": 380
+  },
+  "/Product/images/dogi-dental-powder.png": {
+    "src": "/Product/images/dogi-dental-powder.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 94942
+  },
+  "/Product/images/f.png": {
+    "src": "/Product/images/f.webp",
+    "width": 200,
+    "height": 200,
+    "bytes": 4564
+  },
+  "/Product/images/icon1.png": {
+    "src": "/Product/images/icon1.webp",
+    "width": 15,
+    "height": 23,
+    "bytes": 258
+  },
+  "/Product/images/immunity (1) 1.png": {
+    "src": "/Product/images/immunity (1) 1.webp",
+    "width": 23,
+    "height": 23,
+    "bytes": 400
+  },
+  "/Product/images/logo.png": {
+    "src": "/Product/images/logo.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 16308
+  },
+  "/Product/images/love 1.png": {
+    "src": "/Product/images/love 1.webp",
+    "width": 24,
+    "height": 24,
+    "bytes": 386
+  },
+  "/Product/images/multi.png": {
+    "src": "/Product/images/multi.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 12002
+  },
+  "/Product/images/p1.png": {
+    "src": "/Product/images/p1.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 15382
+  },
+  "/Product/images/pl.jpg": {
+    "src": "/Product/images/pl.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 13904
+  },
+  "/Product/images/Productimage.png": {
+    "src": "/Product/images/Productimage.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 15382
+  },
+  "/Product/images/right.png": {
+    "src": "/Product/images/right.webp",
+    "width": 52,
+    "height": 52,
+    "bytes": 424
+  },
+  "/Product/images/stomach 1.png": {
+    "src": "/Product/images/stomach 1.webp",
+    "width": 24,
+    "height": 24,
+    "bytes": 438
+  },
+  "/QuizDesktop/images/d1.jpg": {
+    "src": "/QuizDesktop/images/d1.webp",
+    "width": 1400,
+    "height": 788,
+    "bytes": 60164
+  },
+  "/QuizDesktop/images/d3.jpg": {
+    "src": "/QuizDesktop/images/d3.webp",
+    "width": 1224,
+    "height": 1632,
+    "bytes": 122220
+  },
+  "/QuizDesktop/images/dc2.png": {
+    "src": "/QuizDesktop/images/dc2.webp",
+    "width": 1000,
+    "height": 646,
+    "bytes": 28680
+  },
+  "/QuizDesktop/images/quiz-banner.png": {
+    "src": "/QuizDesktop/images/quiz-banner.webp",
+    "width": 1400,
+    "height": 525,
+    "bytes": 66418
+  },
+  "/QuizDesktop/images/user1.jpg": {
+    "src": "/QuizDesktop/images/user1.webp",
+    "width": 1000,
+    "height": 1000,
+    "bytes": 68376
+  },
+  "/QuizDesktop/images/user2.jpg": {
+    "src": "/QuizDesktop/images/user2.webp",
+    "width": 1000,
+    "height": 667,
+    "bytes": 28812
+  },
+  "/QuizDesktop/images/user3.jpg": {
+    "src": "/QuizDesktop/images/user3.webp",
+    "width": 679,
+    "height": 1000,
+    "bytes": 27190
+  },
+  "/QuizDesktop/images/user4.jpg": {
+    "src": "/QuizDesktop/images/user4.webp",
+    "width": 1400,
+    "height": 1589,
+    "bytes": 72706
+  },
+  "/Science/images/ban-science.JPG": {
+    "src": "/Science/images/ban-science.webp",
+    "width": 1400,
+    "height": 731,
+    "bytes": 32356
+  },
+  "/Science/images/dailyduo.png": {
+    "src": "/Science/images/dailyduo.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 62812
+  },
+  "/Science/images/everyday.png": {
+    "src": "/Science/images/everyday.webp",
+    "width": 1400,
+    "height": 1400,
+    "bytes": 93466
+  }
+}

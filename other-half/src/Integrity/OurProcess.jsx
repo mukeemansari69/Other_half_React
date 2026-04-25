@@ -5,25 +5,25 @@ import "/public/Integrity/css/ourProcess.css";
 const processData = [
   {
     id: "01",
-    icon: "/Integrity/images/searchicon.png",
+    icon: "/Integrity/images/searchicon.webp",
     title: "We Research. A Lot.",
     desc: "Science journals, clinical studies, vet consults. We don’t guess — we geek out.",
   },
   {
     id: "02",
-    icon: "/Integrity/images/formulate.png",
+    icon: "/Integrity/images/formulate.webp",
     title: "We Formulate With Intention.",
     desc: "Every nutrient is dosed with a purpose — not tossed in to pad a label.",
   },
   {
     id: "03",
-    icon: "/Integrity/images/proud-icon.png",
+    icon: "/Integrity/images/proud-icon.webp",
     title: "We Produce Safely.",
     desc: "cGMP certified, third-party tested, and quality-checked to the last scoop.",
   },
   {
     id: "04",
-    icon: "/Integrity/images/launchicon.png",
+    icon: "/Integrity/images/launchicon.webp",
     title: "We Don’t Launch It Unless It’s Legit.",
     desc: "If our dogs won’t eat it, and yours won’t benefit? We don’t sell it.",
   },

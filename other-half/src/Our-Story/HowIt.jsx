@@ -47,7 +47,7 @@ const HowIt = () => {
         {/* RIGHT IMAGE */}
         <div className="howit-image-wrapper">
           <img
-            src="/OurStory/images/howit.jpg"
+            src="/OurStory/images/howit.webp"
             alt="dog"
             loading="lazy"
             decoding="async"
@@ -66,7 +66,7 @@ const HowIt = () => {
         </h2>
 
         <img
-          src="/OurStory/images/howit.jpg"
+          src="/OurStory/images/howit.webp"
           alt="dog"
           loading="lazy"
           decoding="async"

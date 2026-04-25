@@ -86,7 +86,7 @@ const HeartBehind = () => {
           </div>
         </div>
 
-        <img src="/OurStory/images/small-dog.png" alt="dog" loading="lazy" decoding="async" className="hb-dog" />
+        <img src="/OurStory/images/small-dog.webp" alt="dog" loading="lazy" decoding="async" className="hb-dog" />
       </div>
 
       {/* MOBILE */}

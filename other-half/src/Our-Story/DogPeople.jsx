@@ -6,19 +6,19 @@ const data = [
     name: "AJ Patel & Oggie",
     role: "Co-Founder",
     desc: "AJ Patel started this company to help dogs like Oggie — a pup with a sensitive stomach and bad breath.",
-    img: "/OurStory/images/random.png",
+    img: "/OurStory/images/random.webp",
   },
   {
     name: "Mike Watts & Theo",
     role: "Co-Founder",
     desc: "Helping dogs live healthier lives with better nutrition and care.",
-    img: "/OurStory/images/aj-patel.jpg",
+    img: "/OurStory/images/aj-patel.webp",
   },
   {
     name: "Priya & Boomer",
     role: "Head of formulation",
     desc: "Crafting high-quality supplements that dogs actually love.",
-    img: "/OurStory/images/random.png",
+    img: "/OurStory/images/random.webp",
   },
 ];
 

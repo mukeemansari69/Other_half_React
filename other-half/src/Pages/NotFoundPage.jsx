@@ -69,7 +69,7 @@ const recoveryCards = [
     title: "Shop The Collection",
     text: "Jump back into the complete wellness lineup, from daily multivitamins to dental support and bundled routines.",
     to: "/collection",
-    image: "/Default/images/col3.png",
+    image: "/Default/images/col3.webp",
     imageAlt: "PetPlus product collection",
     kicker: "Most visited",
     icon: ShoppingBag,
@@ -78,7 +78,7 @@ const recoveryCards = [
     title: "Take The Quiz",
     text: "Answer a few quick questions and find a routine that fits your dog's size, goals, and everyday rhythm.",
     to: "/quiz#quiz-questions",
-    image: "/Home/images/q4.png",
+    image: "/Home/images/q4.webp",
     imageAlt: "Dog routine quiz illustration",
     kicker: "Find the fit",
     icon: Search,
@@ -87,7 +87,7 @@ const recoveryCards = [
     title: "Contact The Pack",
     text: "If you were looking for order help, subscription support, or product guidance, this is the fastest way back.",
     to: "/contact",
-    image: "/Default/images/dogs3.jpg",
+    image: "/Default/images/dogs3.webp",
     imageAlt: "Dog looking toward the camera",
     kicker: "Need help?",
     icon: HeartHandshake,
@@ -201,7 +201,7 @@ const NotFoundPage = () => {
               <article className="not-found-product-card not-found-product-card--one">
                 <span className="not-found-product-card__badge">Everyday wellness</span>
                 <img
-                  src="/Default/images/col1.png"
+                  src="/Default/images/col1.webp"
                   alt="Everyday Daily Multivitamin"
                   loading="lazy"
                   decoding="async"
@@ -212,7 +212,7 @@ const NotFoundPage = () => {
               <article className="not-found-product-card not-found-product-card--two">
                 <span className="not-found-product-card__badge">Fresh breath support</span>
                 <img
-                  src="/Default/images/col2.png"
+                  src="/Default/images/col2.webp"
                   alt="Doggie Dental Powder"
                   loading="lazy"
                   decoding="async"

@@ -13,7 +13,7 @@ const featuredPost = {
   title: "Real Dog Health Starts with Daily Habits, Not Trends",
   excerpt:
     "Long-term dog health isn’t built overnight. From better digestion to stronger immunity and cleaner teeth, consistent daily routines create results that quick fixes never can. Here’s how simple habits can transform your dog’s wellbeing.",
-  image: "/OurStory/images/story-banner.jpg",
+  image: "/OurStory/images/story-banner.webp",
   route: "/science",
 };
 
@@ -44,7 +44,7 @@ const blogPosts = [
     title: "How a multivitamin supports more than one problem at the same time.",
     excerpt:
       "A closer look at how joint, gut, immunity, and coat support can live inside one daily scoop when a formula is built with system-wide thinking.",
-    image: "/Home/images/d1.jpg",
+    image: "/Home/images/d1.webp",
     route: "/product",
   },
   {
@@ -55,7 +55,7 @@ const blogPosts = [
     title: "Why no-brush dental support gets better compliance from real households.",
     excerpt:
       "The easier the habit, the more likely pet parents stick with it. That is where powder-based oral care changes the game.",
-    image: "/Home/images/d2.jpg",
+    image: "/Home/images/d2.webp",
     route: "/doggie-dental",
   },
   {
@@ -66,7 +66,7 @@ const blogPosts = [
     title: "What makes a bundle feel useful instead of overwhelming.",
     excerpt:
       "A good bundle removes decision fatigue and turns multiple health goals into one easy routine. Here is the logic behind that.",
-    image: "/Home/images/d3.jpg",
+    image: "/Home/images/d3.webp",
     route: "/daily-duo",
   },
   {
@@ -77,7 +77,7 @@ const blogPosts = [
     title: "Ingredient integrity is not just a label, it is a trust system.",
     excerpt:
       "Shoppers do not only buy outcomes. They buy confidence in sourcing, manufacturing, and the standards behind the formula.",
-    image: "/Integrity/images/no-filler.jpg",
+    image: "/Integrity/images/no-filler.webp",
     route: "/integrity",
   },
   {
@@ -88,7 +88,7 @@ const blogPosts = [
     title: "How ingredient glossaries help shoppers understand formulas faster.",
     excerpt:
       "When customers recognize what ingredients do, they make decisions faster and trust the product page more deeply.",
-    image: "/Glossary/images/banner.jpg",
+    image: "/Glossary/images/banner.webp",
     route: "/glossary",
   },
   {
@@ -99,7 +99,7 @@ const blogPosts = [
     title: "Behind the scenes of a brand that wants wellness to feel simpler.",
     excerpt:
       "Every strong pet brand needs a point of view. This story-style post connects education, design, and product purpose together.",
-    image: "/OurStory/images/nextstep.jpg",
+    image: "/OurStory/images/nextstep.webp",
     route: "/our-story",
   },
 ];

@@ -17,7 +17,7 @@ const page = {
   title: "Subscription Policy",
   intro:
     "Our subscription program is designed for convenience, consistency, and savings. This policy explains how recurring billing works, when changes take effect, how pricing and cadence are set, and what happens if a charge fails or a plan is canceled.",
-  image: "/Default/images/col3.png",
+  image: "/Default/images/col3.webp",
   imageAlt: "Daily Duo collection tile",
   stats: [
     { label: "Policy date", value: LAST_UPDATED },

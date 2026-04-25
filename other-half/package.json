@@ -7,6 +7,8 @@
     "dev": "vite",
     "dev:server": "node server/index.js",
     "dev:server:watch": "node --watch server/index.js",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "apply:webp": "node scripts/apply-webp-references.mjs",
     "build": "vite build && node scripts/postbuild-seo.mjs",
     "lint": "eslint .",
     "migrate:atlas": "node scripts/migrate-to-atlas.mjs --archive-local",
@@ -19,6 +21,7 @@
     "@tailwindcss/vite": "^4.2.1",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
@@ -46,6 +49,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
+    "sharp": "^0.34.5",
     "vite": "^7.1.7"
   }
 }

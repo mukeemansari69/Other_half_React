@@ -4,17 +4,17 @@ import "/public/Home/css/features.css";
 const Features = () => {
   const data = [
     {
-      img: "/Home/images/f1.png",
+      img: "/Home/images/f1.webp",
       title: "Vet-Approved",
       desc: "Formulated by professionals who speak fluent “woof.”",
     },
     {
-      img: "/Home/images/f2.png",
+      img: "/Home/images/f2.webp",
       title: "Clinically Tested",
       desc: "Real science. Real studies. Real tail-wagging results.",
     },
     {
-      img: "/Home/images/f3.png",
+      img: "/Home/images/f3.webp",
       title: "Human-Grade Ingredients",
       desc: "Clean, simple, and effective—nothing you wouldn’t want in your own food.",
     },

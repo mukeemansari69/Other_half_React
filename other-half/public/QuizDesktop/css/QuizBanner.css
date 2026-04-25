@@ -4,7 +4,7 @@
   min-height: 720px;
   display: flex;
   align-items: center;
-  background-image: url("/QuizDesktop/images/quiz-banner.png");
+  background-image: url("/QuizDesktop/images/quiz-banner.webp");
   background-size: cover;
   background-position: center;
 }

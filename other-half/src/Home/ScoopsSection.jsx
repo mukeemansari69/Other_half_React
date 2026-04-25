@@ -5,32 +5,32 @@ const data = [
   {
     title: "Hip & Joint Support",
     text: "Keep those zoomies pain-free—joints that jump for joy!",
-    img: "/Home/images/d1.jpg",
+    img: "/Home/images/d1.webp",
   },
   {
     title: "Digestive Health",
     text: "Supports smooth digestion for your pup.",
-    img: "/Home/images/d2.jpg",
+    img: "/Home/images/d2.webp",
   },
   {
     title: "Allergy Support",
     text: "Helps reduce common allergy symptoms.",
-    img: "/Home/images/d3.jpg",
+    img: "/Home/images/d3.webp",
   },
   {
     title: "Healthy Aging",
     text: "Nutrients that support senior dogs.",
-    img: "/Home/images/d4.jpg",
+    img: "/Home/images/d4.webp",
   },
   {
     title: "Immunity Boost",
     text: "Boost your dog’s natural defenses.",
-    img: "/Home/images/d5.jpg",
+    img: "/Home/images/d5.webp",
   },
   {
     title: "Dental Delight",
     text: "Supports teeth and gum health.",
-    img: "/Home/images/d6.jpg",
+    img: "/Home/images/d6.webp",
   },
 ];
 

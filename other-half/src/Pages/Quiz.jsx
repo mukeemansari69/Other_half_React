@@ -53,7 +53,7 @@ const recommendationMeta = {
       "A strong fit when your dog needs broader support across digestion, energy, skin, coat, and healthy aging without adding extra complexity.",
     route: "/product",
     cta: "View Everyday",
-    image: "/Default/images/col1.png",
+    image: "/Default/images/col1.webp",
     routine:
       "One scoop daily for body-wide support that feels easy to keep consistent.",
     bullets: [
@@ -69,7 +69,7 @@ const recommendationMeta = {
       "A stronger fit when breath, plaque, tartar, or mouth comfort is the clearest concern and you want a focused no-brush routine.",
     route: "/doggie-dental",
     cta: "View Doggie Dental",
-    image: "/Product/images/dogi-dental-powder.png",
+    image: "/Product/images/dogi-dental-powder.webp",
     routine:
       "Sprinkle daily for oral support that fits into a normal feeding routine.",
     bullets: [
@@ -85,7 +85,7 @@ const recommendationMeta = {
       "A stronger fit when your dog needs support in more than one area and you want one routine that covers body wellness and oral care together.",
     route: "/daily-duo",
     cta: "View Daily Duo",
-    image: "/Default/images/col3.png",
+    image: "/Default/images/col3.webp",
     routine:
       "Use a combined body + mouth routine when you want broader coverage with less guesswork.",
     bullets: [
@@ -663,7 +663,7 @@ const Quiz = () => {
               <div className="quiz-page__dog-scene-glow quiz-page__dog-scene-glow--one" />
               <div className="quiz-page__dog-scene-glow quiz-page__dog-scene-glow--two" />
               <img
-                src="/Default/images/mkm.png"
+                src="/Default/images/mkm.webp"
                 alt="Happy dog ready for the quiz"
                 loading="lazy"
                 decoding="async"

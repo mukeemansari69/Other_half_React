@@ -1,4 +1,5 @@
 import React from "react";
+import { getImagePerformanceProps } from "../utils/imagePerformance.js";
 
 const items = [
   {
@@ -15,7 +16,7 @@ const items = [
   },
   {
     text: "Trusted by experts",
-    img: "/Home/images/slider-5.png",
+    img: "/Home/images/slider-5.webp",
   },
   {
     text: "A comprehensive oral health solution",
@@ -58,10 +59,8 @@ export default function Slider() {
               </p>
 
               <img
-                src={item.img}
+                {...getImagePerformanceProps(item.img)}
                 alt="logo"
-                loading="lazy"
-                decoding="async"
                 className="
                 max-w-[80px] sm:max-w-[100px] md:max-w-[120px]
                 h-auto object-contain
