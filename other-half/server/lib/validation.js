@@ -15,10 +15,23 @@ export const createHttpError = (message, statusCode = 400, details = null) => {
   return error;
 };
 
-export const normalizeEmail = (value = "") => String(value).trim().toLowerCase();
+const toScalarString = (value, fieldLabel = "This field") => {
+  if (value === undefined || value === null) {
+    return "";
+  }
+
+  if (typeof value === "object") {
+    throw createHttpError(`${fieldLabel} format is invalid.`, 400);
+  }
+
+  return String(value);
+};
+
+export const normalizeEmail = (value = "") =>
+  toScalarString(value, "Email address").trim().toLowerCase();
 
 export const normalizeTextValue = (value = "") =>
-  String(value)
+  toScalarString(value)
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
@@ -40,7 +53,7 @@ export const sanitizeTextInput = (
   value,
   { fieldLabel, required = false, minimumLength = 0, maximumLength = 500 } = {}
 ) => {
-  const normalizedValue = String(value ?? "").trim();
+  const normalizedValue = toScalarString(value, fieldLabel || "This field").trim();
 
   if (!normalizedValue) {
     if (required) {
@@ -71,7 +84,7 @@ export const sanitizeEmailInput = (value, fieldLabel = "Email address") => {
 };
 
 export const normalizePhoneInput = (value = "") => {
-  const trimmedValue = String(value ?? "").trim();
+  const trimmedValue = toScalarString(value, "Phone number").trim();
 
   if (!trimmedValue) {
     return "";
@@ -233,7 +246,41 @@ export const sanitizeDeliveryAddressInput = (value, { required = false } = {}) =
 };
 
 export const validatePassword = (password = "") => {
-  return String(password).trim().length >= PASSWORD_MIN_LENGTH;
+  return toScalarString(password, "Password").trim().length >= PASSWORD_MIN_LENGTH;
+};
+
+export const sanitizeNumericRecordInput = (
+  value,
+  {
+    fieldLabel = "This field",
+    maximumKeys = 20,
+    minimumValue = -1000,
+    maximumValue = 1000,
+  } = {}
+) => {
+  if (value === undefined || value === null || value === "") {
+    return {};
+  }
+
+  if (typeof value !== "object" || Array.isArray(value)) {
+    throw createHttpError(`${fieldLabel} format is invalid.`, 400);
+  }
+
+  const entries = Object.entries(value)
+    .slice(0, maximumKeys)
+    .flatMap(([rawKey, rawValue]) => {
+      const key = toScalarString(rawKey, `${fieldLabel} key`).trim().slice(0, 60);
+      const numericValue = Number(rawValue);
+
+      if (!key || !Number.isFinite(numericValue)) {
+        return [];
+      }
+
+      const safeValue = Math.min(maximumValue, Math.max(minimumValue, numericValue));
+      return [[key, Number(safeValue.toFixed(4))]];
+    });
+
+  return Object.fromEntries(entries);
 };
 
 export { allowedDeliveryAddressTypes, emailPattern, phonePattern };

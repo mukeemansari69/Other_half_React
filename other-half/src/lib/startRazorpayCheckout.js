@@ -20,6 +20,7 @@ export const toCheckoutItemPayload = (item) => ({
   sizeId: item.sizeId,
   sizeLabel: item.sizeLabel,
   sizeWeight: item.sizeWeight,
+  bundleIds: item.bundleIds,
 });
 
 export const startRazorpayCheckout = async ({

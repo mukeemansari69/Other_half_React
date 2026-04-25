@@ -59,6 +59,12 @@ Default backend port: `4000`
 
 Default frontend API base: `http://localhost:4000/api`
 
+Public vs private env vars:
+
+- Only `VITE_*` values are exposed to the browser bundle. Never put secrets in `VITE_*`.
+- Keep secrets only on the backend or in Render environment variables: `JWT_SECRET`, `MONGODB_URI`, `RAZORPAY_KEY_SECRET`, `RECAPTCHA_SECRET_KEY`, `SMTP_*`, `CLOUDINARY_*`, `OPENAI_API_KEY`.
+- For separate frontend + Render backend deployments, set `AUTH_CLIENT_URL=https://www.pet-plus.co.in` and `SERVER_PUBLIC_URL=https://other-half-react.onrender.com`.
+
 MongoDB:
 
 - Set `MONGODB_URI` to your Atlas connection string.
@@ -117,8 +123,10 @@ Required backend env vars before production start:
 Recommended env vars for a live domain:
 
 - `CLIENT_ORIGIN=https://your-frontend-domain.com,https://www.your-frontend-domain.com`
+- `AUTH_CLIENT_URL=https://www.your-frontend-domain.com`
+- `SERVER_PUBLIC_URL=https://your-render-backend.onrender.com`
 - `VITE_SITE_URL=https://www.your-frontend-domain.com`
-- `VITE_API_BASE_URL=https://your-api-domain.com/api`
+- `VITE_API_BASE_URL=https://your-render-backend.onrender.com/api`
 
 If you deploy frontend and backend separately:
 
@@ -126,8 +134,11 @@ If you deploy frontend and backend separately:
 2. Host `dist/` on your frontend provider.
 3. Deploy the Node backend separately.
 4. Set `CLIENT_ORIGIN` on the backend to your frontend URL.
-5. Set `VITE_API_BASE_URL` on the frontend to the backend API URL.
-6. Confirm `/api/health` works before testing login, checkout, or admin routes.
+5. Set `AUTH_CLIENT_URL` on the backend to the frontend URL.
+6. Set `SERVER_PUBLIC_URL` on the backend to the Render backend URL.
+7. Set `VITE_API_BASE_URL` on the frontend to the backend API URL.
+8. Add frontend security headers on the frontend host as well, because backend headers do not protect a separately hosted static frontend.
+9. Confirm `/api/health` works before testing login, checkout, or admin routes.
 
 Production notes:
 

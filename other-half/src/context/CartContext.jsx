@@ -46,6 +46,13 @@ const normalizeItem = (item) => {
     sizeId: String(item.sizeId || "").trim(),
     sizeLabel: String(item.sizeLabel || "").trim(),
     sizeWeight: String(item.sizeWeight || "").trim(),
+    bundleIds: [
+      ...new Set(
+        (Array.isArray(item.bundleIds) ? item.bundleIds : [])
+          .map((value) => String(value || "").trim())
+          .filter(Boolean)
+      ),
+    ],
   };
 };
 

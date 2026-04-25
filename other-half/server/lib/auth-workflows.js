@@ -7,6 +7,7 @@ const ACTION_TOKEN_SECRET =
   process.env.AUTH_FLOW_SECRET || process.env.JWT_SECRET || DEFAULT_ACTION_TOKEN_SECRET;
 const AUTH_CLIENT_URL_FALLBACK =
   process.env.AUTH_CLIENT_URL?.trim() ||
+  process.env.PUBLIC_SITE_URL?.trim() ||
   process.env.VITE_SITE_URL?.trim() ||
   String(process.env.CLIENT_ORIGIN || "")
     .split(",")
@@ -14,13 +15,16 @@ const AUTH_CLIENT_URL_FALLBACK =
     .filter(Boolean)[0] ||
   "http://localhost:5173";
 const AUTH_SERVER_URL_FALLBACK = (() => {
-  const configuredServerUrl = process.env.SERVER_PUBLIC_URL?.trim();
+  const configuredServerUrl =
+    process.env.SERVER_PUBLIC_URL?.trim() || process.env.RENDER_EXTERNAL_URL?.trim();
 
   if (configuredServerUrl) {
     return configuredServerUrl.replace(/\/$/, "");
   }
 
-  const configuredApiBase = String(process.env.VITE_API_BASE_URL || "").trim();
+  const configuredApiBase = String(
+    process.env.API_BASE_URL || process.env.VITE_API_BASE_URL || ""
+  ).trim();
 
   if (configuredApiBase) {
     return configuredApiBase.replace(/\/api\/?$/, "");

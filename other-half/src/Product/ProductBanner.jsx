@@ -734,6 +734,7 @@ const ProductBanner = ({
       sizeId: selectedSize.id,
       sizeLabel: selectedSize.name,
       sizeWeight: selectedSize.weight,
+      bundleIds: sortedBundleIds,
     };
   }, [
     cartVariantId,
@@ -752,6 +753,7 @@ const ProductBanner = ({
     selectedSize.id,
     selectedSize.name,
     selectedSize.weight,
+    sortedBundleIds,
     totalPrice,
   ]);
   const isInCart = hasItem(cartVariantId);
@@ -810,11 +812,7 @@ const ProductBanner = ({
     }
   };
 
-  const handleDirectCheckout = async ({
-    skipAuthCheck = false,
-    authToken = token,
-    authUser = user,
-  } = {}) => {
+  const handleDirectCheckout = async ({ authToken = token, authUser = user } = {}) => {
     if (isOutOfStock) {
       setCheckoutStatus({
         type: "error",

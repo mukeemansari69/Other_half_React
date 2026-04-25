@@ -106,11 +106,7 @@ const CartPage = () => {
     });
   };
 
-  const handleCheckout = async ({
-    skipAuthCheck = false,
-    authToken = token,
-    authUser = user,
-  } = {}) => {
+  const handleCheckout = async ({ authToken = token, authUser = user } = {}) => {
     if (items.length === 0) {
       setStatus({
         type: "error",

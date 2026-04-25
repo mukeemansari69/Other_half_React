@@ -3,7 +3,7 @@ import { PawPrint } from "lucide-react";
 import { LoadingLink } from "./LoadingControl.jsx";
 
 const EmptyStateCard = ({
-  icon: Icon = PawPrint,
+  icon = PawPrint,
   eyebrow = "",
   title,
   description,
@@ -13,6 +13,8 @@ const EmptyStateCard = ({
   className = "",
   children = null,
 }) => {
+  const IconComponent = icon;
+
   return (
     <div
       className={`relative overflow-hidden rounded-[32px] border border-[#E6DFCF] bg-white p-6 shadow-[0_24px_80px_rgba(34,30,18,0.08)] md:p-8 ${className}`}
@@ -23,7 +25,7 @@ const EmptyStateCard = ({
       <div className="relative">
         <div className="flex flex-col gap-4 md:flex-row md:items-start">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EEF6E7] text-[#0F4A12] shadow-[0_12px_24px_rgba(15,74,18,0.08)]">
-            <Icon size={28} />
+            <IconComponent size={28} />
           </div>
 
           <div className="flex-1">
@@ -86,4 +88,3 @@ const EmptyStateCard = ({
 };
 
 export default EmptyStateCard;
-

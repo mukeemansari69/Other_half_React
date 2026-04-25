@@ -61,6 +61,7 @@ import {
   getRobotsDirectiveForPath,
   isKnownRoute,
 } from "../shared/seo.js";
+import { resolveCatalogLineItem } from "../shared/storeCatalog.js";
 import { securityHeaderValues } from "../shared/securityHeaders.js";
 import {
   hasCompleteDeliveryAddress,
@@ -69,6 +70,7 @@ import {
   normalizeTextValue,
   sanitizeDeliveryAddressInput,
   sanitizeEmailInput,
+  sanitizeNumericRecordInput,
   sanitizePhoneInput,
   sanitizeTextInput,
 } from "./lib/validation.js";
@@ -78,10 +80,96 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, "..");
 const PORT = Number(process.env.PORT) || 4000;
 const isProduction = process.env.NODE_ENV === "production";
-const configuredOrigins = (process.env.CLIENT_ORIGIN || "")
+const DEFAULT_SITE_ORIGINS = ["https://pet-plus.co.in", "https://www.pet-plus.co.in"];
+
+const normalizeOrigin = (value = "") => {
+  try {
+    const normalizedUrl = new URL(String(value || "").trim());
+    return `${normalizedUrl.protocol}//${normalizedUrl.host}`;
+  } catch {
+    return "";
+  }
+};
+
+const normalizeAbsoluteUrl = (value = "") => {
+  try {
+    return new URL(String(value || "").trim()).toString();
+  } catch {
+    return "";
+  }
+};
+
+const isLocalDevelopmentOrigin = (origin = "") =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+
+const uniqueNonEmptyValues = (values) => [...new Set(values.filter(Boolean))];
+
+const configuredSiteUrl = normalizeAbsoluteUrl(
+  process.env.AUTH_CLIENT_URL ||
+    process.env.PUBLIC_SITE_URL ||
+    process.env.VITE_SITE_URL ||
+    DEFAULT_SITE_ORIGINS[1]
+);
+const configuredServerBaseUrl = normalizeAbsoluteUrl(
+  process.env.SERVER_PUBLIC_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
+    process.env.API_BASE_URL ||
+    process.env.VITE_API_BASE_URL ||
+    ""
+);
+const configuredServerOrigin = normalizeOrigin(configuredServerBaseUrl);
+const configuredOrigins = uniqueNonEmptyValues(
+  (process.env.CLIENT_ORIGIN || "")
   .split(",")
-  .map((value) => value.trim())
-  .filter(Boolean);
+    .map((value) => normalizeOrigin(value))
+    .filter((origin) => {
+      if (!origin) {
+        return false;
+      }
+
+      if (isProduction && !origin.startsWith("https://")) {
+        logWarn("server.config.insecure_client_origin_ignored", {
+          origin,
+        });
+        return false;
+      }
+
+      return true;
+    })
+);
+const trustedFrontendOrigins = uniqueNonEmptyValues([
+  ...DEFAULT_SITE_ORIGINS,
+  ...configuredOrigins,
+  normalizeOrigin(configuredSiteUrl),
+]);
+const cspScriptOrigins = [
+  "https://checkout.razorpay.com",
+  "https://www.google.com/recaptcha/",
+  "https://www.gstatic.com/recaptcha/",
+];
+const cspStyleOrigins = ["https://fonts.googleapis.com"];
+const cspFontOrigins = ["https://fonts.gstatic.com"];
+const cspImageOrigins = uniqueNonEmptyValues([
+  ...trustedFrontendOrigins,
+  "https://images.unsplash.com",
+  "https://res.cloudinary.com",
+]);
+const cspMediaOrigins = uniqueNonEmptyValues([
+  "https://www.pexels.com",
+  "https://*.pexels.com",
+  "https://res.cloudinary.com",
+]);
+const cspConnectOrigins = uniqueNonEmptyValues([
+  ...trustedFrontendOrigins,
+  configuredServerOrigin,
+  "https://api.razorpay.com",
+  "https://www.google.com/recaptcha/",
+]);
+const cspFrameOrigins = [
+  "https://api.razorpay.com",
+  "https://checkout.razorpay.com",
+  "https://www.google.com/recaptcha/",
+];
 const DIST_DIR = path.join(ROOT_DIR, "dist");
 const DIST_INDEX = path.join(DIST_DIR, "index.html");
 const DIST_NOT_FOUND = path.join(DIST_DIR, "404.html");
@@ -125,7 +213,7 @@ const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY?.trim() || "";
 const recaptchaMinimumScore = Number(process.env.RECAPTCHA_MINIMUM_SCORE || 0.5);
 
 const sanitizeSupportChoice = (value, allowedValues, fallback) => {
-  const normalizedValue = String(value ?? "").trim().toLowerCase();
+  const normalizedValue = normalizeTextValue(value ?? "");
   return allowedValues.has(normalizedValue) ? normalizedValue : fallback;
 };
 
@@ -191,11 +279,58 @@ const supportLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => {
-    const email = normalizeEmail(req.body?.email || "");
+    const email = (() => {
+      try {
+        return normalizeEmail(req.body?.email || "");
+      } catch {
+        return "";
+      }
+    })();
     return `${ipKeyGenerator(req.ip || "")}:${email || "anonymous-support"}`;
   },
   message: {
     message: "Too many support requests were submitted. Please try again shortly.",
+  },
+});
+
+const aiAssistantLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: isProduction ? 20 : 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message:
+      "The pet health assistant is receiving too many requests right now. Please wait a bit and try again.",
+  },
+});
+
+const newsletterLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    const email = (() => {
+      try {
+        return normalizeEmail(req.body?.email || "");
+      } catch {
+        return "";
+      }
+    })();
+    return `${ipKeyGenerator(req.ip || "")}:${email || "anonymous-newsletter"}`;
+  },
+  message: {
+    message: "Too many newsletter signups were submitted. Please try again later.",
+  },
+});
+
+const quizSubmissionLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000,
+  max: isProduction ? 20 : 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Too many quiz submissions were received. Please try again later.",
   },
 });
 
@@ -207,6 +342,66 @@ const addQueryParam = (urlValue, key, value) => {
   } catch {
     return urlValue;
   }
+};
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) {
+    return true;
+  }
+
+  const normalizedOrigin = normalizeOrigin(origin);
+
+  if (!normalizedOrigin) {
+    return false;
+  }
+
+  if (configuredOrigins.includes(normalizedOrigin) || trustedFrontendOrigins.includes(normalizedOrigin)) {
+    return true;
+  }
+
+  if (!isProduction && isLocalDevelopmentOrigin(normalizedOrigin)) {
+    return true;
+  }
+
+  return false;
+};
+
+const isAllowedAbsoluteAppUrl = (value = "") => {
+  try {
+    const normalizedUrl = new URL(String(value || "").trim());
+
+    if (!isAllowedOrigin(normalizedUrl.origin)) {
+      return false;
+    }
+
+    if (normalizedUrl.protocol === "https:") {
+      return true;
+    }
+
+    return !isProduction && isLocalDevelopmentOrigin(normalizedUrl.origin);
+  } catch {
+    return false;
+  }
+};
+
+const getAllowedClientOrigin = (req) => {
+  const requestedOrigin = normalizeOrigin(req.headers.origin || "");
+
+  if (requestedOrigin && isAllowedOrigin(requestedOrigin)) {
+    return requestedOrigin;
+  }
+
+  return configuredOrigins[0] || trustedFrontendOrigins[0] || DEFAULT_SITE_ORIGINS[1];
+};
+
+const resolveAllowedAppUrl = (value, fallbackOrigin, fallbackPath) => {
+  const normalizedValue = typeof value === "string" ? value.trim() : "";
+
+  if (normalizedValue && isAllowedAbsoluteAppUrl(normalizedValue)) {
+    return normalizedValue;
+  }
+
+  return new URL(fallbackPath, `${fallbackOrigin}/`).toString();
 };
 
 const sortByDateDescending = (collection, field = "createdAt") => {
@@ -265,6 +460,54 @@ const resolveCatalogProductFromOrderItem = (item) => {
     productId: item?.productId || "",
     productName: item?.name || "",
   });
+};
+
+const sanitizeCheckoutItems = (rawItems = []) => {
+  return (Array.isArray(rawItems) ? rawItems : [])
+    .slice(0, 20)
+    .map((item) => {
+      const resolvedLineItem = resolveCatalogLineItem({
+        productId: item?.productId,
+        productName: item?.name,
+        sizeId: item?.sizeId,
+        planId: item?.planId,
+        purchaseType: item?.purchaseType,
+        bundleIds: Array.isArray(item?.bundleIds) ? item.bundleIds : [],
+      });
+
+      if (!resolvedLineItem || resolvedLineItem.inStock === false) {
+        return null;
+      }
+
+      return {
+        productId: resolvedLineItem.productId,
+        name: resolvedLineItem.productName,
+        description: resolvedLineItem.description,
+        image: resolvedLineItem.image,
+        unitPrice: resolvedLineItem.unitPrice,
+        purchaseType: resolvedLineItem.purchaseType,
+        planId: resolvedLineItem.planId,
+        planLabel: resolvedLineItem.planLabel,
+        deliveryLabel: resolvedLineItem.deliveryLabel,
+        deliveryCadence: resolvedLineItem.deliveryCadence,
+        billingIntervalUnit: resolvedLineItem.billingIntervalUnit,
+        billingIntervalCount: resolvedLineItem.billingIntervalCount,
+        sizeId: resolvedLineItem.sizeId,
+        sizeLabel: resolvedLineItem.sizeLabel,
+        sizeWeight: resolvedLineItem.sizeWeight,
+        bundleIds: resolvedLineItem.bundleIds,
+        quantity: Math.max(1, Math.min(20, Math.round(Number(item?.quantity || 1)))),
+      };
+    })
+    .filter(
+      (item) =>
+        item &&
+        item.name &&
+        Number.isFinite(item.unitPrice) &&
+        item.unitPrice > 0 &&
+        Number.isFinite(item.quantity) &&
+        item.quantity > 0
+    );
 };
 
 const getReviewableProductsForUser = (orders, reviews, userId) => {
@@ -890,22 +1133,6 @@ const handleStripeInvoicePaid = async ({
   };
 };
 
-const isAllowedOrigin = (origin) => {
-  if (!origin) {
-    return true;
-  }
-
-  if (configuredOrigins.includes(origin)) {
-    return true;
-  }
-
-  if (!isProduction && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) {
-    return true;
-  }
-
-  return false;
-};
-
 app.use(createRequestLogger());
 app.use(compression());
 app.use(
@@ -918,37 +1145,13 @@ app.use(
         frameAncestors: ["'self'"],
         formAction: ["'self'"],
         upgradeInsecureRequests: [],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://checkout.razorpay.com",
-          "https://www.google.com/recaptcha/",
-          "https://www.gstatic.com/recaptcha/",
-        ],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
-        imgSrc: [
-          "'self'",
-          "data:",
-          "blob:",
-          "https://www.pet-plus.co.in",
-          "https://pet-plus.co.in",
-          "https://images.unsplash.com",
-        ],
-        mediaSrc: ["'self'", "blob:", "https://www.pexels.com", "https://*.pexels.com"],
-        connectSrc: [
-          "'self'",
-          "https://www.pet-plus.co.in",
-          "https://pet-plus.co.in",
-          "https://api.razorpay.com",
-          "https://www.google.com/recaptcha/",
-        ],
-        frameSrc: [
-          "'self'",
-          "https://api.razorpay.com",
-          "https://checkout.razorpay.com",
-          "https://www.google.com/recaptcha/",
-        ],
+        scriptSrc: ["'self'", "'unsafe-inline'", ...cspScriptOrigins],
+        styleSrc: ["'self'", "'unsafe-inline'", ...cspStyleOrigins],
+        fontSrc: ["'self'", ...cspFontOrigins, "data:"],
+        imgSrc: ["'self'", "data:", "blob:", ...cspImageOrigins],
+        mediaSrc: ["'self'", "blob:", ...cspMediaOrigins],
+        connectSrc: ["'self'", ...cspConnectOrigins],
+        frameSrc: ["'self'", ...cspFrameOrigins],
       },
     },
     crossOriginEmbedderPolicy: false,
@@ -958,6 +1161,13 @@ app.use(
     frameguard: {
       action: "sameorigin",
     },
+    strictTransportSecurity: isProduction
+      ? {
+          maxAge: 63072000,
+          includeSubDomains: true,
+          preload: true,
+        }
+      : false,
   })
 );
 app.use((req, res, next) => {
@@ -986,6 +1196,11 @@ app.use(
     optionsSuccessStatus: 204,
   })
 );
+app.use("/api", (_req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Pragma", "no-cache");
+  next();
+});
 app.post(
   "/api/payments/stripe/webhook",
   express.raw({ type: "application/json" }),
@@ -1065,9 +1280,12 @@ app.post(
   })
 );
 app.use(express.json({ limit: "1mb" }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use("/api", apiLimiter);
-app.use("/uploads", express.static(UPLOADS_DIR));
+
+if (getUploadStorageMode() === "local") {
+  app.use("/uploads", express.static(UPLOADS_DIR));
+}
 
 app.get("/api/health", (_req, res) => {
   res.json({
@@ -1081,6 +1299,7 @@ app.use("/api/auth", createAuthRouter());
 
 app.post(
   "/api/ai/dog-health-assistant",
+  aiAssistantLimiter,
   asyncHandler(async (req, res) => {
     const description = sanitizeTextInput(req.body?.description, {
       fieldLabel: "Dog problem description",
@@ -1101,38 +1320,10 @@ app.post(
   "/api/payments/create-order",
   optionalAuth,
   asyncHandler(async (req, res) => {
-    const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
-    const items = rawItems
-      .slice(0, 20)
-      .map((item) => ({
-        productId: String(item?.productId || "").trim(),
-        name: String(item?.name || "").trim(),
-        description: String(item?.description || "").trim().slice(0, 240),
-        image: String(item?.image || "").trim(),
-        unitPrice: Number(item?.unitPrice),
-        quantity: Math.max(1, Math.round(Number(item?.quantity || 1))),
-        purchaseType: item?.purchaseType === "subscription" ? "subscription" : "one-time",
-        planId: String(item?.planId || "").trim(),
-        planLabel: String(item?.planLabel || "").trim(),
-        deliveryLabel: String(item?.deliveryLabel || "").trim(),
-        deliveryCadence: String(item?.deliveryCadence || "").trim(),
-        billingIntervalUnit: String(item?.billingIntervalUnit || "").trim() || "month",
-        billingIntervalCount: Math.max(1, Math.round(Number(item?.billingIntervalCount || 1))),
-        sizeId: String(item?.sizeId || "").trim(),
-        sizeLabel: String(item?.sizeLabel || "").trim(),
-        sizeWeight: String(item?.sizeWeight || "").trim(),
-      }))
-      .filter(
-        (item) =>
-          item.name &&
-          Number.isFinite(item.unitPrice) &&
-          item.unitPrice > 0 &&
-          Number.isFinite(item.quantity) &&
-          item.quantity > 0
-      );
+    const items = sanitizeCheckoutItems(req.body.items);
 
     if (items.length === 0) {
-      return res.status(400).json({ message: "Your cart is empty." });
+      return res.status(400).json({ message: "Your cart is empty or could not be verified." });
     }
 
     const rawDeliveryAddress = hasSubmittedAddressFields(req.body.deliveryAddress)
@@ -1153,16 +1344,20 @@ app.post(
 
     const localOrderId = randomUUID();
     const localOrderNumber = createOrderNumber();
-    const email = normalizeEmail(req.body.email || "");
+    const email = req.body.email ? sanitizeEmailInput(req.body.email) : normalizeEmail(req.user?.email || "");
     const itemSubtotal = items.reduce(
       (runningTotal, item) => runningTotal + item.unitPrice * item.quantity,
       0
     );
     const shippingAmount = calculateShipping(itemSubtotal);
     const totalAmount = Number((itemSubtotal + shippingAmount).toFixed(2));
+    const providedCustomerName = sanitizeTextInput(req.body.customerName || "", {
+      fieldLabel: "Customer name",
+      maximumLength: 120,
+    });
     const customerName =
       req.user?.name ||
-      (typeof req.body.customerName === "string" ? req.body.customerName.trim() : "") ||
+      providedCustomerName ||
       deliveryAddress.fullName ||
       "Guest customer";
     const customerEmail = email || req.user?.email || "";
@@ -1411,46 +1606,16 @@ app.post(
       });
     }
 
-    const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
-    const items = rawItems
-      .slice(0, 20)
-      .map((item) => ({
-        productId: String(item?.productId || "").trim(),
-        name: String(item?.name || "").trim(),
-        description: String(item?.description || "").trim().slice(0, 240),
-        image: String(item?.image || "").trim(),
-        unitPrice: Number(item?.unitPrice),
-        quantity: Math.round(Number(item?.quantity || 1)),
-        purchaseType: item?.purchaseType === "subscription" ? "subscription" : "one-time",
-        planId: String(item?.planId || "").trim(),
-        planLabel: String(item?.planLabel || "").trim(),
-        deliveryLabel: String(item?.deliveryLabel || "").trim(),
-        deliveryCadence: String(item?.deliveryCadence || "").trim(),
-        billingIntervalUnit: String(item?.billingIntervalUnit || "").trim() || "month",
-        billingIntervalCount: Math.max(1, Math.round(Number(item?.billingIntervalCount || 1))),
-        sizeId: String(item?.sizeId || "").trim(),
-        sizeLabel: String(item?.sizeLabel || "").trim(),
-        sizeWeight: String(item?.sizeWeight || "").trim(),
-      }))
-      .filter(
-        (item) =>
-          item.name &&
-          Number.isFinite(item.unitPrice) &&
-          item.unitPrice > 0 &&
-          Number.isFinite(item.quantity) &&
-          item.quantity > 0
-      );
+    const items = sanitizeCheckoutItems(req.body.items);
 
     if (items.length === 0) {
-      return res.status(400).json({ message: "Your cart is empty." });
+      return res.status(400).json({ message: "Your cart is empty or could not be verified." });
     }
 
     const { secretKey: stripeSecretKey } = getStripeConfig();
     const upiVpa = (process.env.UPI_VPA || "9690296846@ptsbi").trim();
     const upiPayeeName = (process.env.UPI_PAYEE_NAME || "PetPlus").trim();
-    const fallbackOrigin = req.headers.origin
-      ? req.headers.origin
-      : `http://localhost:${PORT}`;
+    const fallbackOrigin = getAllowedClientOrigin(req);
     const preferredSuccessUrl =
       typeof req.body.successUrl === "string" ? req.body.successUrl.trim() : "";
     const preferredCancelUrl =
@@ -1458,15 +1623,11 @@ app.post(
     const localOrderId = randomUUID();
     const localOrderNumber = createOrderNumber();
     const successUrlBase =
-      /^https?:\/\//i.test(preferredSuccessUrl)
-        ? preferredSuccessUrl
-        : `${fallbackOrigin}/cart?checkout=success`;
+      resolveAllowedAppUrl(preferredSuccessUrl, fallbackOrigin, "/cart?checkout=success");
     const cancelUrlBase =
-      /^https?:\/\//i.test(preferredCancelUrl)
-        ? preferredCancelUrl
-        : `${fallbackOrigin}/cart?checkout=cancelled`;
+      resolveAllowedAppUrl(preferredCancelUrl, fallbackOrigin, "/cart?checkout=cancelled");
     const cancelUrl = addQueryParam(cancelUrlBase, "orderId", localOrderId);
-    const email = normalizeEmail(req.body.email || "");
+    const email = req.body.email ? sanitizeEmailInput(req.body.email) : normalizeEmail(req.user?.email || "");
     const normalizedItems = items.map((item) => ({
       ...item,
       image:
@@ -1479,8 +1640,12 @@ app.post(
       0
     );
     const now = new Date().toISOString();
+    const providedCustomerName = sanitizeTextInput(req.body.customerName || "", {
+      fieldLabel: "Customer name",
+      maximumLength: 120,
+    });
     const customerName =
-      req.user?.name || (typeof req.body.customerName === "string" ? req.body.customerName.trim() : "") || "Guest customer";
+      req.user?.name || providedCustomerName || "Guest customer";
     const customerEmail = email || req.user?.email || "";
     const subscriptionType = items.some((item) => item.purchaseType === "subscription")
       ? "subscription"
@@ -1754,7 +1919,7 @@ app.patch(
       return res.status(404).json({ message: "Account was not found." });
     }
 
-    const nextName = req.body.name?.trim();
+    const nextName = typeof req.body.name === "string" ? req.body.name.trim() : "";
     const nextPhone = req.body.phone;
     const nextDogName = req.body.dogName;
     const nextCadence = req.body.deliveryCadence;
@@ -2053,6 +2218,7 @@ app.get(
 
 app.post(
   "/api/newsletter/subscribe",
+  newsletterLimiter,
   asyncHandler(async (req, res) => {
     const email = sanitizeEmailInput(req.body.email);
     const source = sanitizeTextInput(req.body.source || "footer", {
@@ -2090,6 +2256,7 @@ app.post(
 app.post(
   "/api/quiz/submissions",
   optionalAuth,
+  quizSubmissionLimiter,
   asyncHandler(async (req, res) => {
     const recommendationKey = sanitizeTextInput(req.body.recommendationKey, {
       fieldLabel: "Recommendation key",
@@ -2138,7 +2305,12 @@ app.post(
       recommendationKey,
       recommendationTitle,
       topFocuses,
-      scores: req.body.scores || {},
+      scores: sanitizeNumericRecordInput(req.body.scores, {
+        fieldLabel: "Scores",
+        maximumKeys: 12,
+        minimumValue: 0,
+        maximumValue: 100,
+      }),
       answers,
       createdAt: new Date().toISOString(),
     };
@@ -2506,6 +2678,7 @@ app.get(
 app.use((error, req, res, next) => {
   void next;
   const requestId = req.requestId || randomUUID();
+  const includeDetails = !isProduction && error?.details;
 
   if (error?.type === "entity.parse.failed") {
     return res.status(400).json({
@@ -2516,8 +2689,9 @@ app.use((error, req, res, next) => {
 
   if (error?.message?.includes("not allowed by CORS")) {
     return res.status(403).json({
-      message:
-        "This frontend origin is not allowed yet. Update CLIENT_ORIGIN or use localhost/127.0.0.1.",
+      message: isProduction
+        ? "This frontend origin is not allowed."
+        : "This frontend origin is not allowed yet. Update CLIENT_ORIGIN or use localhost/127.0.0.1.",
       requestId,
     });
   }
@@ -2534,18 +2708,27 @@ app.use((error, req, res, next) => {
   }
 
   if (error?.statusCode) {
-    logWarn("request.failed", {
+    const logDetails = {
       requestId,
       method: req.method,
       path: req.originalUrl || req.url,
       statusCode: error.statusCode,
       error,
-    });
+    };
+
+    if (error.statusCode >= 500) {
+      logError("request.failed", logDetails);
+    } else {
+      logWarn("request.failed", logDetails);
+    }
 
     return res.status(error.statusCode).json({
-      message: error.message || "The request could not be completed.",
+      message:
+        isProduction && error.statusCode >= 500
+          ? "The request could not be completed."
+          : error.message || "The request could not be completed.",
       requestId,
-      ...(error.details ? { details: error.details } : {}),
+      ...(includeDetails ? { details: error.details } : {}),
     });
   }
 
@@ -2559,7 +2742,6 @@ app.use((error, req, res, next) => {
   return res.status(500).json({
     message: "Something unexpected happened on the server.",
     requestId,
-    ...(error?.details ? { details: error.details } : {}),
   });
 });
 
@@ -2641,9 +2823,15 @@ seedDatabase()
       );
     }
 
-    if (isProduction && configuredOrigins.some((origin) => !origin.startsWith("https://"))) {
-      logWarn("server.config.insecure_origin", {
-        configuredOrigins,
+    if (isProduction && configuredSiteUrl && !configuredSiteUrl.startsWith("https://")) {
+      logWarn("server.config.insecure_site_url", {
+        configuredSiteUrl,
+      });
+    }
+
+    if (isProduction && configuredServerBaseUrl && !configuredServerBaseUrl.startsWith("https://")) {
+      logWarn("server.config.insecure_server_url", {
+        configuredServerBaseUrl,
       });
     }
 
@@ -2668,6 +2856,8 @@ seedDatabase()
         uploadsDirectory: UPLOADS_DIR,
         uploadStorageMode,
         configuredOrigins,
+        configuredSiteUrl,
+        configuredServerBaseUrl,
       });
     });
   })

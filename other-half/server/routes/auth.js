@@ -53,7 +53,13 @@ const asyncHandler = (handler) => {
 };
 
 const createIdentityKey = (req) => {
-  const email = normalizeEmail(req.body?.email || "");
+  const email = (() => {
+    try {
+      return normalizeEmail(req.body?.email || "");
+    } catch {
+      return "";
+    }
+  })();
   const phone = (() => {
     try {
       return normalizePhoneInput(req.body?.phone || "");

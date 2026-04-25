@@ -384,5 +384,7 @@ export const resolveCatalogLineItem = ({
     deliveryCadence: selection.plan.deliveryCadence,
     billingIntervalUnit: selection.plan.billingIntervalUnit,
     billingIntervalCount: selection.plan.billingIntervalCount,
+    inStock: selection.plan.inStock !== false,
+    outOfStockMessage: selection.plan.outOfStockMessage || "",
   };
 };
