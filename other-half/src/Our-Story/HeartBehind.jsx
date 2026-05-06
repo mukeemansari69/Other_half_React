@@ -8,6 +8,14 @@ const HeartBehind = () => {
 
   const [playing, setPlaying] = useState(true);
 
+  const playVideo = (video) => {
+    const playPromise = video?.play?.();
+
+    if (playPromise?.catch) {
+      playPromise.catch(() => {});
+    }
+  };
+
   const toggleVideo = () => {
     const isMobile = window.innerWidth <= 768;
 
@@ -20,7 +28,7 @@ const HeartBehind = () => {
     if (playing) {
       video.pause();
     } else {
-      video.play();
+      playVideo(video);
     }
 
     setPlaying(!playing);

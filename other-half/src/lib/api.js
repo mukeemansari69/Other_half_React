@@ -55,12 +55,13 @@ export const getApiBaseCandidates = () => {
     candidates.push(normalizedValue);
   };
 
-  addCandidate("/api");
   const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";
 
   if (canUseConfiguredApiBaseUrl(configuredApiBaseUrl)) {
     addCandidate(configuredApiBaseUrl);
   }
+
+  addCandidate("/api");
 
   if (typeof window !== "undefined") {
     const { hostname, protocol } = window.location;

@@ -98,6 +98,7 @@ export default function Testimonials({
   }, [items, reviewProductId]);
 
   const displayItems = apiReviews.length > 0 ? apiReviews : fallbackItems;
+  const shouldLoop = displayItems.length >= 6;
   const reviewProduct = reviewProductId
     ? resolveReviewProduct({ productId: reviewProductId })
     : null;
@@ -186,9 +187,8 @@ export default function Testimonials({
               delay: 2500,
               disableOnInteraction: false,
             }}
-            loop={displayItems.length > 1}
-            loopAdditionalSlides={displayItems.length}
-            loopFillGroupWithBlank={true}
+            loop={shouldLoop}
+            loopAdditionalSlides={shouldLoop ? displayItems.length : 0}
             spaceBetween={24}
             slidesPerView={1.5}
             centeredSlides={false}

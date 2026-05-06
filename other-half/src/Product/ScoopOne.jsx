@@ -20,13 +20,21 @@ const ScoopOne = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef(null);
 
+  const playVideo = () => {
+    const playPromise = videoRef.current?.play?.();
+
+    if (playPromise?.catch) {
+      playPromise.catch(() => {});
+    }
+  };
+
   const toggleAccordion = (index) => {
     setActiveIndex(index === activeIndex ? null : index);
   };
 
   const handleVideoClick = () => {
     if (videoRef.current.paused) {
-      videoRef.current.play();
+      playVideo();
       setIsPlaying(true);
     } else {
       videoRef.current.pause();

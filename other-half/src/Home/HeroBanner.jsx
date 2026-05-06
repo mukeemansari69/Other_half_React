@@ -22,6 +22,7 @@ const heroSlides = [
     render: () => <ScienceHero isolated />,
   },
 ];
+const shouldLoopHeroSlides = heroSlides.length > 2;
 
 export default function HeroBanner() {
   const swiperRef = useRef(null);
@@ -37,7 +38,7 @@ export default function HeroBanner() {
         <Swiper
           modules={[Autoplay, A11y]}
           slidesPerView={1}
-          loop
+          loop={shouldLoopHeroSlides}
           speed={850}
           grabCursor
           allowTouchMove
@@ -82,7 +83,20 @@ export default function HeroBanner() {
               className={`home-hero-slider__indicator ${
                 activeSlide === index ? "is-active" : ""
               }`}
-              onClick={() => swiperRef.current?.slideToLoop(index)}
+              onClick={() => {
+                const swiper = swiperRef.current;
+
+                if (!swiper) {
+                  return;
+                }
+
+                if (shouldLoopHeroSlides) {
+                  swiper.slideToLoop(index);
+                  return;
+                }
+
+                swiper.slideTo(index);
+              }}
             />
           ))}
         </div>

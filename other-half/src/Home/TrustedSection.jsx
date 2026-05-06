@@ -1,6 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 import "/public/Home/css/trustedSection.css";
 
+const trustedVideos = [
+  "/Home/images/dog1.mp4",
+  "/Product/images/dog-video.mp4",
+  "/Home/images/dog1.mp4",
+  "/Product/images/dog-video.mp4",
+  "/Home/images/dog1.mp4",
+  "/Product/images/dog-video.mp4",
+  "/Home/images/dog1.mp4",
+  "/Product/images/dog-video.mp4",
+  "/Home/images/dog1.mp4",
+  "/Product/images/dog-video.mp4",
+];
+
+const playVideo = (video) => {
+  const playPromise = video?.play?.();
+
+  if (playPromise?.catch) {
+    playPromise.catch(() => {});
+  }
+};
+
 export default function TrustedSection() {
 
   const desktopVideosRef = useRef([]);
@@ -8,19 +29,6 @@ export default function TrustedSection() {
 
   const [playing, setPlaying] = useState({});
   const [muted, setMuted] = useState({});
-
-  const videos = [
-    "https://www.pexels.com/download/video/7515921/",
-    "https://www.pexels.com/download/video/7189544/",
-    "https://www.pexels.com/download/video/7684007/",
-    "https://www.pexels.com/download/video/6131501/",
-    "https://www.pexels.com/download/video/17029739/",
-    "https://www.pexels.com/download/video/16622195/",
-    "https://www.pexels.com/download/video/31770762/",
-    "https://www.pexels.com/download/video/34935656/",
-    "https://www.pexels.com/download/video/5423960/",
-    "https://www.pexels.com/download/video/3042473/",
-  ];
 
   useEffect(() => {
     let index = 0;
@@ -34,7 +42,7 @@ export default function TrustedSection() {
       if (!current) return;
 
       current.currentTime = 0;
-      current.play();
+      playVideo(current);
 
       setPlaying({ [index]: true });
 
@@ -56,7 +64,7 @@ export default function TrustedSection() {
     if (!video) return;
 
     if (video.paused) {
-      video.play();
+      playVideo(video);
       setPlaying(prev => ({ ...prev, [i]: true }));
     } else {
       video.pause();
@@ -92,7 +100,7 @@ export default function TrustedSection() {
 
         {/* DESKTOP */}
         <div className="desktop-videos hidden md:flex">
-          {videos.map((src, i) => (
+          {trustedVideos.map((src, i) => (
             <div className="video-card" key={i}>
 
               <video
@@ -138,7 +146,7 @@ export default function TrustedSection() {
 
         {/* MOBILE */}
         <div className="mobile-videos flex md:hidden">
-          {videos.map((src, i) => (
+          {trustedVideos.map((src, i) => (
             <div className="mobile-card" key={i}>
 
               <video

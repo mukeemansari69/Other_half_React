@@ -146,6 +146,7 @@ const cspScriptOrigins = [
   "https://checkout.razorpay.com",
   "https://www.google.com/recaptcha/",
   "https://www.gstatic.com/recaptcha/",
+  "https://vercel.live",
 ];
 const cspStyleOrigins = ["https://fonts.googleapis.com"];
 const cspFontOrigins = ["https://fonts.gstatic.com"];
@@ -164,11 +165,13 @@ const cspConnectOrigins = uniqueNonEmptyValues([
   configuredServerOrigin,
   "https://api.razorpay.com",
   "https://www.google.com/recaptcha/",
+  "https://vercel.live",
 ]);
 const cspFrameOrigins = [
   "https://api.razorpay.com",
   "https://checkout.razorpay.com",
   "https://www.google.com/recaptcha/",
+  "https://vercel.live",
 ];
 const DIST_DIR = path.join(ROOT_DIR, "dist");
 const DIST_INDEX = path.join(DIST_DIR, "index.html");
