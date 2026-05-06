@@ -54,6 +54,7 @@ const RegisterPage = () => {
   const [status, setStatus] = useState({ type: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
 
+  const canUseEmailSignup = config.delivery.emailConfigured || config.developmentDebugCodes;
   const canUsePhoneOtp = config.delivery.smsConfigured || config.developmentDebugCodes;
 
   const updateEmailField = (field, value) => {
@@ -201,6 +202,15 @@ const RegisterPage = () => {
 
           {activeTab === "email" ? (
             <form className="space-y-5" onSubmit={handleEmailSignup}>
+              <AuthNotice
+                type={canUseEmailSignup ? "info" : "neutral"}
+                message={
+                  canUseEmailSignup
+                    ? "Email signup sends a verification code before the account is activated."
+                    : "Email delivery is not configured yet, so email signup is currently unavailable."
+                }
+              />
+
               <label className="block">
                 <span className="mb-2 block text-sm font-medium text-[#353126]">Full name</span>
                 <input
@@ -274,7 +284,7 @@ const RegisterPage = () => {
                 className="w-full rounded-full bg-[#0F4A12] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#133F18] disabled:cursor-not-allowed disabled:opacity-70"
                 loading={submitting}
                 loadingText="Creating account..."
-                disabled={submitting}
+                disabled={submitting || !canUseEmailSignup}
               >
                 Create account with email
               </LoadingButton>

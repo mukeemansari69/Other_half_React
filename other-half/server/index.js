@@ -2727,7 +2727,7 @@ app.use((error, req, res, next) => {
 
     return res.status(error.statusCode).json({
       message:
-        isProduction && error.statusCode >= 500
+        isProduction && error.statusCode >= 500 && !error.expose
           ? "The request could not be completed."
           : error.message || "The request could not be completed.",
       requestId,

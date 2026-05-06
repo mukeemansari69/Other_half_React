@@ -179,7 +179,9 @@ const ensureEmailDeliveryReady = () => {
   if (isProduction && !mailConfig.isConfigured) {
     throw createHttpError(
       "Email delivery is not configured yet. Add SMTP credentials before enabling this flow in production.",
-      503
+      503,
+      null,
+      { expose: true }
     );
   }
 
@@ -192,7 +194,9 @@ const ensureSmsDeliveryReady = () => {
   if (isProduction && !smsConfig.isConfigured) {
     throw createHttpError(
       "SMS delivery is not configured yet. Add Twilio credentials before enabling this flow in production.",
-      503
+      503,
+      null,
+      { expose: true }
     );
   }
 
@@ -229,10 +233,12 @@ const sendEmailVerificationChallenge = async (database, user) => {
       verificationUrl,
       expiresInMinutes,
     });
-  } catch (error) {
+  } catch {
     throw createHttpError(
-      error.message || "Verification email could not be sent. Please try again.",
-      502
+      "Verification email could not be sent. Please try again.",
+      502,
+      null,
+      { expose: true }
     );
   }
 
@@ -264,10 +270,12 @@ const sendPhoneOtpChallenge = async (database, user, purpose = "phone-auth") => 
       purpose,
       expiresInMinutes,
     });
-  } catch (error) {
+  } catch {
     throw createHttpError(
-      error.message || "OTP SMS could not be sent. Please try again.",
-      502
+      "OTP SMS could not be sent. Please try again.",
+      502,
+      null,
+      { expose: true }
     );
   }
 
@@ -302,10 +310,12 @@ const sendPasswordResetChallenge = async (database, user, method) => {
         resetUrl,
         expiresInMinutes,
       });
-    } catch (error) {
+    } catch {
       throw createHttpError(
-        error.message || "Password reset email could not be sent. Please try again.",
-        502
+        "Password reset email could not be sent. Please try again.",
+        502,
+        null,
+        { expose: true }
       );
     }
 
@@ -336,10 +346,12 @@ const sendPasswordResetChallenge = async (database, user, method) => {
       purpose: "password-reset",
       expiresInMinutes,
     });
-  } catch (error) {
+  } catch {
     throw createHttpError(
-      error.message || "Password reset SMS could not be sent. Please try again.",
-      502
+      "Password reset SMS could not be sent. Please try again.",
+      502,
+      null,
+      { expose: true }
     );
   }
 

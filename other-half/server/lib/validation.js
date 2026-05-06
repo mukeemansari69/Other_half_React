@@ -4,9 +4,10 @@ const allowedDeliveryAddressTypes = new Set(["home", "work", "other"]);
 
 export const PASSWORD_MIN_LENGTH = 8;
 
-export const createHttpError = (message, statusCode = 400, details = null) => {
+export const createHttpError = (message, statusCode = 400, details = null, options = {}) => {
   const error = new Error(message);
   error.statusCode = statusCode;
+  error.expose = options.expose ?? statusCode < 500;
 
   if (details && typeof details === "object") {
     error.details = details;
