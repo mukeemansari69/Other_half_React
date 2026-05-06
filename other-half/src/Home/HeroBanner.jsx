@@ -17,11 +17,6 @@ const heroSlides = [
     render: () => <HomeHeroSection />,
   },
   {
-    id: "clinical",
-    label: "Clinical banner",
-    render: () => <ClinicalHero isolated />,
-  },
-  {
     id: "science",
     label: "Science banner",
     render: () => <ScienceHero isolated />,

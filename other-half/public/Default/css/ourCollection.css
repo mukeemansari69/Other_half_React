@@ -74,6 +74,8 @@
 .ourCollection-image {
   max-width: 296px;
   width: 100%;
+  height: 300px;
+  object-fit: fill;
 }
 
 /* RATING */

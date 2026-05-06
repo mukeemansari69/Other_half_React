@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "/public/Home/css/health.css";
-import img1 from "/Home/images/img1.png";
-import img2 from "/Home/images/img21.png";
-import img3 from "/Home/images/img4.png";
+
+import img1 from "/Home/images/our-story.webp";
+import img2 from "/Home/images/img23s.webp";
+import img3 from "/Home/images/img2s.webp";
+import img4 from "/Home/images/our-story.webp";
+
+import img5 from "/Home/images/img-21.webp";
+
+import img6 from "/Home/images/img4s.webp";
 
 
-const images = [img1, img2, img3];
+
+
+const images = [img1, img2, img3,img4,img5,img6];
 
 const Health = () => {
   const [index, setIndex] = useState(0);

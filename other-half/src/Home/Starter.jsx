@@ -2,7 +2,7 @@ import React from "react";
          import { NavLink } from "react-router-dom";
 import { getImagePerformanceProps } from "../utils/imagePerformance.js";
 
-const starterDuoImage = getImagePerformanceProps("/Home/images/home-Starter-Duo.webp");
+const starterDuoImage = getImagePerformanceProps("/Home/images/daily-duo-img.webp");
 
 export default function Starter() {
   return (

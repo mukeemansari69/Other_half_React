@@ -13,7 +13,7 @@ const featuredPost = {
   title: "Real Dog Health Starts with Daily Habits, Not Trends",
   excerpt:
     "Long-term dog health isn’t built overnight. From better digestion to stronger immunity and cleaner teeth, consistent daily routines create results that quick fixes never can. Here’s how simple habits can transform your dog’s wellbeing.",
-  image: "/OurStory/images/story-banner.webp",
+  image: "/OurStory/images/our-story.webp",
   route: "/science",
 };
 
