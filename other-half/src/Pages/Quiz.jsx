@@ -53,7 +53,7 @@ const recommendationMeta = {
       "A strong fit when your dog needs broader support across digestion, energy, skin, coat, and healthy aging without adding extra complexity.",
     route: "/product",
     cta: "View Everyday",
-    image: "/Default/images/col1.webp",
+    image: "/Default/images/col1-20260506.webp",
     routine:
       "One scoop daily for body-wide support that feels easy to keep consistent.",
     bullets: [

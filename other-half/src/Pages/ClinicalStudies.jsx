@@ -72,7 +72,7 @@ const formulaStudies = [
   {
     id: "everyday",
     route: "/product",
-    image: "/Default/images/col1.webp",
+    image: "/Default/images/col1-20260506.webp",
     kicker: "Whole-body baseline",
     title: "Everyday Daily Multivitamin",
     summary:

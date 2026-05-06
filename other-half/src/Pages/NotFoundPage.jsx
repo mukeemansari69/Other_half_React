@@ -201,7 +201,7 @@ const NotFoundPage = () => {
               <article className="not-found-product-card not-found-product-card--one">
                 <span className="not-found-product-card__badge">Everyday wellness</span>
                 <img
-                  src="/Default/images/col1.webp"
+                  src="/Default/images/col1-20260506.webp"
                   alt="Everyday Daily Multivitamin"
                   loading="lazy"
                   decoding="async"
@@ -212,7 +212,7 @@ const NotFoundPage = () => {
               <article className="not-found-product-card not-found-product-card--two">
                 <span className="not-found-product-card__badge">Fresh breath support</span>
                 <img
-                  src="/Default/images/col2.webp"
+                  src="/Default/images/col2-20260506.webp"
                   alt="Doggie Dental Powder"
                   loading="lazy"
                   decoding="async"

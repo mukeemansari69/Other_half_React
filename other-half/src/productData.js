@@ -531,7 +531,7 @@ export const everydayProductData = {
     },
     {
       id: "mobility-pack",
-      image: "/Default/images/col1.webp",
+      image: "/Default/images/col1-20260506.webp",
       title: "Mobility Pack",
       subtitle: "Joint + Bone Support",
       compareAtPrice: 84.99,

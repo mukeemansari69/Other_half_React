@@ -299,7 +299,7 @@ const CartPage = () => {
                 className="grid gap-4 rounded-[24px] bg-[#FBF8EF] p-4 md:grid-cols-[120px_1fr_auto]"
               >
                 <img
-                  src={item.image || "/Default/images/col1.webp"}
+                  src={item.image || "/Default/images/col1-20260506.webp"}
                   alt={item.name}
                   loading="lazy"
                   decoding="async"

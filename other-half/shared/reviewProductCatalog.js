@@ -4,7 +4,7 @@ const reviewProductCatalog = [
     productName: "45 in 1 Everyday Daily Multivitamin",
     route: "/product",
     reviewSectionHref: "/?reviewsProduct=everyday-one#reviews",
-    image: "/Default/images/col1.png",
+    image: "/Default/images/col1-20260506.webp",
     testimonialImage: "/Home/images/d1.jpg",
     aliases: [
       "everyday-one",
@@ -18,7 +18,7 @@ const reviewProductCatalog = [
     productName: "Doggie Dental Powder - Fresh Breath & Oral Care",
     route: "/doggie-dental",
     reviewSectionHref: "/?reviewsProduct=doggie-dental#reviews",
-    image: "/Default/images/col2.png",
+    image: "/Default/images/col2-20260506.webp",
     testimonialImage: "/Home/images/d2.jpg",
     aliases: [
       "doggie-dental",
