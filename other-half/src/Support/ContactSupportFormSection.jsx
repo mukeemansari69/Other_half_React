@@ -766,7 +766,7 @@ const ContactSupportFormSection = () => {
               <span>{selectedTeam.email}</span>
             </div>
             <p className="support-form-side-card__text">
-              Requests land in the backend dashboard first, and when SMTP is configured
+              Requests land in the backend dashboard first, and when Resend is configured
               they are also emailed to the admin inbox for faster follow-up.
             </p>
           </div>

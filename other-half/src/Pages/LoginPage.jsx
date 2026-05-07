@@ -146,7 +146,7 @@ const LoginPage = () => {
           title="Sign back in with the flow that fits your routine."
           description="Email, SMS OTP, and social login now live in the same auth system, so dog parents can get back to their account without friction and without weakening security."
           highlights={heroHighlights}
-          footer="If the backend is running locally without SMTP or Twilio, development mode will surface debug OTP details in the form so the flow still stays testable."
+          footer="If the backend is running locally without Resend or Twilio, development mode will surface debug OTP details in the form so the flow still stays testable."
         />
 
         <section className="rounded-[36px] border border-[#E6DFCF] bg-white p-8 shadow-[0_24px_80px_rgba(34,30,18,0.08)] md:p-10">

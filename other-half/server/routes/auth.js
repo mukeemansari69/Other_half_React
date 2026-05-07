@@ -178,7 +178,7 @@ const ensureEmailDeliveryReady = () => {
 
   if (isProduction && !mailConfig.isConfigured) {
     throw createHttpError(
-      "Email delivery is not configured yet. Add SMTP credentials before enabling this flow in production.",
+      "Email delivery is not configured yet. Add Resend credentials before enabling this flow in production.",
       503,
       null,
       { expose: true }

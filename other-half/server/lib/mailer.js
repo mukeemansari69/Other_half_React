@@ -1,11 +1,11 @@
 import "../loadEnv.js";
+import fs from "node:fs/promises";
 import path from "node:path";
-
-import nodemailer from "nodemailer";
 
 import { UPLOADS_DIR } from "./database.js";
 
 const emailPattern = /\S+@\S+\.\S+/;
+const resendApiUrl = "https://api.resend.com/emails";
 
 const normalizeEmail = (value = "") => String(value).trim().toLowerCase();
 const escapeHtml = (value = "") =>
@@ -16,71 +16,35 @@ const escapeHtml = (value = "") =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 
-const toBoolean = (value, fallback = false) => {
-  if (value === undefined) {
-    return fallback;
-  }
+const extractEmailAddress = (value = "") => {
+  const trimmedValue = String(value).trim();
+  const angleMatch = trimmedValue.match(/<([^<>]+)>/);
 
-  return ["1", "true", "yes", "on"].includes(String(value).trim().toLowerCase());
+  return normalizeEmail(angleMatch?.[1] || trimmedValue);
 };
 
 const getMailConfig = () => {
-  const host = process.env.SMTP_HOST?.trim() || "";
-  const port = Number(process.env.SMTP_PORT || 587);
-  const user = process.env.SMTP_USER?.trim() || process.env.EMAIL_USER?.trim() || "";
-  const pass = process.env.SMTP_PASS?.trim() || process.env.EMAIL_PASS?.trim() || "";
-  const from = process.env.MAIL_FROM?.trim() || user || "no-reply@PetPlus.co.in";
+  const apiKey = process.env.RESEND_API_KEY?.trim() || "";
+  const from =
+    process.env.RESEND_FROM_EMAIL?.trim() ||
+    process.env.MAIL_FROM?.trim() ||
+    "PetPlus <no-reply@petplus.co.in>";
   const supportNotificationEmail =
     process.env.SUPPORT_NOTIFICATION_EMAIL?.trim() ||
     process.env.ADMIN_NOTIFICATION_EMAIL?.trim() ||
-    "admin@PetPlus.co.in";
-  const secure = toBoolean(process.env.SMTP_SECURE, port === 465);
+    "admin@petplus.co.in";
+  const fromAddress = extractEmailAddress(from);
 
   return {
-    host,
-    port,
-    user,
-    pass,
+    provider: "resend",
+    apiKey,
     from,
-    secure,
+    fromAddress,
     supportNotificationEmail,
-    isConfigured: Boolean(host && port && user && pass && emailPattern.test(supportNotificationEmail)),
+    isConfigured: Boolean(
+      apiKey && emailPattern.test(fromAddress) && emailPattern.test(supportNotificationEmail)
+    ),
   };
-};
-
-let cachedTransporter = null;
-let cachedTransportKey = "";
-
-const getTransporter = () => {
-  const config = getMailConfig();
-
-  if (!config.isConfigured) {
-    return null;
-  }
-
-  const nextTransportKey = JSON.stringify({
-    host: config.host,
-    port: config.port,
-    secure: config.secure,
-    user: config.user,
-    from: config.from,
-    supportNotificationEmail: config.supportNotificationEmail,
-  });
-
-  if (!cachedTransporter || cachedTransportKey !== nextTransportKey) {
-    cachedTransporter = nodemailer.createTransport({
-      host: config.host,
-      port: config.port,
-      secure: config.secure,
-      auth: {
-        user: config.user,
-        pass: config.pass,
-      },
-    });
-    cachedTransportKey = nextTransportKey;
-  }
-
-  return cachedTransporter;
 };
 
 const buildRecipientList = (supportRequest) => {
@@ -198,89 +162,95 @@ const buildSupportRequestHtml = (supportRequest) => {
   `;
 };
 
-const buildMailAttachments = (supportRequest) => {
-  return (supportRequest.attachments || [])
-    .map((attachment) => {
-      if (!attachment?.fileName || attachment.storage === "cloudinary") {
-        return null;
-      }
+const buildMailAttachments = async (supportRequest) => {
+  const localAttachments = (supportRequest.attachments || []).filter(
+    (attachment) => attachment?.fileName && attachment.storage !== "cloudinary"
+  );
+
+  const encodedAttachments = await Promise.all(
+    localAttachments.map(async (attachment) => {
+      const content = await fs.readFile(path.join(UPLOADS_DIR, attachment.fileName));
 
       return {
         filename: attachment.originalName,
-        path: path.join(UPLOADS_DIR, attachment.fileName),
-        contentType: attachment.mimetype || undefined,
+        content: content.toString("base64"),
+        content_type: attachment.mimetype || undefined,
       };
     })
-    .filter(Boolean);
+  );
+
+  return encodedAttachments.filter(Boolean);
 };
 
-const sendSupportRequestEmail = async (supportRequest) => {
-  const transporter = getTransporter();
+const sendResendEmail = async ({ to, cc, subject, text, html, replyTo, attachments }) => {
   const config = getMailConfig();
 
-  if (!transporter || !config.isConfigured) {
+  if (!config.isConfigured) {
     return {
       delivered: false,
       skipped: true,
       reason:
-        "SMTP mail delivery is not configured yet. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, and MAIL_FROM in the server environment.",
-      recipients: [],
+        "Resend email delivery is not configured yet. Add RESEND_API_KEY and RESEND_FROM_EMAIL in the server environment.",
+      recipients: [to, ...(Array.isArray(cc) ? cc : [])].filter(Boolean),
       messageId: null,
     };
   }
 
+  const response = await fetch(resendApiUrl, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: config.from,
+      to: Array.isArray(to) ? to : [to],
+      cc: Array.isArray(cc) && cc.length > 0 ? cc : undefined,
+      reply_to: replyTo,
+      subject,
+      text,
+      html,
+      attachments: Array.isArray(attachments) && attachments.length > 0 ? attachments : undefined,
+    }),
+  });
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = payload?.message || payload?.error || "Resend rejected the email request.";
+    throw new Error(`Resend email delivery failed: ${message}`);
+  }
+
+  return {
+    delivered: true,
+    skipped: false,
+    reason: "",
+    recipients: [to, ...(Array.isArray(cc) ? cc : [])].flat().filter(Boolean),
+    messageId: payload?.id || null,
+  };
+};
+
+const sendSupportRequestEmail = async (supportRequest) => {
   const recipients = buildRecipientList(supportRequest);
-  const info = await transporter.sendMail({
-    from: config.from,
+
+  return sendResendEmail({
     to: recipients.to,
     cc: recipients.cc.length > 0 ? recipients.cc : undefined,
     replyTo: emailPattern.test(supportRequest.email) ? supportRequest.email : undefined,
     subject: `Contact request: ${supportRequest.subject}`,
     text: buildSupportRequestText(supportRequest),
     html: buildSupportRequestHtml(supportRequest),
-    attachments: buildMailAttachments(supportRequest),
+    attachments: await buildMailAttachments(supportRequest),
   });
-
-  return {
-    delivered: true,
-    skipped: false,
-    reason: "",
-    recipients: [recipients.to, ...recipients.cc],
-    messageId: info.messageId || null,
-  };
 };
 
 const sendMailMessage = async ({ to, subject, text, html, replyTo }) => {
-  const transporter = getTransporter();
-  const config = getMailConfig();
-
-  if (!transporter || !config.isConfigured) {
-    return {
-      delivered: false,
-      skipped: true,
-      reason:
-        "SMTP mail delivery is not configured yet. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, and MAIL_FROM in the server environment.",
-      recipients: [to].filter(Boolean),
-      messageId: null,
-    };
-  }
-
-  const info = await transporter.sendMail({
-    from: config.from,
+  return sendResendEmail({
     to,
     subject,
     text,
     html,
     replyTo,
   });
-
-  return {
-    delivered: true,
-    skipped: false,
-    reason: "",
-    recipients: [to].filter(Boolean),
-    messageId: info.messageId || null,
-  };
 };
 
 const buildAuthEmailHtml = ({ eyebrow, title, intro, otp, actionUrl, actionLabel, expiresInMinutes }) => {
