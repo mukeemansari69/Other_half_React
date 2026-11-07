@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 
 import CartToast from "./Components/CartToast.jsx";
 import Footer from "./Components/Footer.jsx";
@@ -143,6 +144,7 @@ const App = () => {
             </Routes>
           </Suspense>
           <Footer />
+          <Analytics />
         </CartProvider>
       </AuthProvider>
     </Router>
